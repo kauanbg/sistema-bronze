@@ -5,7 +5,6 @@ const path = require('path');
 
 const app = express();
 app.use(cors());
-// Aumenta o limite para aceitar upload de fotos maiores em base64
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
@@ -15,7 +14,12 @@ const arquivoBanco = 'banco_de_dados.json';
 
 function lerBanco() {
     if (!fs.existsSync(arquivoBanco)) {
-        fs.writeFileSync(arquivoBanco, JSON.stringify({ agendamentos: [], promocoes: [] }));
+        const dadosIniciais = {
+            configuracoes: { senhaAdmin: "141607" },
+            agendamentos: [],
+            promocoes: []
+        };
+        fs.writeFileSync(arquivoBanco, JSON.stringify(dadosIniciais, null, 2));
     }
     const dadosBrutos = fs.readFileSync(arquivoBanco);
     return JSON.parse(dadosBrutos);
@@ -29,12 +33,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Validação de limite de 2 pessoas por data e hora
 app.post('/salvar', (req, res) => {
     const banco = lerBanco();
     const { data, hora } = req.body;
 
-    // Conta quantos já marcaram para esse mesmo dia e horário
     const totalNoHorario = banco.agendamentos.filter(a => a.data === data && a.hora === hora).length;
 
     if (totalNoHorario >= 2) {
@@ -47,19 +49,21 @@ app.post('/salvar', (req, res) => {
 });
 
 app.get('/listar', (req, res) => {
-    const senha = req.headers['codigo-secreto'];
-    if (senha === '141607') {
-        const banco = lerBanco();
-        res.json(banco.agendamentos);
+    const senhaRecebida = req.headers['codigo-secreto'];
+    const banco = lerBanco();
+    
+    if (senhaRecebida === banco.configuracoes.senhaAdmin) {
+        res.json({ agendamentos: banco.agendamentos, configuracoes: banco.configuracoes });
     } else {
         res.status(401).send("Acesso negado");
     }
 });
 
 app.post('/promocoes', (req, res) => {
-    const senha = req.headers['codigo-secreto'];
-    if (senha === '141607') {
-        const banco = lerBanco();
+    const senhaRecebida = req.headers['codigo-secreto'];
+    const banco = lerBanco();
+
+    if (senhaRecebida === banco.configuracoes.senhaAdmin) {
         const novaPromo = { id: Date.now(), ...req.body };
         banco.promocoes.push(novaPromo);
         salvarBanco(banco);
@@ -75,9 +79,10 @@ app.get('/promocoes', (req, res) => {
 });
 
 app.delete('/promocoes/:id', (req, res) => {
-    const senha = req.headers['codigo-secreto'];
-    if (senha === '141607') {
-        const banco = lerBanco();
+    const senhaRecebida = req.headers['codigo-secreto'];
+    const banco = lerBanco();
+
+    if (senhaRecebida === banco.configuracoes.senhaAdmin) {
         banco.promocoes = banco.promocoes.filter(p => p.id != req.params.id);
         salvarBanco(banco);
         res.status(200).send("Promoção apagada");
