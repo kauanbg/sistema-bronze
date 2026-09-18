@@ -1,11 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname)); // Faz o site aparecer na internet
+
+// Força a pasta atual a servir os arquivos estáticos (HTML, CSS)
+app.use(express.static(__dirname));
 
 const arquivoBanco = 'banco_de_dados.json';
 
@@ -20,6 +23,11 @@ function lerBanco() {
 function salvarBanco(dados) {
     fs.writeFileSync(arquivoBanco, JSON.stringify(dados, null, 2));
 }
+
+// Rota principal explícita para garantir que abra o index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.post('/salvar', (req, res) => {
     const banco = lerBanco();
