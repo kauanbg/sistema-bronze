@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espaço Bronze - Agendamento</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #ffe4e1; margin: 0; padding: 0; color: #333; }
+        .cabecalho { background-color: #ff69b4; color: white; text-align: center; padding: 30px 20px; }
+        .cabecalho h1 { margin: 0; font-size: 28px; }
+        
+        .container { max-width: 900px; margin: 20px auto; padding: 0 20px; }
+        
+        .grid-promocoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .card-promo { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; }
+        .card-promo:hover { transform: translateY(-5px); }
+        .card-promo.selecionado { border-color: #ff69b4; box-shadow: 0 0 15px rgba(255, 105, 180, 0.5); }
+        .foto-promo { width: 100%; height: 180px; object-fit: cover; background-color: #fce4ec; }
+        .info-promo { padding: 15px; }
+        .info-promo h3 { margin: 0 0 10px 0; color: #ff1493; }
+        .preco-promo { font-size: 22px; font-weight: bold; color: #444; }
+        .dias-promo { font-size: 12px; color: #888; margin-top: 5px; }
+
+        .card-formulario { background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }
+        .card-formulario h2 { text-align: center; color: #ff69b4; margin-top: 0; }
+        .grupo-input { margin-bottom: 15px; }
+        .linha-dupla { display: flex; gap: 15px; }
+        .linha-dupla .grupo-input { flex: 1; }
+        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        input[readonly] { background-color: #f0f0f0; color: #666; cursor: not-allowed; }
+        button { width: 100%; padding: 14px; background-color: #ff69b4; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; margin-top: 15px; }
+        button:hover { background-color: #ff1493; }
+    </style>
+</head>
+<body>
+
+    <div class="cabecalho">
+        <h1>Bem-vinda ao Espaço Bronze ☀️</h1>
+        <p>Escolha uma de nossas promoções ou faça um agendamento avulso!</p>
+    </div>
+
+    <div class="container">
+        
+        <h2 style="text-align: center; color: #ff1493;">Nossas Promoções</h2>
+        <div class="grid-promocoes" id="listaPromocoes"></div>
+
+        <div class="card-formulario" id="areaFormulario">
+            <h2>Fazer Agendamento</h2>
+            
+            <form id="formCliente">
+                <div class="grupo-input">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" required>
+                </div>
+                
+                <div class="linha-dupla">
+                    <div class="grupo-input">
+                        <label for="telefone">WhatsApp (Número)</label>
+                        <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="tipo">Tipo de Bronze</label>
+                        <select id="tipo" required>
+                            <option value="Paredão">Paredão</option>
+                            <option value="Máquina Turbo">Máquina Turbo</option>
+                            <option value="Sol">Sol</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="linha-dupla">
+                    <div class="grupo-input">
+                        <label for="data">Data</label>
+                        <input type="date" id="data" required>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="hora">Hora</label>
+                        <input type="time" id="hora" required>
+                    </div>
+                </div>
+
+                <div class="grupo-input">
+                    <label for="valor">Investimento (R$)</label>
+                    <input type="number" id="valor" step="0.01" required>
+                    <small id="avisoDias" style="color: red; font-size: 12px; display: none; margin-top: 5px;"></small>
+                </div>
+                
+                <button type="submit">Confirmar Agendamento</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let promocoesAtivas = [];
+        let diasPermitidosPromo = [];
+
+        window.onload = async () => {
+            try {
+                const res = await fetch('/promocoes');
+                promocoesAtivas = await res.json();
+                renderizarPromocoes();
+            } catch (e) {
+                console.log("Servidor offline");
+            }
+        };
+
+        function renderizarPromocoes() {
+            const container = document.getElementById('listaPromocoes');
+            container.innerHTML = '';
+            
+            if(promocoesAtivas.length === 0) {
+                container.innerHTML = '<p style="text-align:center; width:100%;">Nenhuma promoção no momento. Faça um agendamento normal abaixo.</p>';
+                return;
+            }
+
+            promocoesAtivas.forEach(promo => {
+                const diasTexto = promo.dias.join(', ');
+                const card = document.createElement('div');
+                card.className = 'card-promo';
+                
+                const foto = promo.foto || 'https://via.placeholder.com/400x200/ffb6c1/ff1493?text=Promoção+Bronze';
+
+                card.innerHTML = `
+                    <img src="${foto}" class="foto-promo" alt="Promoção">
+                    <div class="info-promo">
+                        <h3>${promo.titulo}</h3>
+                        <div class="preco-promo">R$ ${promo.preco}</div>
+                        <div class="dias-promo">Válido para: ${diasTexto}</div>
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    document.querySelectorAll('.card-promo').forEach(c => c.classList.remove('selecionado'));
+                    card.classList.add('selecionado');
+
+                    const inputTipo = document.getElementById('tipo');
+                    if (![...inputTipo.options].some(opt => opt.value === promo.titulo)) {
+                        inputTipo.innerHTML += `<option value="${promo.titulo}" selected>${promo.titulo}</option>`;
+                    }
+                    inputTipo.value = promo.titulo;
+                    
+                    const inputValor = document.getElementById('valor');
+                    inputValor.value = promo.preco;
+                    inputValor.readOnly = true;
+
+                    diasPermitidosPromo = promo.diasNum;
+
+                    document.getElementById('avisoDias').style.display = 'block';
+                    document.getElementById('avisoDias').innerText = `Atenção: Essa promoção só vale para ${diasTexto}.`;
+
+                    document.getElementById('areaFormulario').scrollIntoView({ behavior: 'smooth' });
+                };
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('formCliente').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (diasPermitidosPromo.length > 0) {
+                const dataEscolhida = new Date(document.getElementById('data').value + 'T00:00:00');
+                const diaDaSemana = dataEscolhida.getDay();
+                
+                if (!diasPermitidosPromo.includes(diaDaSemana.toString())) {
+                    alert('Data inválida para a promoção escolhida! Por favor, escolha um dos dias válidos na descrição da promoção.');
+                    return;
+                }
+            }
+
+            const agendamento = {
+                nome: document.getElementById('nome').value,
+                telefone: document.getElementById('telefone').value,
+                tipo: document.getElementById('tipo').value,
+                data: document.getElementById('data').value,
+                hora: document.getElementById('hora').value,
+                valor: document.getElementById('valor').value
+            };
+
+            await fetch('/salvar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(agendamento)
+            });
+
+            alert('Agendamento realizado com sucesso!');
+            window.location.reload();
+        });
+    </script>
+</body>
+</html>
