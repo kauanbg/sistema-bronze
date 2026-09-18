@@ -9,29 +9,23 @@
         .card { background: white; max-width: 480px; margin: 30px auto; padding: 30px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         h1 { color: #ff69b4; margin-top: 0; font-size: 26px; }
         .subtitulo { font-size: 15px; color: #555; margin-bottom: 20px; line-height: 1.4; }
-        
         .qr-container { background: #fff0f5; padding: 20px; border-radius: 12px; display: inline-block; border: 2px solid #ffb6c1; margin: 15px 0; }
         .qr-container img { width: 220px; height: 220px; border-radius: 8px; display: block; margin: 0 auto; }
-        
         .chave-box { background: #f8f9fa; padding: 12px; border-radius: 8px; font-size: 20px; font-weight: bold; word-break: break-all; margin: 15px 0; border: 1px dashed #ff69b4; color: #333; letter-spacing: 1px; }
-        
         .btn-copiar { padding: 14px 28px; background: #2ed573; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s, transform 0.1s; width: 100%; margin-top: 10px; }
         .btn-copiar:hover { background: #26af5f; }
         .btn-copiar:active { transform: scale(0.98); }
-        
         .btn-voltar { display: block; background: #ff69b4; color: white; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: background 0.2s; }
         .btn-voltar:hover { background: #ff1493; }
-        
         .aviso { font-size: 13px; color: #777; margin-top: 8px; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h1>Área de Pagamento </h1>
+        <h1>Área de Pagamento 💳</h1>
         <p class="subtitulo">Escaneie o QR Code abaixo com o app do seu banco ou copie a chave Pix para realizar o pagamento:</p>
         
-        <!-- Área do QR Code Gerado Automaticamente -->
         <div class="qr-container">
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=21974832980" alt="QR Code Pix - Espaço Bronze">
         </div>
@@ -51,7 +45,6 @@
             navigator.clipboard.writeText(texto).then(() => {
                 alert('Chave Pix copiada com sucesso!');
             }).catch(() => {
-                // Suporte de cópia para navegadores sem permissão de clipboard direto
                 const inputTemp = document.createElement('input');
                 inputTemp.value = texto;
                 document.body.appendChild(inputTemp);
