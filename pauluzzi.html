@@ -263,8 +263,14 @@
             if (confirm("Tem certeza que deseja apagar este agendamento?")) {
                 try {
                     const res = await fetch(`/agendamentos/${id}`, {
-                        method: 'DELETE'
+                        method: 'DELETE',
+                        headers: { 'codigo-secreto': senhaAdmin }
                     });
+                    if (res.status === 401) {
+                        alert("Sessão expirada!");
+                        sair();
+                        return;
+                    }
                     if (res.ok) {
                         alert("✅ Agendamento apagado com sucesso!");
                         carregarAgendamentos();
