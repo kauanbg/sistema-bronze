@@ -64,7 +64,7 @@
 
         <button class="btn-confirmar" id="btnSalvar" onclick="confirmarEConcluirAgendamento()">✅ Já Fiz o Pix, Confirmar Agendamento</button>
         
-        <a href="#" id="btnWhats" class="btn-whatsapp" target="_blank">📲 Enviar Comprovante no WhatsApp</a>
+        <a href="#" id="btnWhats" class="btn-whatsapp" target="_blank">📲 Enviar Comprovante para Bronze Pauluzzi</a>
 
         <p class="aviso">⚠️ Seu agendamento só é registrado no sistema após clicar no botão de confirmação acima.</p>
         
@@ -133,7 +133,6 @@
                 formatarCampo('62', formatarCampo('05', '***')) +
                 '6304';
 
-            // Cálculo do CRC16 CCITT-FALSE
             let crc = 0xFFFF;
             for (let i = 0; i < payload.length; i++) {
                 crc ^= (payload.charCodeAt(i) << 8);
@@ -194,9 +193,12 @@
 
                 const dataFormatada = dadosAgendamento.data.split('-').reverse().join('/');
                 const valorFormatado = parseFloat(dadosAgendamento.valor).toFixed(2).replace('.', ',');
-                const msg = encodeURIComponent(`Olá! Fiz o agendamento no valor de R$ ${valorFormatado}.\n\nNome: ${dadosAgendamento.nome}\nData: ${dataFormatada} às ${dadosAgendamento.hora}\nServiço: ${dadosAgendamento.tipo}\n\nSegue em anexo o comprovante Pix!`);
+                
+                // Mensagem customizada para Bronze Pauluzzi
+                const msg = encodeURIComponent(`Olá, Bronze Pauluzzi! ☀️\nFiz o agendamento no valor de R$ ${valorFormatado}.\n\n👤 Nome: ${dadosAgendamento.nome}\n📅 Data: ${dataFormatada} às ${dadosAgendamento.hora}\n👙 Serviço: ${dadosAgendamento.tipo}\n\nSegue em anexo o meu comprovante Pix!`);
                 
                 const btnWhats = document.getElementById('btnWhats');
+                // Redirecionamento configurado perfeitamente para o WhatsApp +55 21 98323-7811
                 btnWhats.href = `https://wa.me/5521983237811?text=${msg}`;
                 btnWhats.style.display = 'block';
 
