@@ -16,10 +16,11 @@
         th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; font-size: 14px; }
         th { background: #ff69b4; color: white; font-weight: bold; }
         
-        input[type="text"], input[type="number"], input[type="file"] { padding: 12px; width: 100%; margin-top: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; background: #fff; color: #333; }
+        input[type="text"], input[type="password"], input[type="number"], input[type="file"] { padding: 12px; width: 100%; margin-top: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; background: #fff; color: #333; }
         button { padding: 14px 20px; margin-top: 15px; background: #ff69b4; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.3s; }
         button:hover { background: #ff1493; }
         .btn-apagar { background: #ff4757; padding: 6px 12px; font-size: 12px; margin-top: 0; }
+        .btn-sair { background: #ff4757; padding: 8px 15px; font-size: 13px; float: right; margin-top: -10px; }
         
         .dias-checkbox { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .dias-checkbox label { background: #4a5153; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 5px; }
@@ -29,12 +30,25 @@
             .card-admin { padding: 15px 10px; }
             h2 { font-size: 20px; }
             h3 { font-size: 18px; }
+            .btn-sair { float: none; display: block; margin: 10px auto; width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- Tela de Login (Aparece primeiro) -->
+    <div id="telaLogin" class="card-admin" style="max-width: 400px; margin: 60px auto; text-align: center;">
+        <h3 style="color: #ff69b4; border: none;">Acesso Restrito 🔐</h3>
+        <p style="font-size: 14px; color: #ccc;">Digite a senha administrativa para continuar:</p>
+        <form onsubmit="fazerLogin(event)">
+            <input type="password" id="senhaInput" placeholder="Sua Senha" required autofocus>
+            <button type="submit" style="width: 100%;">Entrar no Painel</button>
+        </form>
+    </div>
+
+    <!-- Painel Administrativo (Inicia oculto até digitar a senha correta) -->
+    <div id="painelAdmin" class="container" style="display: none;">
+        <button class="btn-sair" onclick="sair()">🚪 Sair</button>
         <h2>Painel Administrativo ☀️</h2>
 
         <div class="card-admin">
@@ -94,12 +108,40 @@
     </div>
 
     <script>
-        let senhaAdmin = "141607";
+        let senhaAdmin = sessionStorage.getItem('senhaAdmin') || '';
 
         window.onload = () => {
-            carregarAgendamentos();
-            carregarPromocoes();
+            if (senhaAdmin) {
+                validarEIniciar();
+            }
         };
+
+        async function fazerLogin(e) {
+            e.preventDefault();
+            senhaAdmin = document.getElementById('senhaInput').value;
+            validarEIniciar();
+        }
+
+        async function validarEIniciar() {
+            const sucesso = await carregarAgendamentos();
+            if (sucesso) {
+                sessionStorage.setItem('senhaAdmin', senhaAdmin);
+                document.getElementById('telaLogin').style.display = 'none';
+                document.getElementById('painelAdmin').style.display = 'block';
+                carregarPromocoes();
+            } else {
+                alert("Senha incorreta!");
+                sessionStorage.removeItem('senhaAdmin');
+                senhaAdmin = '';
+                document.getElementById('telaLogin').style.display = 'block';
+                document.getElementById('painelAdmin').style.display = 'none';
+            }
+        }
+
+        function sair() {
+            sessionStorage.removeItem('senhaAdmin');
+            window.location.reload();
+        }
 
         function converterImagemParaBase64(file) {
             return new Promise((resolve, reject) => {
@@ -141,7 +183,8 @@
             });
 
             if (response.status === 401) {
-                alert("Erro de autenticação! A senha no banco de dados não confere.");
+                alert("Sessão expirada ou senha incorreta!");
+                sair();
                 return;
             }
             
@@ -167,38 +210,47 @@
         }
 
         async function apagarPromo(id) {
-            await fetch(`/promocoes/${id}`, {
+            const res = await fetch(`/promocoes/${id}`, {
                 method: 'DELETE',
                 headers: { 'codigo-secreto': senhaAdmin }
             });
+            if (res.status === 401) {
+                alert("Sessão expirada!");
+                sair();
+                return;
+            }
             carregarPromocoes();
         }
 
         async function carregarAgendamentos() {
-            const res = await fetch('/listar', {
-                headers: { 'codigo-secreto': senhaAdmin }
-            });
-            
-            if (res.status === 401) { 
-                alert("Acesso negado: a senha do painel não bate com a senha do banco de dados!");
-                return;
+            try {
+                const res = await fetch('/listar', {
+                    headers: { 'codigo-secreto': senhaAdmin }
+                });
+                
+                if (res.status === 401) { 
+                    return false;
+                }
+                
+                const respostaServidor = await res.json();
+                const dados = respostaServidor.agendamentos;
+                
+                const tabela = document.getElementById('tabelaAgendamentos');
+                tabela.innerHTML = dados.length ? "" : "<tr><td colspan='5'>Nenhum agendamento ainda.</td></tr>";
+                
+                dados.forEach(item => {
+                    tabela.innerHTML += `<tr>
+                        <td><strong>${item.nome}</strong></td>
+                        <td>${item.telefone}</td>
+                        <td>${item.tipo}</td>
+                        <td>${item.data.split('-').reverse().join('/')} às ${item.hora}</td>
+                        <td style="color: green; font-weight: bold;">R$ ${item.valor}</td>
+                    </tr>`;
+                });
+                return true;
+            } catch (e) {
+                return false;
             }
-            
-            const respostaServidor = await res.json();
-            const dados = respostaServidor.agendamentos;
-            
-            const tabela = document.getElementById('tabelaAgendamentos');
-            tabela.innerHTML = dados.length ? "" : "<tr><td colspan='5'>Nenhum agendamento ainda.</td></tr>";
-            
-            dados.forEach(item => {
-                tabela.innerHTML += `<tr>
-                    <td><strong>${item.nome}</strong></td>
-                    <td>${item.telefone}</td>
-                    <td>${item.tipo}</td>
-                    <td>${item.data.split('-').reverse().join('/')} às ${item.hora}</td>
-                    <td style="color: green; font-weight: bold;">R$ ${item.valor}</td>
-                </tr>`;
-            });
         }
     </script>
 </body>
