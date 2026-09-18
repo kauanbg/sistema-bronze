@@ -53,7 +53,7 @@
     </div>
 
     <div class="container">
-        <a href="/pagamento.html" class="btn-pagamento">💳 Ir para a Página de Pagamentos / Pix</a>
+        <a href="#" class="btn-pagamento" onclick="irParaPagamento(event)">💳 Ir para a Página de Pagamentos / Pix</a>
         
         <h2 style="text-align: center; color: #ff1493; font-size: 20px; margin-bottom: 15px;">Nossas Promoções</h2>
         <div class="grid-promocoes" id="listaPromocoes"></div>
@@ -94,7 +94,6 @@
                     </div>
                 </div>
 
-                <!-- Opção para Adicionar Óculos -->
                 <div class="grupo-input">
                     <label class="box-oculos">
                         <input type="checkbox" id="oculos" onchange="calcularTotal()">
@@ -130,11 +129,21 @@
             }
         };
 
+        function irParaPagamento(e) {
+            e.preventDefault();
+            const val = document.getElementById('valor').value;
+            if (val) {
+                localStorage.setItem('ultimoValorAgendado', val);
+                window.location.href = `/pagamento.html?valor=${val}`;
+            } else {
+                window.location.href = '/pagamento.html';
+            }
+        }
+
         function gerarOpcoesHorarios(tipo, horaFixa = '') {
             const selectHora = document.getElementById('hora');
             selectHora.innerHTML = '';
 
-            // Bronze de Sol é sempre Ordem de Chegada e sem limitador
             if (tipo === 'Sol') {
                 selectHora.innerHTML = `<option value="Ordem de Chegada" selected>Ordem de Chegada</option>`;
                 selectHora.disabled = true;
@@ -143,7 +152,6 @@
             }
             
             if (horaFixa) {
-                // Se a promoção tiver horário congelado
                 selectHora.innerHTML = `<option value="${horaFixa}" selected>${horaFixa} (Horário Fixo da Promoção)</option>`;
                 selectHora.disabled = true;
                 document.getElementById('horaOculta').value = horaFixa;
@@ -153,20 +161,18 @@
             selectHora.disabled = false;
             document.getElementById('horaOculta').value = '';
 
-            const inicio = 7; // 07:00
-            const fim = 21;  // 21:00
+            const inicio = 7;
+            const fim = 21;
 
             if (tipo === 'Paredão') {
-                // De 1 em 1 hora
                 for (let h = inicio; h <= fim; h++) {
                     const horaStr = h.toString().padStart(2, '0') + ':00';
                     selectHora.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
                 }
             } else {
-                // Máquina Turbo e outros: de 20 em 20 minutos
                 for (let h = inicio; h <= fim; h++) {
                     for (let m = 0; m < 60; m += 20) {
-                        if (h === fim && m > 0) break; // Para exatamente às 21:00
+                        if (h === fim && m > 0) break;
                         const horaStr = h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
                         selectHora.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
                     }
@@ -263,13 +269,15 @@
                 }
             }
 
+            const valorFinal = document.getElementById('valor').value;
+
             const agendamento = {
                 nome: document.getElementById('nome').value,
                 telefone: document.getElementById('telefone').value,
                 tipo: document.getElementById('tipo').value,
                 data: document.getElementById('data').value,
                 hora: horaFinal,
-                valor: document.getElementById('valor').value,
+                valor: valorFinal,
                 oculos: document.getElementById('oculos').checked
             };
 
@@ -285,8 +293,9 @@
                 return;
             }
 
-            alert('Agendamento realizado com sucesso!');
-            window.location.reload();
+            localStorage.setItem('ultimoValorAgendado', valorFinal);
+            alert('Agendamento realizado com sucesso! Redirecionando para o pagamento...');
+            window.location.href = `/pagamento.html?valor=${valorFinal}`;
         });
     </script>
 </body>
