@@ -9,7 +9,6 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static(__dirname));
 
-// Pega a URL salva nas variáveis do Render (MONGODB_URI)
 const URL_BANCO = process.env.MONGODB_URI || "mongodb+srv://admin:141607Skskiwkw@cluster0.iybvsjs.mongodb.net/sistema_bronze?appName=Cluster0";
 
 mongoose.connect(URL_BANCO)
@@ -31,7 +30,8 @@ const PromocaoSchema = new mongoose.Schema({
     foto: String,
     preco: String,
     diasNum: [String],
-    dias: [String]
+    dias: [String],
+    horaFixa: String // Horário congelado opcional
 });
 
 const ConfigSchema = new mongoose.Schema({
@@ -54,14 +54,20 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Salvar agendamento com validação de maximo 2 pessoas no mesmo horário
+// Salvar agendamento com limite de 4 pessoas no Paredão e 2 pessoas na Máquina
 app.post('/salvar', async (req, res) => {
     try {
-        const { data, hora } = req.body;
-        const totalNoHorario = await Agendamento.countDocuments({ data, hora });
+        const { data, hora, tipo } = req.body;
+        
+        // Define o limite máximo de acordo com o procedimento
+        const limiteMaximo = (tipo === 'Paredão') ? 4 : 2;
 
-        if (totalNoHorario >= 2) {
-            return res.status(400).json({ erro: "Este horário já atingiu o limite máximo de 2 pessoas!" });
+        const totalNoHorario = await Agendamento.countDocuments({ data, hora, tipo });
+
+        if (totalNoHorario >= limiteMaximo) {
+            return res.status(400).json({ 
+                erro: `O serviço "${tipo}" no horário ${hora} já atingiu o limite máximo de ${limiteMaximo} pessoas!` 
+            });
         }
 
         await Agendamento.create(req.body);
@@ -71,7 +77,7 @@ app.post('/salvar', async (req, res) => {
     }
 });
 
-// Listar agendamentos para o admin
+// Listar agendamentos
 app.get('/listar', async (req, res) => {
     const senhaRecebida = req.headers['codigo-secreto'];
     const senhaAtual = await obterSenha();
@@ -84,7 +90,7 @@ app.get('/listar', async (req, res) => {
     }
 });
 
-// Criar nova promoção
+// Criar promoção
 app.post('/promocoes', async (req, res) => {
     const senhaRecebida = req.headers['codigo-secreto'];
     const senhaAtual = await obterSenha();
@@ -97,13 +103,13 @@ app.post('/promocoes', async (req, res) => {
     }
 });
 
-// Listar promoções ativas
+// Listar promoções
 app.get('/promocoes', async (req, res) => {
     const promocoes = await Promocao.find();
     res.json(promocoes);
 });
 
-// Apagar promoção
+// Deletar promoção
 app.delete('/promocoes/:id', async (req, res) => {
     const senhaRecebida = req.headers['codigo-secreto'];
     const senhaAtual = await obterSenha();
