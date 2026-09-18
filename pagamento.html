@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagamento - Pauluzzi Bronze</title>
+    <title>Pagamento Pix - Pauluzzi Bronze</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #1a1a1a; margin: 0; padding: 15px; color: #fff; text-align: center; }
@@ -14,25 +14,24 @@
         .box-resumo { background: #333; border: 1px solid #ff69b4; padding: 15px; border-radius: 12px; margin: 15px 0; text-align: left; font-size: 14px; line-height: 1.6; }
         .box-resumo h3 { color: #ff69b4; margin-top: 0; font-size: 16px; border-bottom: 1px solid #555; padding-bottom: 5px; }
 
-        .box-valor-total { background: #1a1a1a; border: 2px dashed #d4af37; padding: 12px; border-radius: 10px; margin: 15px 0; text-align: center; }
+        .box-valor-total { background: #1a1a1a; border: 2px dashed #2ed573; padding: 12px; border-radius: 10px; margin: 15px 0; text-align: center; }
         .box-valor-total span { font-size: 13px; color: #aaa; font-weight: bold; display: block; }
-        .valor-destaque { font-size: 28px; font-weight: bold; color: #2ed573; margin-top: 3px; }
+        .valor-destaque { font-size: 30px; font-weight: bold; color: #2ed573; margin-top: 3px; }
 
         .qr-container { background: #fff; padding: 15px; border-radius: 12px; display: inline-block; border: 2px solid #d4af37; margin: 10px 0; max-width: 100%; }
-        .qr-container img { max-width: 100%; width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
+        .qr-container img { max-width: 100%; width: 220px; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
         
-        .chave-box { background: #333; padding: 12px 8px; border-radius: 8px; font-size: 20px; font-weight: bold; word-break: break-all; margin: 15px 0; border: 1px dashed #d4af37; color: #fff; letter-spacing: 1px; }
-        
-        .btn-confirmar { padding: 16px 20px; background: linear-gradient(135deg, #2ed573, #26af5f); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; width: 100%; margin-top: 10px; text-transform: uppercase; }
-        .btn-confirmar:hover { background: linear-gradient(135deg, #26af5f, #1e9046); }
+        .btn-copiar-pix { padding: 16px 20px; background: linear-gradient(135deg, #2ed573, #26af5f); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; width: 100%; margin-top: 10px; text-transform: uppercase; }
+        .btn-copiar-pix:hover { background: linear-gradient(135deg, #26af5f, #1e9046); }
 
-        .btn-copiar { padding: 12px 20px; background: #333; color: #d4af37; border: 1px solid #d4af37; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 8px; }
+        .chave-box { background: #333; padding: 10px; border-radius: 8px; font-size: 14px; color: #aaa; margin-top: 15px; word-break: break-all; border: 1px dashed #555; }
         
+        .btn-confirmar { padding: 14px 20px; background: #ff69b4; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; text-transform: uppercase; }
+        .btn-confirmar:hover { background: #ff1493; }
+
         .btn-whatsapp { display: none; background: #25d366; color: white; text-decoration: none; padding: 14px; border-radius: 8px; font-weight: bold; margin-top: 15px; font-size: 15px; }
-
         .btn-voltar { display: block; color: #aaa; padding: 10px; text-decoration: none; font-size: 13px; margin-top: 15px; }
-        .btn-voltar:hover { color: #fff; }
-        
+
         .aviso { font-size: 12px; color: #ff4757; margin-top: 10px; line-height: 1.3; font-weight: bold; }
     </style>
 </head>
@@ -40,7 +39,7 @@
 
     <div class="card">
         <h1>Pagamento Pix 💳</h1>
-        <p class="subtitulo">Escaneie o QR Code ou copie a chave Pix para concluir o seu agendamento:</p>
+        <p class="subtitulo">Clique no botão abaixo para copiar o Pix já com o valor exato ou escaneie o QR Code:</p>
         
         <div class="box-resumo" id="boxResumo">
             <h3>Resumo do Agendamento</h3>
@@ -48,30 +47,33 @@
         </div>
 
         <div class="box-valor-total">
-            <span>VALOR A PAGAR VIA PIX:</span>
+            <span>VALOR COMPLETO A PAGAR:</span>
             <div class="valor-destaque" id="valorTotalDisplay">R$ 0,00</div>
         </div>
 
         <div class="qr-container">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=21983237811" alt="QR Code Pix - Pauluzzi Bronze">
+            <img id="qrCodeImg" src="" alt="QR Code Pix - Pauluzzi Bronze">
         </div>
 
-        <p style="margin-bottom: 5px; font-size: 13px; color: #d4af37; font-weight: bold;">Chave Pix (Telefone):</p>
-        <div class="chave-box" id="textoChave">21983237811</div>
-        
-        <button class="btn-copiar" onclick="copiarChave()">📋 Copiar Chave Pix</button>
-        
-        <button class="btn-confirmar" id="btnSalvar" onclick="confirmarEConcluirAgendamento()">✅ Confirmar Pagamento e Finalizar</button>
+        <!-- Botão principal do Pix Copia e Cola com Valor -->
+        <button class="btn-copiar-pix" onclick="copiarPixComValor()">📋 Copiar Código Pix Copia e Cola</button>
+
+        <div class="chave-box">
+            Chave Pix alternativa (Telefone): <strong style="color: #fff;">21983237811</strong>
+        </div>
+
+        <button class="btn-confirmar" id="btnSalvar" onclick="confirmarEConcluirAgendamento()">✅ Já Fiz o Pix, Confirmar Agendamento</button>
         
         <a href="#" id="btnWhats" class="btn-whatsapp" target="_blank">📲 Enviar Comprovante no WhatsApp</a>
 
-        <p class="aviso">⚠️ Seu horário só fica garantido e gravado no sistema após clicar em "Confirmar Pagamento".</p>
+        <p class="aviso">⚠️ Seu agendamento só é registrado no sistema após clicar no botão de confirmação acima.</p>
         
-        <a href="/" class="btn-voltar">⬅ Voltar e Alterar Dados</a>
+        <a href="/" class="btn-voltar">⬅ Voltar para o Início</a>
     </div>
 
     <script>
         let dadosAgendamento = null;
+        let pixCopiaEColaComValor = '';
 
         window.onload = () => {
             const temp = localStorage.getItem('agendamentoPendente');
@@ -79,7 +81,8 @@
                 dadosAgendamento = JSON.parse(temp);
                 
                 const dataFormatada = dadosAgendamento.data.split('-').reverse().join('/');
-                const valorFormatado = parseFloat(dadosAgendamento.valor).toFixed(2).replace('.', ',');
+                const valorNum = parseFloat(dadosAgendamento.valor) || 0;
+                const valorFormatado = valorNum.toFixed(2).replace('.', ',');
 
                 document.getElementById('detalhesResumo').innerHTML = `
                     👤 <strong>Nome:</strong> ${dadosAgendamento.nome}<br>
@@ -90,24 +93,75 @@
                 `;
 
                 document.getElementById('valorTotalDisplay').innerText = `R$ ${valorFormatado}`;
+
+                // Gera o código Pix Copia e Cola Oficial com valor embutido
+                pixCopiaEColaComValor = gerarPixBRCode('21983237811', 'PAULUZZI BRONZE', 'RIO DE JANEIRO', valorNum);
+
+                // Atualiza o QR Code com o código com valor
+                const urlQR = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(pixCopiaEColaComValor)}`;
+                document.getElementById('qrCodeImg').src = urlQR;
+
             } else {
-                alert("Nenhum agendamento pendente encontrado! Por favor, preencha o formulário.");
+                alert("Nenhum agendamento pendente encontrado!");
                 window.location.href = '/';
             }
         };
 
-        function copiarChave() {
-            const texto = document.getElementById('textoChave').innerText;
-            navigator.clipboard.writeText(texto).then(() => {
-                alert('Chave Pix copiada com sucesso!');
+        // Algoritmo oficial do Banco Central para gerar o Pix Copia e Cola (BR Code)
+        function gerarPixBRCode(chave, nome, cidade, valor) {
+            function formatarCampo(id, val) {
+                const len = val.length.toString().padStart(2, '0');
+                return `${id}${len}${val}`;
+            }
+
+            let chaveFormatada = chave.replace(/\D/g, '');
+            if (chaveFormatada.length === 11) {
+                chaveFormatada = '+55' + chaveFormatada;
+            }
+
+            const merchantAccount = formatarCampo('00', 'br.gov.bcb.pix') + formatarCampo('01', chaveFormatada);
+            const valorStr = parseFloat(valor).toFixed(2);
+
+            let payload = '000201' +
+                formatarCampo('26', merchantAccount) +
+                '52040000' +
+                '5303986' +
+                formatarCampo('54', valorStr) +
+                '5802BR' +
+                formatarCampo('59', nome.substring(0, 25)) +
+                formatarCampo('60', cidade.substring(0, 15)) +
+                formatarCampo('62', formatarCampo('05', '***')) +
+                '6304';
+
+            // Cálculo do CRC16 CCITT-FALSE
+            let crc = 0xFFFF;
+            for (let i = 0; i < payload.length; i++) {
+                crc ^= (payload.charCodeAt(i) << 8);
+                for (let j = 0; j < 8; j++) {
+                    if ((crc & 0x8000) !== 0) {
+                        crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+                    } else {
+                        crc = (crc << 1) & 0xFFFF;
+                    }
+                }
+            }
+            const crcHex = crc.toString(16).toUpperCase().padStart(4, '0');
+            return payload + crcHex;
+        }
+
+        function copiarPixComValor() {
+            if (!pixCopiaEColaComValor) return;
+
+            navigator.clipboard.writeText(pixCopiaEColaComValor).then(() => {
+                alert('✅ CÓDIGO PIX COPIADO COM SUCESSO!\n\nAgora abra o aplicativo do seu banco, vá em Pix -> "Pix Copia e Cola". O valor já aparecerá preenchido!');
             }).catch(() => {
-                const inputTemp = document.createElement('input');
-                inputTemp.value = texto;
+                const inputTemp = document.createElement('textarea');
+                inputTemp.value = pixCopiaEColaComValor;
                 document.body.appendChild(inputTemp);
                 inputTemp.select();
                 document.execCommand('copy');
                 document.body.removeChild(inputTemp);
-                alert('Chave Pix copiada com sucesso!');
+                alert('✅ CÓDIGO PIX COPIADO COM SUCESSO!\n\nAgora abra o aplicativo do seu banco, vá em Pix -> "Pix Copia e Cola". O valor já aparecerá preenchido!');
             });
         }
 
@@ -129,19 +183,18 @@
                     const erroServidor = await resposta.json();
                     alert(erroServidor.erro);
                     btn.disabled = false;
-                    btn.innerText = "✅ Confirmar Pagamento e Finalizar";
+                    btn.innerText = "✅ Já Fiz o Pix, Confirmar Agendamento";
                     return;
                 }
 
                 localStorage.removeItem('agendamentoPendente');
-                alert("🎉 AGENDAMENTO CONCLUÍDO COM SUCESSO!\n\nAgora envie o comprovante Pix para o nosso WhatsApp para validar a reserva.");
+                alert("🎉 AGENDAMENTO CONCLUÍDO COM SUCESSO!\n\nEnvie agora o seu comprovante pelo WhatsApp.");
 
                 btn.style.display = 'none';
 
-                // Gera o link direto para o WhatsApp com a mensagem pronta
                 const dataFormatada = dadosAgendamento.data.split('-').reverse().join('/');
                 const valorFormatado = parseFloat(dadosAgendamento.valor).toFixed(2).replace('.', ',');
-                const msg = encodeURIComponent(`Olá! Fiz o pagamento do meu agendamento no valor de R$ ${valorFormatado}.\n\nNome: ${dadosAgendamento.nome}\nData: ${dataFormatada} às ${dadosAgendamento.hora}\nServiço: ${dadosAgendamento.tipo}`);
+                const msg = encodeURIComponent(`Olá! Fiz o agendamento no valor de R$ ${valorFormatado}.\n\nNome: ${dadosAgendamento.nome}\nData: ${dataFormatada} às ${dadosAgendamento.hora}\nServiço: ${dadosAgendamento.tipo}\n\nSegue em anexo o comprovante Pix!`);
                 
                 const btnWhats = document.getElementById('btnWhats');
                 btnWhats.href = `https://wa.me/5521983237811?text=${msg}`;
@@ -150,7 +203,7 @@
             } catch (e) {
                 alert("Erro ao gravar agendamento. Tente novamente.");
                 btn.disabled = false;
-                btn.innerText = "✅ Confirmar Pagamento e Finalizar";
+                btn.innerText = "✅ Já Fiz o Pix, Confirmar Agendamento";
             }
         }
     </script>
