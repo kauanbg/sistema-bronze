@@ -47,6 +47,9 @@
 
                 <input type="number" id="precoPromo" placeholder="Valor (Investimento) Fixo" required>
                 
+                <label style="margin-top: 15px; display:block; color:#ff69b4; font-size: 14px; font-weight: bold;">Congelar Horário Fixo? (Opcional - Ex: 08:00):</label>
+                <input type="text" id="horaFixaPromo" placeholder="Deixe em branco para permitir qualquer horário">
+
                 <p style="margin-bottom: 5px; color: #ff69b4; margin-top: 15px; font-size: 14px; font-weight: bold;">Dias da semana válidos:</p>
                 <div class="dias-checkbox">
                     <label><input type="checkbox" name="dias" value="0" data-nome="Dom"> Dom</label>
@@ -64,7 +67,7 @@
             <h4 style="margin-top: 25px; color: #ff69b4; margin-bottom: 5px;">Promoções Ativas no Site</h4>
             <div class="tabela-responsive">
                 <table>
-                    <thead><tr><th>Título</th><th>Investimento</th><th>Ação</th></tr></thead>
+                    <thead><tr><th>Título</th><th>Investimento</th><th>Horário Fixado</th><th>Ação</th></tr></thead>
                     <tbody id="tabelaPromos"></tbody>
                 </table>
             </div>
@@ -126,6 +129,7 @@
                 titulo: document.getElementById('tituloPromo').value,
                 foto: fotoBase64,
                 preco: document.getElementById('precoPromo').value,
+                horaFixa: document.getElementById('horaFixaPromo').value.trim(),
                 diasNum: diasNum,
                 dias: diasNomes
             };
@@ -156,6 +160,7 @@
                 tabela.innerHTML += `<tr>
                     <td>${p.titulo}</td>
                     <td>R$ ${p.preco}</td>
+                    <td>${p.horaFixa || 'Livre'}</td>
                     <td><button class="btn-apagar" onclick="apagarPromo('${p._id}')">Apagar</button></td>
                 </tr>`;
             });
