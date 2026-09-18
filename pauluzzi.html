@@ -36,7 +36,7 @@
 </head>
 <body>
 
-    <!-- Tela de Login (Aparece primeiro) -->
+    <!-- Tela de Login -->
     <div id="telaLogin" class="card-admin" style="max-width: 400px; margin: 60px auto; text-align: center;">
         <h3 style="color: #ff69b4; border: none;">Acesso Restrito 🔐</h3>
         <p style="font-size: 14px; color: #ccc;">Digite a senha administrativa para continuar:</p>
@@ -46,7 +46,7 @@
         </form>
     </div>
 
-    <!-- Painel Administrativo (Inicia oculto até digitar a senha correta) -->
+    <!-- Painel Administrativo -->
     <div id="painelAdmin" class="container" style="display: none;">
         <button class="btn-sair" onclick="sair()">🚪 Sair</button>
         <h2>Painel Administrativo ☀️</h2>
@@ -59,7 +59,9 @@
                 <label style="margin-top: 15px; display:block; color:#ff69b4; font-size: 14px; font-weight: bold;">Escolher foto (Galeria/Computador):</label>
                 <input type="file" id="fotoArquivo" accept="image/*" required>
 
-                <input type="number" id="precoPromo" placeholder="Valor (Investimento) Fixo" required>
+                <!-- Atualizado com step="0.01" para permitir números quebrados (Ex: 59.99) -->
+                <label style="margin-top: 15px; display:block; color:#ff69b4; font-size: 14px; font-weight: bold;">Valor (Investimento) Fixo:</label>
+                <input type="number" id="precoPromo" step="0.01" placeholder="Ex: 59.99" required>
                 
                 <label style="margin-top: 15px; display:block; color:#ff69b4; font-size: 14px; font-weight: bold;">Congelar Horário Fixo? (Opcional - Ex: 08:00):</label>
                 <input type="text" id="horaFixaPromo" placeholder="Deixe em branco para permitir qualquer horário">
