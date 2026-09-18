@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espaço Bronze - Agendamento</title>
+    <title>Espaço Bronze Pauluzzi- Agendamento</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #ffe4e1; margin: 0; padding: 0; color: #333; }
         .cabecalho { background-color: #ff69b4; color: white; text-align: center; padding: 30px 20px; }
@@ -35,7 +35,7 @@
 <body>
 
     <div class="cabecalho">
-        <h1>Bem-vinda ao Espaço Bronze ☀️</h1>
+        <h1>Bem-vinda ao Espaço Bronze Pauluzzi☀️</h1>
         <p>Escolha sua promoção e garanta seu horário!</p>
     </div>
 
@@ -159,7 +159,6 @@
             const horaEscolhida = document.getElementById('hora').value;
             const horaNum = parseInt(horaEscolhida.split(':')[0]);
             
-            // Valida restrição das 07:00 às 21:00
             if (horaNum < 7 || horaNum > 21) {
                 alert('Os horários de atendimento devem ser distribuídos estritamente entre as 07:00 e as 21:00!');
                 return;
