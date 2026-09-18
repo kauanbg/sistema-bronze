@@ -3,39 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espaço Bronze - Agendamento</title>
+    <title>Pauluzzi Bronze - Agendamento</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #ffe4e1; margin: 0; padding: 0; color: #333; }
-        .cabecalho { background-color: #ff69b4; color: white; text-align: center; padding: 25px 15px; }
-        .cabecalho h1 { margin: 0; font-size: 26px; }
-        .cabecalho p { margin: 8px 0 0 0; font-size: 14px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #1a1a1a; margin: 0; padding: 0; color: #fff; }
+        .cabecalho { background: linear-gradient(135deg, #d4af37, #ff69b4); color: white; text-align: center; padding: 25px 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .cabecalho h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .cabecalho p { margin: 8px 0 0 0; font-size: 14px; color: #fff8dc; font-weight: 600; }
+        
         .container { max-width: 900px; margin: 15px auto; padding: 0 15px; }
+
+        .card-info { background: #2b2b2b; border: 1px solid #d4af37; border-radius: 12px; padding: 18px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .card-info h3 { color: #d4af37; margin-top: 0; text-align: center; font-size: 18px; text-transform: uppercase; }
+        
+        .grid-horarios { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 13px; margin-top: 10px; }
+        .item-horario { background: #333; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #ff69b4; display: flex; justify-content: space-between; }
+
         .grid-promocoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .card-promo { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; }
-        .card-promo:hover { transform: translateY(-3px); }
-        .card-promo.selecionado { border-color: #ff69b4; box-shadow: 0 0 15px rgba(255, 105, 180, 0.5); }
-        .foto-promo { width: 100%; height: 180px; object-fit: cover; background-color: #fce4ec; display: block; }
+        .card-promo { background: #2b2b2b; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; border: 2px solid #444; }
+        .card-promo:hover { transform: translateY(-3px); border-color: #d4af37; }
+        .card-promo.selecionado { border-color: #ff69b4; box-shadow: 0 0 15px rgba(255, 105, 180, 0.6); }
+        .foto-promo { width: 100%; height: 180px; object-fit: cover; background-color: #333; display: block; }
         .info-promo { padding: 15px; }
-        .info-promo h3 { margin: 0 0 8px 0; color: #ff1493; font-size: 18px; }
-        .preco-promo { font-size: 22px; font-weight: bold; color: #444; }
-        .dias-promo { font-size: 12px; color: #888; margin-top: 5px; }
-        .card-formulario { background-color: #ffffff; padding: 25px 20px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto 30px auto; }
-        .card-formulario h2 { text-align: center; color: #ff69b4; margin-top: 0; font-size: 22px; }
+        .info-promo h3 { margin: 0 0 8px 0; color: #ff69b4; font-size: 18px; }
+        .preco-promo { font-size: 22px; font-weight: bold; color: #d4af37; }
+        .dias-promo { font-size: 12px; color: #aaa; margin-top: 5px; }
+
+        .card-formulario { background-color: #242424; border: 1px solid #d4af37; padding: 25px 20px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.5); max-width: 500px; margin: 0 auto 30px auto; }
+        .card-formulario h2 { text-align: center; color: #d4af37; margin-top: 0; font-size: 22px; text-transform: uppercase; }
         .grupo-input { margin-bottom: 15px; }
         .linha-dupla { display: flex; gap: 15px; }
         .linha-dupla .grupo-input { flex: 1; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; background: #fff; }
-        input[readonly], select[disabled] { background-color: #f0f0f0; color: #666; cursor: not-allowed; }
-        button { width: 100%; padding: 15px; background-color: #ff69b4; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.3s; margin-top: 10px; }
-        button:hover { background-color: #ff1493; }
-        .btn-pagamento { display: block; text-align: center; background-color: #2ed573; color: white; text-decoration: none; padding: 14px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; font-size: 15px; }
-        .btn-pagamento:hover { background-color: #26af5f; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #e0e0e0; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #555; border-radius: 8px; font-size: 15px; background: #333; color: #fff; }
+        input[readonly], select[disabled] { background-color: #1f1f1f; color: #888; cursor: not-allowed; }
         
-        .box-oculos { background: #fff0f5; padding: 12px; border-radius: 8px; border: 1px solid #ff69b4; display: flex; align-items: center; gap: 10px; cursor: pointer; margin-top: 5px; }
+        button { width: 100%; padding: 16px; background: linear-gradient(135deg, #2ed573, #26af5f); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.3s; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        button:hover { background: linear-gradient(135deg, #26af5f, #1e9046); }
+
+        .box-oculos { background: #333; padding: 12px; border-radius: 8px; border: 1px solid #ff69b4; display: flex; align-items: center; gap: 10px; cursor: pointer; margin-top: 5px; }
         .box-oculos input { width: 18px; height: 18px; cursor: pointer; }
-        .box-oculos span { font-size: 14px; font-weight: bold; color: #d63384; }
+        .box-oculos span { font-size: 14px; font-weight: bold; color: #ff69b4; }
+
+        .aviso-pagamento { background: #ff4757; color: white; padding: 10px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: bold; margin-bottom: 15px; }
+        .rodape { text-align: center; font-size: 13px; color: #aaa; margin: 30px 0; line-height: 1.5; }
 
         @media (max-width: 600px) {
             .linha-dupla { flex-direction: column; gap: 0; }
@@ -48,44 +59,70 @@
 <body>
 
     <div class="cabecalho">
-        <h1>Bem-vinda ao Espaço Bronze ☀️</h1>
-        <p>Escolha sua promoção e garanta seu horário!</p>
+        <h1>Pauluzzi Bronze ☀️</h1>
+        <p>Bronze de Luxo Natural & Artificial</p>
     </div>
 
     <div class="container">
-        <a href="#" class="btn-pagamento" onclick="irParaPagamento(event)">💳 Ir para a Página de Pagamentos / Pix</a>
         
-        <h2 style="text-align: center; color: #ff1493; font-size: 20px; margin-bottom: 15px;">Nossas Promoções</h2>
+        <!-- Informações de Funcionamento -->
+        <div class="card-info">
+            <h3>🕒 Horário de Funcionamento</h3>
+            <div class="grid-horarios">
+                <div class="item-horario"><span>Domingo</span> <strong>08:00 às 14:00</strong></div>
+                <div class="item-horario" style="border-color: #ff4757;"><span>Segunda</span> <strong style="color: #ff4757;">NÃO FUNCIONAMOS</strong></div>
+                <div class="item-horario"><span>Terça e Quarta</span> <strong>08:00 às 18:00</strong></div>
+                <div class="item-horario"><span>Quinta a Sábado</span> <strong>08:00 às 19:00</strong></div>
+            </div>
+        </div>
+
+        <h2 style="text-align: center; color: #d4af37; font-size: 20px; margin-bottom: 15px;">Promoções Ativas</h2>
         <div class="grid-promocoes" id="listaPromocoes"></div>
 
         <div class="card-formulario" id="areaFormulario">
-            <h2>Fazer Agendamento</h2>
+            <h2>Agendar Horário</h2>
+            <div class="aviso-pagamento">⚠️ ATENÇÃO: PAGAMENTO ANTECIPADO!<br>Seu agendamento só é confirmado após realizar o Pix.</div>
             
             <form id="formCliente">
                 <div class="grupo-input">
                     <label for="nome">Nome Completo</label>
-                    <input type="text" id="nome" required placeholder="Digite seu nome">
+                    <input type="text" id="nome" required placeholder="Digite seu nome completo">
                 </div>
                 
                 <div class="linha-dupla">
                     <div class="grupo-input">
-                        <label for="telefone">WhatsApp (Número)</label>
-                        <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+                        <label for="telefone">WhatsApp (DDD + Número)</label>
+                        <input type="tel" id="telefone" placeholder="(21) 99999-9999" required>
                     </div>
                     <div class="grupo-input">
-                        <label for="tipo">Tipo de Bronze</label>
+                        <label for="tipo">Serviço / Procedimento</label>
                         <select id="tipo" required onchange="aoMudarTipo()">
-                            <option value="Paredão">Paredão (Até 4 pessoas/h)</option>
-                            <option value="Máquina Turbo">Máquina Turbo (Até 2 pessoas)</option>
-                            <option value="Sol">Sol (Ordem de Chegada)</option>
+                            <!-- Paredão Duplo -->
+                            <option value="Paredão 1h (R$ 39,99)" data-categoria="Paredão" data-preco="39.99">Paredão Duplo - 1 Hora (R$ 39,99)</option>
+                            <option value="Paredão 1h30 (R$ 49,99)" data-categoria="Paredão" data-preco="49.99">Paredão Duplo - 1h30 (R$ 49,99)</option>
+                            <option value="Paredão 2h (R$ 59,99)" data-categoria="Paredão" data-preco="59.99">Paredão Duplo - 2 Horas (R$ 59,99)</option>
+                            <!-- Cabine 360 Turbo -->
+                            <option value="Cabine 360 10min (R$ 89,99)" data-categoria="Máquina Turbo" data-preco="89.99">Cabine 360° Turbo - 10 Min (R$ 89,99)</option>
+                            <option value="Cabine 360 15min (R$ 119,99)" data-categoria="Máquina Turbo" data-preco="119.99">Cabine 360° Turbo - 15 Min (R$ 119,99)</option>
+                            <option value="Cabine 360 20min (R$ 134,99)" data-categoria="Máquina Turbo" data-preco="134.99">Cabine 360° Turbo - 20 Min (R$ 134,99)</option>
+                            <!-- Bronze Natural Sol -->
+                            <option value="Sol 1h (R$ 39,99)" data-categoria="Sol" data-preco="39.99">Bronze Sol - 1 Hora (R$ 39,99)</option>
+                            <option value="Sol 1h30 (R$ 49,99)" data-categoria="Sol" data-preco="49.99">Bronze Sol - 1h30 (R$ 49,99)</option>
+                            <option value="Sol Tempo Livre (R$ 69,99)" data-categoria="Sol" data-preco="69.99">Bronze Sol - Tempo Livre (R$ 69,99)</option>
+                            <!-- Outros Procedimentos -->
+                            <option value="Banho de Lua (R$ 24,99)" data-categoria="Sol" data-preco="24.99">Banho de Lua (R$ 24,99)</option>
+                            <option value="Intensificador (R$ 29,99)" data-categoria="Sol" data-preco="29.99">Intensificador (R$ 29,99)</option>
+                            <option value="Montagem Biquíni (R$ 24,99)" data-categoria="Sol" data-preco="24.99">Apenas Montagem Biquíni (R$ 24,99)</option>
+                            <option value="Montagem Cueca (R$ 29,99)" data-categoria="Sol" data-preco="29.99">Apenas Montagem Cueca (R$ 29,99)</option>
+                            <option value="Decapagem (R$ 24,99)" data-categoria="Sol" data-preco="24.99">Decapagem (R$ 24,99)</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="linha-dupla">
                     <div class="grupo-input">
-                        <label for="data">Data</label>
-                        <input type="date" id="data" required>
+                        <label for="data">Data Desejada</label>
+                        <input type="date" id="data" required onchange="validarDataEHorario()">
                     </div>
                     <div class="grupo-input">
                         <label for="hora">Horário Disponível</label>
@@ -104,11 +141,17 @@
                 <div class="grupo-input">
                     <label for="valor">Investimento Total (R$)</label>
                     <input type="number" id="valor" step="0.01" required placeholder="0.00" oninput="atualizarPrecoBaseManual()">
-                    <small id="avisoDias" style="color: red; font-size: 12px; display: none; margin-top: 5px;"></small>
+                    <small id="avisoDias" style="color: #ff4757; font-size: 12px; display: none; margin-top: 5px;"></small>
                 </div>
                 
-                <button type="submit">Confirmar Agendamento</button>
+                <button type="submit">Ir para Pagamento (Pix) 💳</button>
             </form>
+        </div>
+
+        <div class="rodape">
+            📍 <strong>Endereço:</strong> Toriba 851, Colégio - RJ<br>
+            📲 <strong>WhatsApp:</strong> (21) 98323-7811<br>
+            <small style="color: #777; display: block; margin-top: 8px;">🚫 Não trabalhamos com parafina | 🚫 Não trabalhamos com figo</small>
         </div>
     </div>
 
@@ -116,10 +159,13 @@
         let promocoesAtivas = [];
         let diasPermitidosPromo = [];
         let horaCongeladaPromo = '';
-        let precoBase = 0;
+        let precoBase = 39.99;
 
         window.onload = async () => {
-            gerarOpcoesHorarios('Paredão');
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('data').min = hoje;
+            
+            aoMudarTipo();
             try {
                 const res = await fetch('/promocoes');
                 promocoesAtivas = await res.json();
@@ -129,22 +175,59 @@
             }
         };
 
-        function irParaPagamento(e) {
-            e.preventDefault();
-            const val = document.getElementById('valor').value;
-            if (val) {
-                localStorage.setItem('ultimoValorAgendado', val);
-                window.location.href = `/pagamento.html?valor=${val}`;
-            } else {
-                window.location.href = '/pagamento.html';
-            }
+        function obterCategoriaEServico() {
+            const select = document.getElementById('tipo');
+            const optionSelecionada = select.options[select.selectedIndex];
+            const categoria = optionSelecionada.getAttribute('data-categoria') || 'Paredão';
+            const preco = parseFloat(optionSelecionada.getAttribute('data-preco')) || 0;
+            return { categoria, preco };
         }
 
-        function gerarOpcoesHorarios(tipo, horaFixa = '') {
+        function aoMudarTipo() {
+            const { categoria, preco } = obterCategoriaEServico();
+            precoBase = preco;
+            calcularTotal();
+            validarDataEHorario();
+        }
+
+        function validarDataEHorario() {
+            const inputData = document.getElementById('data').value;
+            const { categoria } = obterCategoriaEServico();
+
+            if (!inputData) {
+                gerarOpcoesHorarios(categoria, 8, 19, horaCongeladaPromo);
+                return;
+            }
+
+            const dataObj = new Date(inputData + 'T00:00:00');
+            const diaSemana = dataObj.getDay(); // 0: Dom, 1: Seg, 2: Ter, 3: Qua, 4: Qui, 5: Sex, 6: Sáb
+
+            // Bloqueio de Segunda-feira
+            if (diaSemana === 1) {
+                alert("🚫 Não funcionamos às Segundas-feiras! Por favor, escolha outro dia.");
+                document.getElementById('data').value = '';
+                return;
+            }
+
+            let inicio = 8;
+            let fim = 19;
+
+            if (diaSemana === 0) { // Domingo (8h às 14h)
+                fim = 14;
+            } else if (diaSemana === 2 || diaSemana === 3) { // Terça e Quarta (8h às 18h)
+                fim = 18;
+            } else { // Quinta, Sexta e Sábado (8h às 19h)
+                fim = 19;
+            }
+
+            gerarOpcoesHorarios(categoria, inicio, fim, horaCongeladaPromo);
+        }
+
+        function gerarOpcoesHorarios(categoria, inicio = 8, fim = 19, horaFixa = '') {
             const selectHora = document.getElementById('hora');
             selectHora.innerHTML = '';
 
-            if (tipo === 'Sol') {
+            if (categoria === 'Sol') {
                 selectHora.innerHTML = `<option value="Ordem de Chegada" selected>Ordem de Chegada</option>`;
                 selectHora.disabled = true;
                 document.getElementById('horaOculta').value = 'Ordem de Chegada';
@@ -161,28 +244,19 @@
             selectHora.disabled = false;
             document.getElementById('horaOculta').value = '';
 
-            const inicio = 7;
-            const fim = 21;
-
-            if (tipo === 'Paredão') {
-                for (let h = inicio; h <= fim; h++) {
+            if (categoria === 'Paredão') {
+                for (let h = inicio; h < fim; h++) {
                     const horaStr = h.toString().padStart(2, '0') + ':00';
                     selectHora.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
                 }
-            } else {
-                for (let h = inicio; h <= fim; h++) {
+            } else { // Máquina Turbo
+                for (let h = inicio; h < fim; h++) {
                     for (let m = 0; m < 60; m += 20) {
-                        if (h === fim && m > 0) break;
                         const horaStr = h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
                         selectHora.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
                     }
                 }
             }
-        }
-
-        function aoMudarTipo() {
-            const tipo = document.getElementById('tipo').value;
-            gerarOpcoesHorarios(tipo, horaCongeladaPromo);
         }
 
         function atualizarPrecoBaseManual() {
@@ -202,7 +276,7 @@
             container.innerHTML = '';
             
             if(promocoesAtivas.length === 0) {
-                container.innerHTML = '<p style="text-align:center; width:100%; font-size: 14px; color: #666;">Nenhuma promoção no momento.</p>';
+                container.innerHTML = '<p style="text-align:center; width:100%; font-size: 14px; color: #888;">Nenhuma promoção ativa no momento.</p>';
                 return;
             }
 
@@ -210,9 +284,9 @@
                 const diasTexto = promo.dias.join(', ');
                 const card = document.createElement('div');
                 card.className = 'card-promo';
-                const foto = promo.foto || 'https://via.placeholder.com/400x200/ffb6c1/ff1493?text=Bronze';
+                const foto = promo.foto || 'https://via.placeholder.com/400x200/d4af37/ffffff?text=Pauluzzi+Bronze';
 
-                const infoHora = promo.horaFixa ? `<div class="dias-promo" style="color:#ff1493; font-weight:bold;">Horário Congelado: ${promo.horaFixa}</div>` : '';
+                const infoHora = promo.horaFixa ? `<div class="dias-promo" style="color:#ff69b4; font-weight:bold;">Horário Congelado: ${promo.horaFixa}</div>` : '';
 
                 card.innerHTML = `
                     <img src="${foto}" class="foto-promo" alt="Promoção">
@@ -230,7 +304,7 @@
 
                     const inputTipo = document.getElementById('tipo');
                     if (![...inputTipo.options].some(opt => opt.value === promo.titulo)) {
-                        inputTipo.innerHTML += `<option value="${promo.titulo}" selected>${promo.titulo}</option>`;
+                        inputTipo.innerHTML += `<option value="${promo.titulo}" data-categoria="Paredão" data-preco="${promo.preco}" selected>${promo.titulo}</option>`;
                     }
                     inputTipo.value = promo.titulo;
                     
@@ -242,8 +316,7 @@
                     diasPermitidosPromo = promo.diasNum;
                     horaCongeladaPromo = promo.horaFixa || '';
 
-                    gerarOpcoesHorarios(inputTipo.value, horaCongeladaPromo);
-                    calcularTotal();
+                    aoMudarTipo();
 
                     document.getElementById('avisoDias').style.display = 'block';
                     document.getElementById('avisoDias').innerText = `Válido apenas para: ${diasTexto}.`;
@@ -254,7 +327,7 @@
             });
         }
 
-        document.getElementById('formCliente').addEventListener('submit', async function(e) {
+        document.getElementById('formCliente').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const selectHora = document.getElementById('hora');
@@ -269,33 +342,22 @@
                 }
             }
 
-            const valorFinal = document.getElementById('valor').value;
+            const { categoria } = obterCategoriaEServico();
 
-            const agendamento = {
+            const agendamentoPendente = {
                 nome: document.getElementById('nome').value,
                 telefone: document.getElementById('telefone').value,
                 tipo: document.getElementById('tipo').value,
+                categoria: categoria,
                 data: document.getElementById('data').value,
                 hora: horaFinal,
-                valor: valorFinal,
+                valor: document.getElementById('valor').value,
                 oculos: document.getElementById('oculos').checked
             };
 
-            const resposta = await fetch('/salvar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(agendamento)
-            });
-
-            if (resposta.status === 400) {
-                const erroServidor = await resposta.json();
-                alert(erroServidor.erro);
-                return;
-            }
-
-            localStorage.setItem('ultimoValorAgendado', valorFinal);
-            alert('Agendamento realizado com sucesso! Redirecionando para o pagamento...');
-            window.location.href = `/pagamento.html?valor=${valorFinal}`;
+            // Guarda os dados pendentes para serem salvos APENAS quando pagar na página de pagamento
+            localStorage.setItem('agendamentoPendente', JSON.stringify(agendamentoPendente));
+            window.location.href = '/pagamento.html';
         });
     </script>
 </body>
