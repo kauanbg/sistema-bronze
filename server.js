@@ -22,7 +22,8 @@ const AgendamentoSchema = new mongoose.Schema({
     tipo: String,
     data: String,
     hora: String,
-    valor: String
+    valor: String,
+    oculos: Boolean
 });
 
 const PromocaoSchema = new mongoose.Schema({
@@ -31,7 +32,7 @@ const PromocaoSchema = new mongoose.Schema({
     preco: String,
     diasNum: [String],
     dias: [String],
-    horaFixa: String // Horário congelado opcional
+    horaFixa: String
 });
 
 const ConfigSchema = new mongoose.Schema({
@@ -54,20 +55,21 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Salvar agendamento com limite de 4 pessoas no Paredão e 2 pessoas na Máquina
+// Salvar agendamento
 app.post('/salvar', async (req, res) => {
     try {
         const { data, hora, tipo } = req.body;
         
-        // Define o limite máximo de acordo com o procedimento
-        const limiteMaximo = (tipo === 'Paredão') ? 4 : 2;
+        // Aplica limite apenas para Paredão (4) e Máquina Turbo (2). Sol é Ordem de Chegada (sem limite).
+        if (tipo === 'Paredão' || tipo === 'Máquina Turbo') {
+            const limiteMaximo = (tipo === 'Paredão') ? 4 : 2;
+            const totalNoHorario = await Agendamento.countDocuments({ data, hora, tipo });
 
-        const totalNoHorario = await Agendamento.countDocuments({ data, hora, tipo });
-
-        if (totalNoHorario >= limiteMaximo) {
-            return res.status(400).json({ 
-                erro: `O serviço "${tipo}" no horário ${hora} já atingiu o limite máximo de ${limiteMaximo} pessoas!` 
-            });
+            if (totalNoHorario >= limiteMaximo) {
+                return res.status(400).json({ 
+                    erro: `O serviço "${tipo}" no horário ${hora} já atingiu o limite máximo de ${limiteMaximo} pessoas!` 
+                });
+            }
         }
 
         await Agendamento.create(req.body);
