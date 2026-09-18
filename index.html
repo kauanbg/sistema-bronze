@@ -36,7 +36,7 @@
         .linha-dupla .grupo-input { flex: 1; }
         label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #e0e0e0; }
         input, select { width: 100%; padding: 12px; border: 1px solid #555; border-radius: 8px; font-size: 15px; background: #333; color: #fff; }
-        input[readonly], select[disabled] { background-color: #1f1f1f; color: #888; cursor: not-allowed; }
+        input[readonly], select[disabled] { background-color: #1a1a1a; color: #d4af37; font-weight: bold; cursor: not-allowed; border-color: #444; }
         
         button { width: 100%; padding: 16px; background: linear-gradient(135deg, #2ed573, #26af5f); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.3s; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
         button:hover { background: linear-gradient(135deg, #26af5f, #1e9046); }
@@ -138,9 +138,10 @@
                     </label>
                 </div>
 
+                <!-- Campo de Valor estritamente READONLY (não é possível editar nem apagar manualmente) -->
                 <div class="grupo-input">
                     <label for="valor">Investimento Total (R$)</label>
-                    <input type="number" id="valor" step="0.01" required placeholder="0.00" oninput="atualizarPrecoBaseManual()">
+                    <input type="number" id="valor" step="0.01" required readonly placeholder="0.00">
                     <small id="avisoDias" style="color: #ff4757; font-size: 12px; display: none; margin-top: 5px;"></small>
                 </div>
                 
@@ -200,9 +201,8 @@
             }
 
             const dataObj = new Date(inputData + 'T00:00:00');
-            const diaSemana = dataObj.getDay(); // 0: Dom, 1: Seg, 2: Ter, 3: Qua, 4: Qui, 5: Sex, 6: Sáb
+            const diaSemana = dataObj.getDay();
 
-            // Bloqueio de Segunda-feira
             if (diaSemana === 1) {
                 alert("🚫 Não funcionamos às Segundas-feiras! Por favor, escolha outro dia.");
                 document.getElementById('data').value = '';
@@ -212,11 +212,11 @@
             let inicio = 8;
             let fim = 19;
 
-            if (diaSemana === 0) { // Domingo (8h às 14h)
+            if (diaSemana === 0) {
                 fim = 14;
-            } else if (diaSemana === 2 || diaSemana === 3) { // Terça e Quarta (8h às 18h)
+            } else if (diaSemana === 2 || diaSemana === 3) {
                 fim = 18;
-            } else { // Quinta, Sexta e Sábado (8h às 19h)
+            } else {
                 fim = 19;
             }
 
@@ -249,7 +249,7 @@
                     const horaStr = h.toString().padStart(2, '0') + ':00';
                     selectHora.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
                 }
-            } else { // Máquina Turbo
+            } else {
                 for (let h = inicio; h < fim; h++) {
                     for (let m = 0; m < 60; m += 20) {
                         const horaStr = h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
@@ -257,12 +257,6 @@
                     }
                 }
             }
-        }
-
-        function atualizarPrecoBaseManual() {
-            const valInput = parseFloat(document.getElementById('valor').value) || 0;
-            const comOculos = document.getElementById('oculos').checked;
-            precoBase = comOculos ? Math.max(0, valInput - 5) : valInput;
         }
 
         function calcularTotal() {
@@ -309,9 +303,6 @@
                     inputTipo.value = promo.titulo;
                     
                     precoBase = parseFloat(promo.preco) || 0;
-                    
-                    const inputValor = document.getElementById('valor');
-                    inputValor.readOnly = true;
 
                     diasPermitidosPromo = promo.diasNum;
                     horaCongeladaPromo = promo.horaFixa || '';
@@ -355,7 +346,6 @@
                 oculos: document.getElementById('oculos').checked
             };
 
-            // Guarda os dados pendentes para serem salvos APENAS quando pagar na página de pagamento
             localStorage.setItem('agendamentoPendente', JSON.stringify(agendamentoPendente));
             window.location.href = '/pagamento.html';
         });
