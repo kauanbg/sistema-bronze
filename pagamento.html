@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagamento - Espaço Bronze Pauluzzi</title>
+    <title>Pagamento - Espaço Bronze</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #ffe4e1; margin: 0; padding: 15px; color: #333; text-align: center; }
@@ -11,10 +11,14 @@
         h1 { color: #ff69b4; margin-top: 0; font-size: 24px; }
         .subtitulo { font-size: 14px; color: #555; margin-bottom: 15px; line-height: 1.4; }
         
+        .box-valor-total { background: #fff0f5; border: 2px dashed #ff1493; padding: 15px; border-radius: 12px; margin: 15px 0; }
+        .box-valor-total span { font-size: 14px; color: #666; font-weight: bold; display: block; }
+        .valor-destaque { font-size: 28px; font-weight: bold; color: #ff1493; margin-top: 5px; }
+
         .qr-container { background: #fff0f5; padding: 15px; border-radius: 12px; display: inline-block; border: 2px solid #ffb6c1; margin: 10px 0; max-width: 100%; }
         .qr-container img { max-width: 100%; width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
         
-        .chave-box { background: #f8f9fa; padding: 12px 8px; border-radius: 8px; font-size: 18px; font-weight: bold; word-break: break-all; margin: 15px 0; border: 1px dashed #ff69b4; color: #333; letter-spacing: 1px; }
+        .chave-box { background: #f8f9fa; padding: 12px 8px; border-radius: 8px; font-size: 20px; font-weight: bold; word-break: break-all; margin: 15px 0; border: 1px dashed #ff69b4; color: #333; letter-spacing: 1px; }
         
         .btn-copiar { padding: 14px 20px; background: #2ed573; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s, transform 0.1s; width: 100%; margin-top: 5px; }
         .btn-copiar:hover { background: #26af5f; }
@@ -32,12 +36,18 @@
         <h1>Área de Pagamento 💳</h1>
         <p class="subtitulo">Escaneie o QR Code abaixo com o app do seu banco ou copie a chave Pix para realizar o pagamento:</p>
         
+        <!-- Exibição do Valor Agendado -->
+        <div class="box-valor-total" id="boxValor" style="display: none;">
+            <span>VALOR A PAGAR:</span>
+            <div class="valor-destaque" id="valorTotalDisplay">R$ 0,00</div>
+        </div>
+
         <div class="qr-container">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=21974832980" alt="QR Code Pix - Espaço Bronze">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=21983237811" alt="QR Code Pix - Espaço Bronze">
         </div>
 
         <p style="margin-bottom: 5px; font-size: 14px; color: #ff1493; font-weight: bold;">Chave Pix (Telefone):</p>
-        <div class="chave-box" id="textoChave">21974832980</div>
+        <div class="chave-box" id="textoChave">21983237811</div>
         
         <button class="btn-copiar" onclick="copiarChave()">📋 Copiar Chave Pix</button>
         <p class="aviso">Após pagar, envie o comprovante de pagamento para o nosso WhatsApp para confirmar seu horário!</p>
@@ -46,6 +56,21 @@
     </div>
 
     <script>
+        window.onload = () => {
+            const params = new URLSearchParams(window.location.search);
+            let valorParam = params.get('valor');
+
+            if (!valorParam) {
+                valorParam = localStorage.getItem('ultimoValorAgendado');
+            }
+
+            if (valorParam && !isNaN(parseFloat(valorParam))) {
+                document.getElementById('boxValor').style.display = 'block';
+                const valorFormatado = parseFloat(valorParam).toFixed(2).replace('.', ',');
+                document.getElementById('valorTotalDisplay').innerText = `R$ ${valorFormatado}`;
+            }
+        };
+
         function copiarChave() {
             const texto = document.getElementById('textoChave').innerText;
             navigator.clipboard.writeText(texto).then(() => {
