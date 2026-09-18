@@ -79,7 +79,7 @@ app.post('/salvar', async (req, res) => {
     }
 });
 
-// Listar agendamentos
+// Listar agendamentos (Com Senha)
 app.get('/listar', async (req, res) => {
     const senhaRecebida = req.headers['codigo-secreto'];
     const senhaAtual = await obterSenha();
@@ -89,6 +89,27 @@ app.get('/listar', async (req, res) => {
         res.json({ agendamentos });
     } else {
         res.status(401).send("Acesso negado");
+    }
+});
+
+// ROTA NOVA: Listar agendamentos para o painel de controle (pauluzzi.html)
+app.get('/agendamentos', async (req, res) => {
+    try {
+        const agendamentos = await Agendamento.find();
+        res.json(agendamentos);
+    } catch (erro) {
+        res.status(500).json({ erro: "Erro ao buscar agendamentos" });
+    }
+});
+
+// ROTA NOVA: Deletar agendamento (Botão da Lixeira)
+app.delete('/agendamentos/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        await Agendamento.findByIdAndDelete(id); 
+        res.status(200).json({ mensagem: 'Agendamento apagado com sucesso!' });
+    } catch (erro) {
+        res.status(500).json({ erro: 'Erro ao apagar agendamento.' });
     }
 });
 
