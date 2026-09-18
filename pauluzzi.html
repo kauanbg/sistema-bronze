@@ -3,257 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administração - Pauluzzi</title>
+    <title>Painel Admin - Pauluzzi Bronze</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #2d3436; color: white; padding: 15px; margin: 0; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        h2, h3 { color: #ff69b4; text-align: center; border-bottom: 1px solid #555; padding-bottom: 10px; margin-top: 10px; }
-        .card-admin { background: #3a4042; padding: 20px 15px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #1a1a1a; color: #fff; margin: 0; padding: 20px; }
+        .cabecalho { background: linear-gradient(135deg, #d4af37, #ff69b4); padding: 20px; text-align: center; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .cabecalho h1 { margin: 0; text-transform: uppercase; letter-spacing: 1px; }
         
-        .tabela-responsive { width: 100%; overflow-x: auto; margin-top: 15px; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; background: white; color: #333; border-radius: 8px; overflow: hidden; min-width: 500px; }
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; font-size: 14px; }
-        th { background: #ff69b4; color: white; font-weight: bold; }
+        .container { max-width: 1200px; margin: 0 auto; }
         
-        input[type="text"], input[type="password"], input[type="number"], input[type="file"] { padding: 12px; width: 100%; margin-top: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; background: #fff; color: #333; }
-        button { padding: 14px 20px; margin-top: 15px; background: #ff69b4; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #ff1493; }
-        .btn-apagar { background: #ff4757; padding: 6px 12px; font-size: 12px; margin-top: 0; }
-        .btn-sair { background: #ff4757; padding: 8px 15px; font-size: 13px; float: right; margin-top: -10px; }
+        table { width: 100%; border-collapse: collapse; background: #242424; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #444; font-size: 14px; }
+        th { background-color: #333; color: #d4af37; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
+        tr:hover { background-color: #2b2b2b; }
         
-        .dias-checkbox { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-        .dias-checkbox label { background: #4a5153; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .btn-apagar { background-color: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s; display: flex; align-items: center; gap: 5px; }
+        .btn-apagar:hover { background-color: #ff6b81; }
 
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            .card-admin { padding: 15px 10px; }
-            h2 { font-size: 20px; }
-            h3 { font-size: 18px; }
-            .btn-sair { float: none; display: block; margin: 10px auto; width: 100%; }
+        .btn-whatsapp { color: #25d366; text-decoration: none; font-weight: bold; }
+        .btn-whatsapp:hover { text-decoration: underline; }
+
+        .badge-oculos { background: #ff69b4; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr { display: block; }
+            th { display: none; }
+            tr { margin-bottom: 15px; border: 1px solid #444; border-radius: 8px; }
+            td { text-align: right; padding-left: 50%; position: relative; }
+            td::before { content: attr(data-label); position: absolute; left: 15px; width: 45%; text-align: left; font-weight: bold; color: #d4af37; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Tela de Login -->
-    <div id="telaLogin" class="card-admin" style="max-width: 400px; margin: 60px auto; text-align: center;">
-        <h3 style="color: #ff69b4; border: none;">Acesso Restrito 🔐</h3>
-        <p style="font-size: 14px; color: #ccc;">Digite a senha administrativa para continuar:</p>
-        <form onsubmit="fazerLogin(event)">
-            <input type="password" id="senhaInput" placeholder="Sua Senha" required autofocus>
-            <button type="submit" style="width: 100%;">Entrar no Painel</button>
-        </form>
-    </div>
-
-    <!-- Painel Administrativo -->
-    <div id="painelAdmin" class="container" style="display: none;">
-        <button class="btn-sair" onclick="sair()">🚪 Sair</button>
-        <h2>Painel Administrativo ☀️</h2>
-
-        <div class="card-admin">
-            <h3>Criar Nova Promoção</h3>
-            <form id="formPromo">
-                <input type="text" id="tituloPromo" placeholder="Nome da Promoção (Ex: Terça Maluca)" required>
-                
-                <label style="margin-top: 15px; display:block; color:#ff69b4; font-size: 14px; font-weight: bold;">Escolher foto (Galeria/Computador):</label>
-                <input type="file" id="fotoArquivo" accept="image/*" required>
-
-                <!-- Atualizado com step="0.01" para permitir números quebrados (Ex: 59.99) -->
-                <label style="margin-top: 15px; display:block; color:#ff69b4; font-size: 14px; font-weight: bold;">Valor (Investimento) Fixo:</label>
-                <input type="number" id="precoPromo" step="0.01" placeholder="Ex: 59.99" required>
-                
-                <label style="margin-top: 15px; display:block; color:#ff69b4; font-size: 14px; font-weight: bold;">Congelar Horário Fixo? (Opcional - Ex: 08:00):</label>
-                <input type="text" id="horaFixaPromo" placeholder="Deixe em branco para permitir qualquer horário">
-
-                <p style="margin-bottom: 5px; color: #ff69b4; margin-top: 15px; font-size: 14px; font-weight: bold;">Dias da semana válidos:</p>
-                <div class="dias-checkbox">
-                    <label><input type="checkbox" name="dias" value="0" data-nome="Dom"> Dom</label>
-                    <label><input type="checkbox" name="dias" value="1" data-nome="Seg"> Seg</label>
-                    <label><input type="checkbox" name="dias" value="2" data-nome="Ter"> Ter</label>
-                    <label><input type="checkbox" name="dias" value="3" data-nome="Qua"> Qua</label>
-                    <label><input type="checkbox" name="dias" value="4" data-nome="Qui"> Qui</label>
-                    <label><input type="checkbox" name="dias" value="5" data-nome="Sex"> Sex</label>
-                    <label><input type="checkbox" name="dias" value="6" data-nome="Sáb"> Sáb</label>
-                </div>
-                
-                <button type="submit" style="width: 100%;">Salvar Promoção e Mostrar no Site</button>
-            </form>
-
-            <h4 style="margin-top: 25px; color: #ff69b4; margin-bottom: 5px;">Promoções Ativas no Site</h4>
-            <div class="tabela-responsive">
-                <table>
-                    <thead><tr><th>Título</th><th>Investimento</th><th>Horário Fixado</th><th>Ação</th></tr></thead>
-                    <tbody id="tabelaPromos"></tbody>
-                </table>
-            </div>
+    <div class="container">
+        <div class="cabecalho">
+            <h1>Painel Administrativo 👑</h1>
+            <p>Gerenciamento de Agendamentos - Pauluzzi Bronze</p>
         </div>
 
-        <div class="card-admin">
-            <h3>Lista de Agendamentos</h3>
-            <button onclick="carregarAgendamentos()" style="margin-bottom: 10px; width: 100%;">🔄 Atualizar Lista</button>
-            <div class="tabela-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>WhatsApp</th>
-                            <th>Tipo/Promoção</th>
-                            <th>Data/Hora</th>
-                            <th>Investimento</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaAgendamentos"></tbody>
-                </table>
-            </div>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data / Hora</th>
+                    <th>Cliente</th>
+                    <th>WhatsApp</th>
+                    <th>Serviço</th>
+                    <th>Investimento (R$)</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaAgendamentos">
+                <tr><td colspan="6" style="text-align: center;">Carregando agendamentos...</td></tr>
+            </tbody>
+        </table>
     </div>
 
     <script>
-        let senhaAdmin = sessionStorage.getItem('senhaAdmin') || '';
-
-        window.onload = () => {
-            if (senhaAdmin) {
-                validarEIniciar();
-            }
-        };
-
-        async function fazerLogin(e) {
-            e.preventDefault();
-            senhaAdmin = document.getElementById('senhaInput').value;
-            validarEIniciar();
-        }
-
-        async function validarEIniciar() {
-            const sucesso = await carregarAgendamentos();
-            if (sucesso) {
-                sessionStorage.setItem('senhaAdmin', senhaAdmin);
-                document.getElementById('telaLogin').style.display = 'none';
-                document.getElementById('painelAdmin').style.display = 'block';
-                carregarPromocoes();
-            } else {
-                alert("Senha incorreta!");
-                sessionStorage.removeItem('senhaAdmin');
-                senhaAdmin = '';
-                document.getElementById('telaLogin').style.display = 'block';
-                document.getElementById('painelAdmin').style.display = 'none';
-            }
-        }
-
-        function sair() {
-            sessionStorage.removeItem('senhaAdmin');
-            window.location.reload();
-        }
-
-        function converterImagemParaBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        document.getElementById('formPromo').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const checks = document.querySelectorAll('input[name="dias"]:checked');
-            const diasNum = Array.from(checks).map(c => c.value);
-            const diasNomes = Array.from(checks).map(c => c.getAttribute('data-nome'));
-
-            if (diasNum.length === 0) { alert('Selecione pelo menos um dia da semana!'); return; }
-
-            const inputFoto = document.getElementById('fotoArquivo');
-            let fotoBase64 = '';
-            if (inputFoto.files && inputFoto.files[0]) {
-                fotoBase64 = await converterImagemParaBase64(inputFoto.files[0]);
-            }
-
-            const promo = {
-                titulo: document.getElementById('tituloPromo').value,
-                foto: fotoBase64,
-                preco: document.getElementById('precoPromo').value,
-                horaFixa: document.getElementById('horaFixaPromo').value.trim(),
-                diasNum: diasNum,
-                dias: diasNomes
-            };
-
-            const response = await fetch('/promocoes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'codigo-secreto': senhaAdmin },
-                body: JSON.stringify(promo)
-            });
-
-            if (response.status === 401) {
-                alert("Sessão expirada ou senha incorreta!");
-                sair();
-                return;
-            }
-            
-            document.getElementById('formPromo').reset();
-            carregarPromocoes();
-            alert('Promoção criada com sucesso!');
-        });
-
-        async function carregarPromocoes() {
-            const res = await fetch('/promocoes');
-            const dados = await res.json();
-            const tabela = document.getElementById('tabelaPromos');
-            tabela.innerHTML = "";
-            
-            dados.forEach(p => {
-                tabela.innerHTML += `<tr>
-                    <td>${p.titulo}</td>
-                    <td>R$ ${p.preco}</td>
-                    <td>${p.horaFixa || 'Livre'}</td>
-                    <td><button class="btn-apagar" onclick="apagarPromo('${p._id}')">Apagar</button></td>
-                </tr>`;
-            });
-        }
-
-        async function apagarPromo(id) {
-            const res = await fetch(`/promocoes/${id}`, {
-                method: 'DELETE',
-                headers: { 'codigo-secreto': senhaAdmin }
-            });
-            if (res.status === 401) {
-                alert("Sessão expirada!");
-                sair();
-                return;
-            }
-            carregarPromocoes();
-        }
-
+        // Função para carregar os agendamentos do banco de dados
         async function carregarAgendamentos() {
             try {
-                const res = await fetch('/listar', {
-                    headers: { 'codigo-secreto': senhaAdmin }
-                });
-                
-                if (res.status === 401) { 
-                    return false;
-                }
-                
-                const respostaServidor = await res.json();
-                const dados = respostaServidor.agendamentos;
+                const resposta = await fetch('/agendamentos'); // Rota que busca os agendamentos no seu backend
+                const dados = await resposta.json();
                 
                 const tabela = document.getElementById('tabelaAgendamentos');
-                tabela.innerHTML = dados.length ? "" : "<tr><td colspan='5'>Nenhum agendamento ainda.</td></tr>";
-                
-                dados.forEach(item => {
-                    tabela.innerHTML += `<tr>
-                        <td><strong>${item.nome}</strong></td>
-                        <td>${item.telefone}</td>
-                        <td>${item.tipo}</td>
-                        <td>${item.data.split('-').reverse().join('/')} às ${item.hora}</td>
-                        <td style="color: green; font-weight: bold;">R$ ${item.valor}</td>
-                    </tr>`;
+                tabela.innerHTML = '';
+
+                if (dados.length === 0) {
+                    tabela.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum agendamento encontrado.</td></tr>';
+                    return;
+                }
+
+                dados.forEach(agendamento => {
+                    const dataFormatada = agendamento.data.split('-').reverse().join('/');
+                    const valorFormatado = parseFloat(agendamento.valor).toFixed(2).replace('.', ',');
+                    const oculosInfo = agendamento.oculos ? '<span class="badge-oculos">Óculos</span>' : '';
+                    const linkWhats = `https://wa.me/55${agendamento.telefone.replace(/\D/g, '')}`;
+
+                    tabela.innerHTML += `
+                        <tr>
+                            <td data-label="Data / Hora"><strong>${dataFormatada}</strong> às ${agendamento.hora}</td>
+                            <td data-label="Cliente">${agendamento.nome}</td>
+                            <td data-label="WhatsApp"><a href="${linkWhats}" target="_blank" class="btn-whatsapp">${agendamento.telefone}</a></td>
+                            <td data-label="Serviço">${agendamento.tipo} ${oculosInfo}</td>
+                            <td data-label="Investimento (R$)" style="color: #2ed573; font-weight: bold;">R$ ${valorFormatado}</td>
+                            <td data-label="Ação">
+                                <button class="btn-apagar" onclick="apagarAgendamento('${agendamento._id}')">🗑️ Apagar</button>
+                            </td>
+                        </tr>
+                    `;
                 });
-                return true;
-            } catch (e) {
-                return false;
+            } catch (erro) {
+                console.error("Erro ao carregar:", erro);
+                document.getElementById('tabelaAgendamentos').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #ff4757;">Erro ao carregar os dados.</td></tr>';
             }
         }
+
+        // Função para apagar o agendamento
+        async function apagarAgendamento(id) {
+            const confirmacao = confirm("Tem certeza que deseja apagar este agendamento? Esta ação não pode ser desfeita.");
+            
+            if (confirmacao) {
+                try {
+                    const resposta = await fetch(`/agendamentos/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (resposta.ok) {
+                        alert("✅ Agendamento apagado com sucesso!");
+                        carregarAgendamentos(); // Recarrega a tabela automaticamente
+                    } else {
+                        alert("❌ Erro ao apagar o agendamento.");
+                    }
+                } catch (erro) {
+                    alert("❌ Erro de conexão ao tentar apagar.");
+                }
+            }
+        }
+
+        // Carrega os dados assim que a página abre
+        window.onload = carregarAgendamentos;
     </script>
+
 </body>
 </html>
