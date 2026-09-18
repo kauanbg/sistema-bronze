@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espaço Bronze Pauluzzi - Agendamento</title>
+    <title>Espaço Bronze - Agendamento</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #ffe4e1; margin: 0; padding: 0; color: #333; }
@@ -27,13 +27,12 @@
         .linha-dupla .grupo-input { flex: 1; }
         label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
         input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; background: #fff; }
-        input[readonly] { background-color: #f0f0f0; color: #666; cursor: not-allowed; }
+        input[readonly], select[disabled] { background-color: #f0f0f0; color: #666; cursor: not-allowed; }
         button { width: 100%; padding: 15px; background-color: #ff69b4; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.3s; margin-top: 10px; }
         button:hover { background-color: #ff1493; }
         .btn-pagamento { display: block; text-align: center; background-color: #2ed573; color: white; text-decoration: none; padding: 14px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; font-size: 15px; }
         .btn-pagamento:hover { background-color: #26af5f; }
 
-        /* Ajustes específicos para Celular */
         @media (max-width: 600px) {
             .linha-dupla { flex-direction: column; gap: 0; }
             .cabecalho h1 { font-size: 22px; }
@@ -45,7 +44,7 @@
 <body>
 
     <div class="cabecalho">
-        <h1>Bem-vinda ao Espaço Bronze Pauluzzi☀️</h1>
+        <h1>Bem-vinda ao Espaço Bronze ☀️</h1>
         <p>Escolha sua promoção e garanta seu horário!</p>
     </div>
 
@@ -71,10 +70,10 @@
                     </div>
                     <div class="grupo-input">
                         <label for="tipo">Tipo de Bronze</label>
-                        <select id="tipo" required>
-                            <option value="Paredão">Paredão</option>
-                            <option value="Máquina Turbo">Máquina Turbo</option>
-                            <option value="Sol">Sol</option>
+                        <select id="tipo" required onchange="aoMudarTipo()">
+                            <option value="Paredão">Paredão (Até 4 pessoas/h)</option>
+                            <option value="Máquina Turbo">Máquina Turbo (Até 2 pessoas)</option>
+                            <option value="Sol">Sol (Até 2 pessoas)</option>
                         </select>
                     </div>
                 </div>
@@ -85,8 +84,9 @@
                         <input type="date" id="data" required>
                     </div>
                     <div class="grupo-input">
-                        <label for="hora">Hora (07:00 às 21:00)</label>
-                        <input type="time" id="hora" min="07:00" max="21:00" required>
+                        <label for="hora">Horário Disponível</label>
+                        <select id="hora" required></select>
+                        <input type="hidden" id="horaOculta">
                     </div>
                 </div>
 
@@ -104,8 +104,10 @@
     <script>
         let promocoesAtivas = [];
         let diasPermitidosPromo = [];
+        let horaCongeladaPromo = '';
 
         window.onload = async () => {
+            gerarOpcoesHorarios('Paredão');
             try {
                 const res = await fetch('/promocoes');
                 promocoesAtivas = await res.json();
@@ -114,6 +116,47 @@
                 console.log("Erro ao carregar promoções");
             }
         };
+
+        function gerarOpcoesHorarios(tipo, horaFixa = '') {
+            const selectHora = document.getElementById('hora');
+            selectHora.innerHTML = '';
+            
+            if (horaFixa) {
+                // Se a promoção tiver horário congelado
+                selectHora.innerHTML = `<option value="${horaFixa}" selected>${horaFixa} (Horário Fixo da Promoção)</option>`;
+                selectHora.disabled = true;
+                document.getElementById('horaOculta').value = horaFixa;
+                return;
+            }
+
+            selectHora.disabled = false;
+            document.getElementById('horaOculta').value = '';
+
+            const inicio = 7; // 07:00
+            const fim = 21;  // 21:00
+
+            if (tipo === 'Paredão') {
+                // De 1 em 1 hora
+                for (let h = inicio; h <= fim; h++) {
+                    const horaStr = h.toString().padStart(2, '0') + ':00';
+                    selectHora.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
+                }
+            } else {
+                // Máquina Turbo e outros: de 20 em 20 minutos
+                for (let h = inicio; h <= fim; h++) {
+                    for (let m = 0; m < 60; m += 20) {
+                        if (h === fim && m > 0) break; // Para exatamente às 21:00
+                        const horaStr = h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
+                        selectHora.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
+                    }
+                }
+            }
+        }
+
+        function aoMudarTipo() {
+            const tipo = document.getElementById('tipo').value;
+            gerarOpcoesHorarios(tipo, horaCongeladaPromo);
+        }
 
         function renderizarPromocoes() {
             const container = document.getElementById('listaPromocoes');
@@ -130,12 +173,15 @@
                 card.className = 'card-promo';
                 const foto = promo.foto || 'https://via.placeholder.com/400x200/ffb6c1/ff1493?text=Bronze';
 
+                const infoHora = promo.horaFixa ? `<div class="dias-promo" style="color:#ff1493; font-weight:bold;">Horário Congelado: ${promo.horaFixa}</div>` : '';
+
                 card.innerHTML = `
                     <img src="${foto}" class="foto-promo" alt="Promoção">
                     <div class="info-promo">
                         <h3>${promo.titulo}</h3>
                         <div class="preco-promo">R$ ${promo.preco}</div>
                         <div class="dias-promo">Válido para: ${diasTexto}</div>
+                        ${infoHora}
                     </div>
                 `;
 
@@ -154,6 +200,10 @@
                     inputValor.readOnly = true;
 
                     diasPermitidosPromo = promo.diasNum;
+                    horaCongeladaPromo = promo.horaFixa || '';
+
+                    gerarOpcoesHorarios(inputTipo.value, horaCongeladaPromo);
+
                     document.getElementById('avisoDias').style.display = 'block';
                     document.getElementById('avisoDias').innerText = `Válido apenas para: ${diasTexto}.`;
 
@@ -166,13 +216,8 @@
         document.getElementById('formCliente').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const horaEscolhida = document.getElementById('hora').value;
-            const horaNum = parseInt(horaEscolhida.split(':')[0]);
-            
-            if (horaNum < 7 || horaNum > 21) {
-                alert('Os horários de atendimento devem ser distribuídos estritamente entre as 07:00 e as 21:00!');
-                return;
-            }
+            const selectHora = document.getElementById('hora');
+            const horaFinal = selectHora.disabled ? document.getElementById('horaOculta').value : selectHora.value;
 
             if (diasPermitidosPromo.length > 0) {
                 const dataEscolhida = new Date(document.getElementById('data').value + 'T00:00:00');
@@ -188,7 +233,7 @@
                 telefone: document.getElementById('telefone').value,
                 tipo: document.getElementById('tipo').value,
                 data: document.getElementById('data').value,
-                hora: document.getElementById('hora').value,
+                hora: horaFinal,
                 valor: document.getElementById('valor').value
             };
 
