@@ -48,7 +48,16 @@
 <div class="toast" id="toast"></div>
 <script>
 const $=id=>document.getElementById(id), money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}), esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-const state={services:[],promos:[],selectedPromo:null,businessHours:{}};const fallbackImg='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675"><rect width="1200" height="675" fill="#201912"/><circle cx="980" cy="130" r="170" fill="#d8ad4b" opacity=".25"/><text x="70" y="350" fill="#f5d98a" font-family="Arial" font-size="66" font-weight="700">Pauluzzi Bronze</text></svg>');
+const DEFAULT_HOURS={
+  0:{nome:'Domingo',inicio:'08:00',fim:'14:00'},
+  1:{nome:'Segunda',fechado:true},
+  2:{nome:'Terça',inicio:'08:00',fim:'18:00'},
+  3:{nome:'Quarta',inicio:'08:00',fim:'18:00'},
+  4:{nome:'Quinta',inicio:'08:00',fim:'19:00'},
+  5:{nome:'Sexta',inicio:'08:00',fim:'19:00'},
+  6:{nome:'Sábado',inicio:'08:00',fim:'19:00'}
+};
+const state={services:[],promos:[],selectedPromo:null,businessHours:DEFAULT_HOURS};const fallbackImg='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675"><rect width="1200" height="675" fill="#201912"/><circle cx="980" cy="130" r="170" fill="#d8ad4b" opacity=".25"/><text x="70" y="350" fill="#f5d98a" font-family="Arial" font-size="66" font-weight="700">Pauluzzi Bronze</text></svg>');
 let toastTimer;
 function toast(message,error=false){const t=$('toast');t.textContent=message;t.className='toast show'+(error?' error':'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.className='toast',3800)}
 async function api(url,options={}){const r=await fetch(url,{cache:'no-store',...options});const b=await r.json().catch(()=>({}));if(!r.ok)throw new Error(b.erro||'Não foi possível concluir a operação.');return b}
@@ -59,11 +68,44 @@ function current(){return state.selectedPromo||state.services.find(s=>s.id===$('
 function dateDay(){const v=$('data').value;return v?new Date(v+'T00:00:00').getDay():null}
 function toMin(x){const a=String(x).split(':').map(Number);return a[0]*60+a[1]}
 function minToTime(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
-function generateHours(item){const select=$('hora'),day=dateDay();select.innerHTML='';select.disabled=false;if(day===null){select.innerHTML='<option value="">Selecione a data primeiro</option>';return}const hours=state.businessHours[day];if(!hours||hours.fechado){select.innerHTML='<option value="">Dia sem atendimento</option>';return}if(state.selectedPromo&&state.selectedPromo.horaFixa){select.innerHTML=`<option value="${esc(state.selectedPromo.horaFixa)}">${esc(state.selectedPromo.horaFixa)} — horário fixo</option>`;select.disabled=true;return}if(item.categoria==='Sol'){select.innerHTML='<option value="Ordem de Chegada">Ordem de Chegada</option>';select.disabled=true;return}const open=toMin(hours.inicio),close=toMin(hours.fim),step=item.categoria==='Paredão'?60:20,duration=Number(item.duracaoMinutos||0),options=[];for(let m=open;m<close;m+=step){if(duration&&m+duration>close)continue;options.push(minToTime(m))}select.innerHTML=options.length?options.map(h=>`<option value="${h}">${h}</option>`).join(''):'<option value="">Sem horários compatíveis</option>'}
+function generateHours(item){
+  const select=$('hora'),day=dateDay();
+  select.innerHTML='';select.disabled=false;
+  if(day===null){
+    select.innerHTML='<option value="">Selecione a data primeiro</option>';
+    return;
+  }
+  const hours=state.businessHours[day];
+  if(!hours||hours.fechado){
+    select.innerHTML='<option value="">Dia sem atendimento</option>';
+    return;
+  }
+  if(state.selectedPromo&&state.selectedPromo.horaFixa){
+    select.innerHTML=`<option value="${esc(state.selectedPromo.horaFixa)}">${esc(state.selectedPromo.horaFixa)} — horário fixo</option>`;
+    select.disabled=true;
+    return;
+  }
+  if(item.categoria==='Sol'){
+    select.innerHTML='<option value="Ordem de Chegada">Ordem de Chegada</option>';
+    select.disabled=true;
+    return;
+  }
+  const open=toMin(hours.inicio),close=toMin(hours.fim);
+  const step=item.categoria==='Paredão'?60:20;
+  const duration=Math.max(0,Number(item.duracaoMinutos||0));
+  const options=[];
+  for(let m=open;m<close;m+=step){
+    if(duration>0 && m+duration>close) continue;
+    options.push(minToTime(m));
+  }
+  select.innerHTML=options.length
+    ? options.map(h=>`<option value="${h}">${h}</option>`).join('')
+    : '<option value="">Sem horários compatíveis</option>';
+}
 function updateForm(){const item=current();if(!item)return;const price=Number(item.preco||0)+($('oculos').checked?5:0);$('valor').textContent=money(price);$('resumoServico').textContent=item.titulo||item.nome;$('resumoCategoria').textContent=item.categoria||'—';$('resumoData').textContent=$('data').value?new Date($('data').value+'T00:00:00').toLocaleDateString('pt-BR'):'—';$('resumoOculos').textContent=$('oculos').checked?'Sim (+ R$ 5,00)':'Não';const day=dateDay();let warning='';if(state.selectedPromo)warning='Promoção válida somente em: '+(state.selectedPromo.dias||[]).join(', ')+'.';if(day===1)warning='Segunda-feira: estabelecimento fechado.';if(state.selectedPromo&&day!==null&&!state.selectedPromo.diasNum.includes(String(day)))warning='A promoção selecionada não vale neste dia.';$('avisoDias').textContent=warning;generateHours(item);$('resumoHora').textContent=$('hora').value||'—';$('resumoTotal').textContent=money(price)}
 $('tipo').addEventListener('change',()=>{state.selectedPromo=null;renderPromos();renderServices($('tipo').value);updateForm()});$('data').addEventListener('change',updateForm);$('oculos').addEventListener('change',updateForm);$('hora').addEventListener('change',updateForm);
 $('formCliente').addEventListener('submit',async e=>{e.preventDefault();const btn=$('btnPagamento');btn.disabled=true;btn.textContent='Validando disponibilidade…';try{if(!$('nome').value.trim()||$('nome').value.trim().length<3)throw new Error('Informe seu nome completo.');const item=current();const payload={nome:$('nome').value,telefone:$('telefone').value,servicoId:state.selectedPromo?'':item.id,promotionId:state.selectedPromo?state.selectedPromo._id:'',data:$('data').value,hora:$('hora').value,oculos:$('oculos').checked};const result=await api('/salvar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});sessionStorage.setItem('pauluzziCheckout',JSON.stringify({id:result.agendamento._id,checkoutToken:result.agendamento.checkoutToken}));location.href='/pagamento.html?id='+encodeURIComponent(result.agendamento._id)}catch(err){toast(err.message,true);btn.disabled=false;btn.textContent='Continuar para o Pix →'}});
-async function init(){try{const config=await api('/config');state.services=config.services||[];state.businessHours=config.businessHours||{};renderHours();renderServices();state.promos=await api('/promocoes');renderPromos();const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());$('data').min=now.toISOString().slice(0,10);updateForm();$('serverStatus').textContent='Disponibilidade protegida por validação no servidor.'}catch(error){$('serverStatus').textContent='Não foi possível carregar a disponibilidade.';toast(error.message,true)}}init();
+async function init(){try{const config=await api('/config');state.services=config.services||[];state.businessHours=DEFAULT_HOURS;renderHours();renderServices();state.promos=await api('/promocoes');renderPromos();const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());$('data').min=now.toISOString().slice(0,10);updateForm();$('serverStatus').textContent='Disponibilidade protegida por validação no servidor.'}catch(error){$('serverStatus').textContent='Não foi possível carregar a disponibilidade.';toast(error.message,true)}}init();
 </script>
 </body>
 </html>
