@@ -51,6 +51,15 @@ body{-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-
 .protection-box{margin:8px 0 14px;padding:12px 13px;border:1px solid #4b3c2e;border-radius:13px;background:#1d1712;color:#d8cec3;font-size:11px;line-height:1.6}.protection-box strong{color:var(--gold2)}.protection-box .required{color:#ffcf78;font-weight:900}.small{color:var(--muted);font-size:11px;line-height:1.5;margin-top:5px}
 .promo-description{margin-top:7px;color:#d9cec2;font-size:11px;line-height:1.5;white-space:pre-wrap}.promo-value-text{color:var(--gold2);font-weight:800}
 </style><style>
+.agenda-box{margin-top:22px;background:rgba(24,20,16,.96);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+.agenda-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px}
+.agenda-head h2{margin:0 0 5px;font-size:24px}.agenda-head p{margin:0;color:var(--muted);font-size:12px}
+.agenda-status{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:8px 11px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap;border:1px solid #665035;background:#342719;color:#f5d991}
+.agenda-status.informado{background:#2d2418;border-color:#80623a;color:#ffd98a}.agenda-status.confirmado{background:#173626;border-color:#34754d;color:#c7f7d6}.agenda-status.cancelado{background:#3a1e23;border-color:#713640;color:#ffb7bf}
+.agenda-message{padding:12px 13px;border-radius:13px;background:#211b15;border:1px solid #392e25;color:#d9cec2;font-size:12px;line-height:1.55;margin-bottom:14px}
+.agenda-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.agenda-item{padding:11px 0;border-bottom:1px solid #302820;min-width:0}.agenda-item:last-child,.agenda-item:nth-last-child(2):nth-child(odd){border-bottom:0}.agenda-label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}.agenda-value{display:block;color:#fff;font-size:13px;font-weight:800;overflow-wrap:anywhere}.agenda-actions{display:flex;gap:10px;margin-top:15px}.agenda-btn{border:1px solid #4a4037;background:#211b15;color:#fff;min-height:44px;padding:0 14px;border-radius:12px;font-weight:900;cursor:pointer}.agenda-btn.primary{background:linear-gradient(135deg,#edca6f,#c89431);color:#20170e;border-color:transparent}.agenda-empty{padding:15px;border:1px dashed #41372e;border-radius:13px;color:var(--muted);font-size:12px;line-height:1.55}
+@media(max-width:620px){.agenda-box{padding:18px;border-radius:19px}.agenda-head{flex-direction:column;gap:10px}.agenda-status{white-space:normal}.agenda-grid{grid-template-columns:1fr}.agenda-item{padding:10px 0}.agenda-item:nth-last-child(2):nth-child(odd){border-bottom:1px solid #302820}.agenda-item:last-child{border-bottom:0}.agenda-actions{display:grid;grid-template-columns:1fr}.agenda-btn{width:100%;min-height:50px}}
+
 button,a,input,select{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 input,select,button{font-size:16px}
 </style>
@@ -65,6 +74,15 @@ input,select,button{font-size:16px}
 
   <div class="section-title"><div><h2>Promoções ativas</h2><p>Clique em uma promoção para usar no agendamento.</p></div></div>
   <section id="listaPromocoes" class="promos"></section>
+
+
+  <section class="agenda-box" id="minhaAgenda" aria-live="polite">
+    <div class="agenda-head">
+      <div><h2>Minha agenda</h2><p>Acompanhe aqui o agendamento feito neste aparelho e veja quando o atendimento confirmar.</p></div>
+      <span class="agenda-status" id="agendaStatus">Nenhum agendamento</span>
+    </div>
+    <div id="agendaConteudo" class="agenda-empty">Seu agendamento aparecerá aqui depois que você concluir os dados e avançar para o pagamento.</div>
+  </section>
 
   <div class="section-title" id="agendamento"><div><h2>Agendar horário</h2><p>Preencha os dados abaixo. O total é calculado no servidor.</p></div></div>
   <section class="booking-grid">
@@ -196,8 +214,65 @@ $('data').addEventListener('change',()=>updateForm(true));
 $('oculos').addEventListener('change',()=>updateForm(false));
 $('protetorSolar').addEventListener('change',()=>updateForm(false));
 $('hora').addEventListener('change',()=>updateForm(false));
-$('formCliente').addEventListener('submit',async e=>{e.preventDefault();const btn=$('btnPagamento');btn.disabled=true;btn.textContent='Validando disponibilidade…';try{if(!$('nome').value.trim()||$('nome').value.trim().length<3)throw new Error('Informe seu nome completo.');const item=current();const payload={nome:$('nome').value,telefone:$('telefone').value,servicoId:state.selectedPromo?'':item.id,promotionId:state.selectedPromo?state.selectedPromo._id:'',data:$('data').value,hora:$('hora').value,oculos:$('oculos').checked,protetorSolar:$('protetorSolar').value};const result=await api('/salvar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});sessionStorage.setItem('pauluzziCheckout',JSON.stringify({id:result.agendamento._id,checkoutToken:result.agendamento.checkoutToken}));location.href='/pagamento.html?id='+encodeURIComponent(result.agendamento._id)}catch(err){toast(err.message,true);btn.disabled=false;btn.textContent='Continuar para o Pix →'}});
-async function init(){try{const config=await api('/config');state.services=config.services||[];state.businessHours=config.businessHours||{};renderHours();renderServices();state.promos=await api('/promocoes');renderPromos();const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());$('data').min=now.toISOString().slice(0,10);updateForm(true);$('serverStatus').textContent='Disponibilidade protegida por validação no servidor.'}catch(error){$('serverStatus').textContent='Não foi possível carregar a disponibilidade.';toast(error.message,true)}}init();
+$('formCliente').addEventListener('submit',async e=>{e.preventDefault();const btn=$('btnPagamento');btn.disabled=true;btn.textContent='Validando disponibilidade…';try{if(!$('nome').value.trim()||$('nome').value.trim().length<3)throw new Error('Informe seu nome completo.');const item=current();const payload={nome:$('nome').value,telefone:$('telefone').value,servicoId:state.selectedPromo?'':item.id,promotionId:state.selectedPromo?state.selectedPromo._id:'',data:$('data').value,hora:$('hora').value,oculos:$('oculos').checked,protetorSolar:$('protetorSolar').value};const result=await api('/salvar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});sessionStorage.setItem('pauluzziCheckout',JSON.stringify({id:result.agendamento._id,checkoutToken:result.agendamento.checkoutToken}));localStorage.setItem('pauluzziMinhaAgenda',JSON.stringify({id:result.agendamento._id,checkoutToken:result.agendamento.checkoutToken}));location.href='/pagamento.html?id='+encodeURIComponent(result.agendamento._id)}catch(err){toast(err.message,true);btn.disabled=false;btn.textContent='Continuar para o Pix →'}});
+
+let agendaTimer=null;
+function agendaStatusInfo(status){
+  if(status==='confirmado') return {label:'✅ Confirmado',cls:'confirmado',msg:'Pagamento conferido pelo atendimento. Este agendamento está confirmado e você está na nossa agenda.'};
+  if(status==='pagamento_informado') return {label:'🕒 Pagamento informado',cls:'informado',msg:'Você informou o pagamento. Agora o atendimento precisa conferir o Pix para confirmar sua agenda.'};
+  if(status==='cancelado') return {label:'❌ Cancelado',cls:'cancelado',msg:'Este agendamento foi cancelado e não está mais válido na agenda.'};
+  return {label:'⏳ Pagamento pendente',cls:'',msg:'O agendamento foi iniciado, mas ainda não está confirmado na agenda. Conclua o pagamento e informe a equipe.'};
+}
+function renderMinhaAgenda(a){
+  const status=agendaStatusInfo(a.status);
+  const badge=$('agendaStatus');
+  badge.textContent=status.label;
+  badge.className='agenda-status'+(status.cls?' '+status.cls:'');
+  const duration=(Number(a.inicioMinutos)>=0&&Number(a.fimMinutos)>=Number(a.inicioMinutos))?Number(a.fimMinutos)-Number(a.inicioMinutos):0;
+  const duracaoTexto=duration>0?(duration>=60?`${Math.floor(duration/60)}h${duration%60?String(duration%60).padStart(2,'0'):''}`:`${duration} min`):'Conforme procedimento';
+  const protetor=a.protetorSolar==='proprio'?'Vou trazer o meu':'Comprar no local';
+  const oculos=a.oculos?'Sim (+ R$ 5,00)':'Não';
+  $('agendaConteudo').innerHTML=`
+    <div class="agenda-message">${esc(status.msg)}</div>
+    <div class="agenda-grid">
+      <div class="agenda-item"><span class="agenda-label">Nome</span><span class="agenda-value">${esc(a.nome)}</span></div>
+      <div class="agenda-item"><span class="agenda-label">WhatsApp</span><span class="agenda-value">${esc(a.telefone)}</span></div>
+      <div class="agenda-item"><span class="agenda-label">Serviço / procedimento</span><span class="agenda-value">${esc(a.tipo)}</span></div>
+      <div class="agenda-item"><span class="agenda-label">Categoria</span><span class="agenda-value">${esc(a.categoria||'—')}</span></div>
+      <div class="agenda-item"><span class="agenda-label">Data</span><span class="agenda-value">${a.data?new Date(a.data+'T00:00:00').toLocaleDateString('pt-BR'):'—'}</span></div>
+      <div class="agenda-item"><span class="agenda-label">Horário</span><span class="agenda-value">${esc(a.hora||'—')}</span></div>
+      <div class="agenda-item"><span class="agenda-label">Duração</span><span class="agenda-value">${esc(duracaoTexto)}</span></div>
+      <div class="agenda-item"><span class="agenda-label">Óculos de proteção</span><span class="agenda-value">${esc(oculos)}</span></div>
+      <div class="agenda-item"><span class="agenda-label">Protetor solar</span><span class="agenda-value">${esc(protetor)}</span></div>
+      <div class="agenda-item"><span class="agenda-label">Valor total</span><span class="agenda-value">${money(a.valor)}</span></div>
+      <div class="agenda-item" style="grid-column:1/-1"><span class="agenda-label">Especificação / observação</span><span class="agenda-value">${esc(a.observacao||'Nenhuma')}</span></div>
+    </div>
+    <div class="agenda-actions"><button class="agenda-btn primary" id="agendaAtualizar" type="button">↻ Atualizar status</button><button class="agenda-btn" id="agendaLimpar" type="button">Limpar consulta deste aparelho</button></div>`;
+  $('agendaAtualizar').addEventListener('click',()=>carregarMinhaAgenda(true));
+  $('agendaLimpar').addEventListener('click',()=>{localStorage.removeItem('pauluzziMinhaAgenda');clearInterval(agendaTimer);renderAgendaVazia()});
+}
+function renderAgendaVazia(){
+  $('agendaStatus').textContent='Nenhum agendamento';
+  $('agendaStatus').className='agenda-status';
+  $('agendaConteudo').innerHTML='Seu agendamento aparecerá aqui depois que você concluir os dados e avançar para o pagamento.';
+}
+async function carregarMinhaAgenda(manual=false){
+  let saved=null;
+  try{saved=JSON.parse(localStorage.getItem('pauluzziMinhaAgenda')||'null')}catch{}
+  if(!saved?.id||!saved?.checkoutToken){renderAgendaVazia();return}
+  try{
+    const r=await fetch('/api/agendamentos/'+encodeURIComponent(saved.id)+'/public?checkoutToken='+encodeURIComponent(saved.checkoutToken),{cache:'no-store'});
+    const b=await r.json().catch(()=>({}));
+    if(!r.ok){
+      if(manual) toast(b.erro||'Não foi possível consultar sua agenda.',true);
+      return;
+    }
+    renderMinhaAgenda(b.agendamento);
+    if(b.agendamento.status==='confirmado'||b.agendamento.status==='cancelado') clearInterval(agendaTimer);
+  }catch(error){if(manual)toast('Não foi possível atualizar sua agenda.',true)}
+}
+
+async function init(){try{const config=await api('/config');state.services=config.services||[];state.businessHours=config.businessHours||{};renderHours();renderServices();state.promos=await api('/promocoes');renderPromos();carregarMinhaAgenda();clearInterval(agendaTimer);agendaTimer=setInterval(carregarMinhaAgenda,5000);const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());$('data').min=now.toISOString().slice(0,10);updateForm(true);$('serverStatus').textContent='Disponibilidade protegida por validação no servidor.'}catch(error){$('serverStatus').textContent='Não foi possível carregar a disponibilidade.';toast(error.message,true)}}init();
 </script>
 </body>
 </html>
