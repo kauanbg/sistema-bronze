@@ -14,55 +14,34 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const MONGO_URI = String(process.env.MONGO_URI || '').trim();
 const ADMIN_PASSWORD = String(process.env.ADMIN_PASSWORD || '').trim();
 const SESSION_SECRET = String(process.env.ADMIN_SESSION_SECRET || '').trim();
-const SESSION_TTL_SECONDS = Math.max(
-  900,
-  Number(process.env.ADMIN_SESSION_TTL_SECONDS || 8 * 60 * 60)
-);
-const BOOKING_HOLD_MINUTES = Math.max(
-  5,
-  Number(process.env.BOOKING_HOLD_MINUTES || 20)
-);
+const SESSION_TTL_SECONDS = Math.max(900, Number(process.env.ADMIN_SESSION_TTL_SECONDS || 8 * 60 * 60));
+const BOOKING_HOLD_MINUTES = Math.max(5, Number(process.env.BOOKING_HOLD_MINUTES || 20));
 const PIX_KEY = String(process.env.PIX_KEY || '21983237811').trim();
-const PIX_MERCHANT_NAME = String(
-  process.env.PIX_MERCHANT_NAME || 'PAULUZZI BRONZE'
-).trim();
-const PIX_CITY = String(
-  process.env.PIX_CITY || 'RIO DE JANEIRO'
-).trim();
-const PUBLIC_URL = String(process.env.PUBLIC_URL || '')
-  .trim()
-  .replace(/\/$/, '');
+const PIX_MERCHANT_NAME = String(process.env.PIX_MERCHANT_NAME || 'PAULUZZI BRONZE').trim();
+const PIX_CITY = String(process.env.PIX_CITY || 'RIO DE JANEIRO').trim();
+const PUBLIC_URL = String(process.env.PUBLIC_URL || '').trim().replace(/\/$/, '');
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        baseUri: ["'self'"],
-        objectSrc: ["'none'"],
-        frameAncestors: ["'none'"],
-        formAction: ["'self'"],
-        imgSrc: ["'self'", 'data:', 'blob:'],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        styleSrc: ["'self'", "'unsafe-inline'"]
-      }
-    },
-    referrerPolicy: {
-      policy: 'strict-origin-when-cross-origin'
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      baseUri: ["'self'"],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      formAction: ["'self'"],
+      imgSrc: ["'self'", 'data:', 'blob:'],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"]
     }
-  })
-);
+  },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
+}));
 
 app.use(express.json({ limit: '2.5mb' }));
-app.use(
-  express.urlencoded({
-    extended: false,
-    limit: '100kb'
-  })
-);
+app.use(express.urlencoded({ extended: false, limit: '100kb' }));
 
 const publicLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -90,40 +69,13 @@ app.use('/api/agendamentos', publicLimiter);
 app.use('/admin/login', authLimiter);
 
 const BUSINESS_HOURS = Object.freeze({
-  0: {
-    inicio: '08:00',
-    fim: '14:00',
-    nome: 'Domingo'
-  },
-  1: {
-    fechado: true,
-    nome: 'Segunda-feira'
-  },
-  2: {
-    inicio: '08:00',
-    fim: '18:00',
-    nome: 'Terça-feira'
-  },
-  3: {
-    inicio: '08:00',
-    fim: '18:00',
-    nome: 'Quarta-feira'
-  },
-  4: {
-    inicio: '08:00',
-    fim: '19:00',
-    nome: 'Quinta-feira'
-  },
-  5: {
-    inicio: '08:00',
-    fim: '19:00',
-    nome: 'Sexta-feira'
-  },
-  6: {
-    inicio: '08:00',
-    fim: '19:00',
-    nome: 'Sábado'
-  }
+  0: { inicio: '08:00', fim: '14:00', nome: 'Domingo' },
+  1: { fechado: true, nome: 'Segunda-feira' },
+  2: { inicio: '08:00', fim: '18:00', nome: 'Terça-feira' },
+  3: { inicio: '08:00', fim: '18:00', nome: 'Quarta-feira' },
+  4: { inicio: '08:00', fim: '19:00', nome: 'Quinta-feira' },
+  5: { inicio: '08:00', fim: '19:00', nome: 'Sexta-feira' },
+  6: { inicio: '08:00', fim: '19:00', nome: 'Sábado' }
 });
 
 const SERVICES = Object.freeze([
@@ -449,13 +401,19 @@ function normalizeMoney(value) {
     return NaN;
   }
 
-  return Math.round((parsed + Number.EPSILON) * 100) / 100;
+  return Math.round(
+    (parsed + Number.EPSILON) * 100
+  ) / 100;
 }
 
 function normalizePhone(value) {
-  const digits = String(value ?? '').replace(/\D/g, '');
+  const digits = String(value ?? '')
+    .replace(/\D/g, '');
 
-  if (digits.startsWith('55') && digits.length === 13) {
+  if (
+    digits.startsWith('55') &&
+    digits.length === 13
+  ) {
     return digits.slice(2);
   }
 
@@ -471,7 +429,9 @@ function isValidDateString(value) {
     return false;
   }
 
-  const date = new Date(`${value}T00:00:00`);
+  const date = new Date(
+    `${value}T00:00:00`
+  );
 
   return (
     !Number.isNaN(date.getTime()) &&
@@ -480,54 +440,88 @@ function isValidDateString(value) {
 }
 
 function todayBrazil() {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Sao_Paulo',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(new Date());
+  return new Intl.DateTimeFormat(
+    'en-CA',
+    {
+      timeZone: 'America/Sao_Paulo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }
+  ).format(new Date());
 }
 
 function nowBrazilMinutes() {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Sao_Paulo',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  }).formatToParts(new Date());
+  const parts =
+    new Intl.DateTimeFormat(
+      'en-US',
+      {
+        timeZone: 'America/Sao_Paulo',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }
+    ).formatToParts(new Date());
 
   const h = Number(
-    parts.find((x) => x.type === 'hour')?.value || 0
+    parts.find(
+      (x) => x.type === 'hour'
+    )?.value || 0
   );
 
   const m = Number(
-    parts.find((x) => x.type === 'minute')?.value || 0
+    parts.find(
+      (x) => x.type === 'minute'
+    )?.value || 0
   );
 
   return h * 60 + m;
 }
 
-function getBusinessDay(dateString) {
-  if (!isValidDateString(dateString)) {
+function getBusinessDay(
+  dateString
+) {
+  if (
+    !isValidDateString(
+      dateString
+    )
+  ) {
     return null;
   }
 
-  const date = new Date(`${dateString}T00:00:00`);
+  const date = new Date(
+    `${dateString}T00:00:00`
+  );
 
-  return BUSINESS_HOURS[date.getDay()] || null;
+  return (
+    BUSINESS_HOURS[
+      date.getDay()
+    ] || null
+  );
 }
 
 function timeToMinutes(time) {
-  const match = /^(\d{2}):(\d{2})$/.exec(String(time));
+  const match =
+    /^(\d{2}):(\d{2})$/.exec(
+      String(time)
+    );
 
   if (!match) {
     return null;
   }
 
-  const hours = Number(match[1]);
-  const minutes = Number(match[2]);
+  const hours = Number(
+    match[1]
+  );
 
-  if (hours > 23 || minutes > 59) {
+  const minutes = Number(
+    match[2]
+  );
+
+  if (
+    hours > 23 ||
+    minutes > 59
+  ) {
     return null;
   }
 
@@ -535,7 +529,9 @@ function timeToMinutes(time) {
 }
 
 function minutesToTime(total) {
-  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(
+  return `${String(
+    Math.floor(total / 60)
+  ).padStart(2, '0')}:${String(
     total % 60
   ).padStart(2, '0')}`;
 }
@@ -546,7 +542,11 @@ function getPromoById(id) {
   }
 
   if (mongoAvailable) {
-    if (!mongoose.isValidObjectId(id)) {
+    if (
+      !mongoose.isValidObjectId(
+        id
+      )
+    ) {
       return Promise.resolve(null);
     }
 
@@ -559,7 +559,8 @@ function getPromoById(id) {
   return Promise.resolve(
     memory.promos.find(
       (p) =>
-        String(p._id) === String(id) &&
+        String(p._id) ===
+          String(id) &&
         p.ativa
     ) || null
   );
@@ -570,68 +571,129 @@ function publicPromo(promo) {
     return null;
   }
 
-  const category = promo.categoria || 'Paredão';
+  const category =
+    promo.categoria ||
+    'Paredão';
 
   const duration = Number(
     promo.duracaoMinutos ??
-      (category === 'Paredão' ? 60 : 0)
+      (category === 'Paredão'
+        ? 60
+        : 0)
   );
 
   return {
-    _id: String(promo._id),
-    titulo: promo.titulo,
-    descricao: promo.descricao || '',
-    valorTexto: promo.valorTexto || '',
-    foto: promo.foto || '',
-    preco: normalizeMoney(promo.preco),
-    categoria: category,
-    duracaoMinutos: duration,
-    horaFixa: promo.horaFixa || '',
-    diasNum: Array.isArray(promo.diasNum)
-      ? promo.diasNum
-      : [],
-    dias: Array.isArray(promo.dias)
-      ? promo.dias
-      : [],
-    ativa: promo.ativa !== false
+    _id: String(
+      promo._id
+    ),
+
+    titulo:
+      promo.titulo,
+
+    descricao:
+      promo.descricao ||
+      '',
+
+    valorTexto:
+      promo.valorTexto ||
+      '',
+
+    foto:
+      promo.foto ||
+      '',
+
+    preco:
+      normalizeMoney(
+        promo.preco
+      ),
+
+    categoria:
+      category,
+
+    duracaoMinutos:
+      duration,
+
+    horaFixa:
+      promo.horaFixa ||
+      '',
+
+    diasNum:
+      Array.isArray(
+        promo.diasNum
+      )
+        ? promo.diasNum
+        : [],
+
+    dias:
+      Array.isArray(
+        promo.dias
+      )
+        ? promo.dias
+        : [],
+
+    ativa:
+      promo.ativa !== false
   };
 }
 
 async function listPromos() {
   if (mongoAvailable) {
-    const docs = await Promo.find({
-      ativa: true
-    })
-      .sort({
-        createdAt: -1
+    const docs =
+      await Promo.find({
+        ativa: true
       })
-      .lean();
+        .sort({
+          createdAt: -1
+        })
+        .lean();
 
-    return docs.map(publicPromo);
+    return docs.map(
+      publicPromo
+    );
   }
 
   return memory.promos
-    .filter((p) => p.ativa)
+    .filter(
+      (p) => p.ativa
+    )
     .sort(
       (a, b) =>
-        new Date(b.createdAt) -
-        new Date(a.createdAt)
+        new Date(
+          b.createdAt
+        ) -
+        new Date(
+          a.createdAt
+        )
     )
-    .map(publicPromo);
+    .map(
+      publicPromo
+    );
 }
 
-async function findBookingById(id) {
+async function findBookingById(
+  id
+) {
   if (mongoAvailable) {
-    if (!mongoose.isValidObjectId(id)) {
+    if (
+      !mongoose.isValidObjectId(
+        id
+      )
+    ) {
       return null;
     }
 
-    return Agendamento.findById(id).lean();
+    return Agendamento
+      .findById(id)
+      .lean();
   }
 
   return (
     memory.agendamentos.find(
-      (item) => String(item._id) === String(id)
+      (item) =>
+        String(
+          item._id
+        ) ===
+        String(id)
     ) || null
   );
 }
@@ -647,7 +709,9 @@ async function listBookings() {
       .lean();
   }
 
-  return [...memory.agendamentos].sort(
+  return [
+    ...memory.agendamentos
+  ].sort(
     (a, b) =>
       `${a.data} ${a.hora}`.localeCompare(
         `${b.data} ${b.hora}`
@@ -655,145 +719,238 @@ async function listBookings() {
   );
 }
 
-async function insertBooking(data) {
+async function insertBooking(
+  data
+) {
   if (mongoAvailable) {
-    return Agendamento.create(data);
+    return Agendamento.create(
+      data
+    );
   }
 
   const item = {
-    _id: crypto.randomUUID(),
+    _id:
+      crypto.randomUUID(),
     ...data,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt:
+      new Date(),
+    updatedAt:
+      new Date()
   };
 
-  memory.agendamentos.push(item);
+  memory.agendamentos.push(
+    item
+  );
 
   return item;
 }
 
-async function updateBooking(id, changes) {
+async function updateBooking(
+  id,
+  changes
+) {
   if (mongoAvailable) {
-    return Agendamento.findByIdAndUpdate(
-      id,
-      {
-        ...changes,
-        updatedAt: new Date()
-      },
-      {
-        new: true
-      }
-    ).lean();
+    return Agendamento
+      .findByIdAndUpdate(
+        id,
+        {
+          ...changes,
+          updatedAt:
+            new Date()
+        },
+        {
+          new: true
+        }
+      )
+      .lean();
   }
 
-  const item = memory.agendamentos.find(
-    (booking) =>
-      String(booking._id) === String(id)
-  );
+  const item =
+    memory.agendamentos.find(
+      (booking) =>
+        String(
+          booking._id
+        ) ===
+        String(id)
+    );
 
   if (!item) {
     return null;
   }
 
-  Object.assign(item, changes, {
-    updatedAt: new Date()
-  });
+  Object.assign(
+    item,
+    changes,
+    {
+      updatedAt:
+        new Date()
+    }
+  );
 
   return item;
 }
 
-async function deleteBooking(id) {
+async function deleteBooking(
+  id
+) {
   if (mongoAvailable) {
-    return Agendamento.findByIdAndDelete(id).lean();
+    return Agendamento
+      .findByIdAndDelete(
+        id
+      )
+      .lean();
   }
 
-  const index = memory.agendamentos.findIndex(
-    (item) =>
-      String(item._id) === String(id)
-  );
+  const index =
+    memory.agendamentos.findIndex(
+      (item) =>
+        String(
+          item._id
+        ) ===
+        String(id)
+    );
 
   if (index === -1) {
     return null;
   }
 
-  return memory.agendamentos.splice(index, 1)[0];
+  return memory.agendamentos.splice(
+    index,
+    1
+  )[0];
 }
 
-async function validateManualBooking(body) {
-  const nome = clean(body.nome, 100).replace(
-    /\s+/g,
-    ' '
-  );
+async function validateManualBooking(
+  body
+) {
+  const nome =
+    clean(
+      body.nome,
+      100
+    ).replace(
+      /\s+/g,
+      ' '
+    );
 
-  const telefone = normalizePhone(
-    body.telefone
-  );
+  const telefone =
+    normalizePhone(
+      body.telefone
+    );
 
-  const servicoId = clean(
-    body.servicoId,
-    60
-  );
+  const servicoId =
+    clean(
+      body.servicoId,
+      60
+    );
 
-  const data = clean(body.data, 10);
-  const hora = clean(body.hora, 10);
+  const data =
+    clean(
+      body.data,
+      10
+    );
 
-  const oculos = Boolean(body.oculos);
+  const hora =
+    clean(
+      body.hora,
+      10
+    );
 
-  const protetorSolar = [
-    'local',
-    'proprio'
-  ].includes(body.protetorSolar)
-    ? body.protetorSolar
-    : 'local';
+  const oculos =
+    Boolean(
+      body.oculos
+    );
 
-  const observacao = clean(
-    body.observacao,
-    200
-  );
+  const protetorSolar =
+    [
+      'local',
+      'proprio'
+    ].includes(
+      body.protetorSolar
+    )
+      ? body.protetorSolar
+      : 'local';
 
-  const requestedDuration = Number(
-    body.duracaoMinutos
-  );
+  const observacao =
+    clean(
+      body.observacao,
+      200
+    );
 
-  if (nome.length < 3) {
+  const requestedDuration =
+    Number(
+      body.duracaoMinutos
+    );
+
+  if (
+    nome.length < 3
+  ) {
     throw new Error(
       'Digite o nome completo.'
     );
   }
 
-  if (!validPhone(telefone)) {
+  if (
+    !validPhone(
+      telefone
+    )
+  ) {
     throw new Error(
       'Informe um WhatsApp válido.'
     );
   }
 
-  if (!isValidDateString(data)) {
-    throw new Error('Data inválida.');
+  if (
+    !isValidDateString(
+      data
+    )
+  ) {
+    throw new Error(
+      'Data inválida.'
+    );
   }
 
-  const service = serviceMap.get(servicoId);
+  const service =
+    serviceMap.get(
+      servicoId
+    );
 
   if (!service) {
-    throw new Error('Serviço inválido.');
+    throw new Error(
+      'Serviço inválido.'
+    );
   }
 
-  const day = getBusinessDay(data);
+  const day =
+    getBusinessDay(
+      data
+    );
 
-  if (!day || day.fechado) {
+  if (
+    !day ||
+    day.fechado
+  ) {
     throw new Error(
       'A data escolhida está fechada.'
     );
   }
 
-  const cat = service.categoria;
+  const cat =
+    service.categoria;
 
   let duration =
-    Number.isFinite(requestedDuration) &&
+    Number.isFinite(
+      requestedDuration
+    ) &&
     requestedDuration > 0
       ? requestedDuration
-      : Number(service.duracaoMinutos || 0);
+      : Number(
+          service.duracaoMinutos ||
+            0
+        );
 
-  if (cat === 'Paredão') {
+  if (
+    cat === 'Paredão'
+  ) {
     if (
       duration < 60 ||
       duration % 60 !== 0
@@ -804,7 +961,10 @@ async function validateManualBooking(body) {
     }
   }
 
-  if (cat === 'Máquina Turbo') {
+  if (
+    cat ===
+    'Máquina Turbo'
+  ) {
     if (
       duration < 5 ||
       duration % 5 !== 0
@@ -815,39 +975,63 @@ async function validateManualBooking(body) {
     }
   }
 
-  if (cat === 'Sol') {
+  if (
+    cat === 'Sol'
+  ) {
     duration = 0;
   }
 
   const finalOculos =
-    cat === 'Máquina Turbo'
+    cat ===
+    'Máquina Turbo'
       ? true
       : oculos;
 
-  const price = normalizeMoney(
-    Number(service.preco || 0) +
-      (finalOculos ? 5 : 0)
-  );
+  const price =
+    normalizeMoney(
+      Number(
+        service.preco || 0
+      ) +
+        (finalOculos
+          ? 5
+          : 0)
+    );
 
-  const start = timeToMinutes(hora);
+  const start =
+    timeToMinutes(
+      hora
+    );
 
-  if (start == null) {
+  if (
+    start == null
+  ) {
     throw new Error(
       'Informe um horário válido.'
     );
   }
 
-  const open = timeToMinutes(day.inicio);
-  const close = timeToMinutes(day.fim);
+  const open =
+    timeToMinutes(
+      day.inicio
+    );
 
-  if (start < open || start >= close) {
+  const close =
+    timeToMinutes(
+      day.fim
+    );
+
+  if (
+    start < open ||
+    start >= close
+  ) {
     throw new Error(
       'Horário fora do expediente.'
     );
   }
 
   if (
-    cat === 'Paredão' &&
+    cat ===
+      'Paredão' &&
     start % 60 !== 0
   ) {
     throw new Error(
@@ -856,7 +1040,8 @@ async function validateManualBooking(body) {
   }
 
   if (
-    cat === 'Máquina Turbo' &&
+    cat ===
+      'Máquina Turbo' &&
     start % 5 !== 0
   ) {
     throw new Error(
@@ -866,22 +1051,27 @@ async function validateManualBooking(body) {
 
   if (
     duration > 0 &&
-    start + duration > close
+    start +
+      duration >
+      close
   ) {
     throw new Error(
       `Esse horário ultrapassa o fechamento das ${day.fim}.`
     );
   }
 
-  const conflict = await findConflict({
-    data,
-    categoria: cat,
-    inicioMinutos: start,
-    fimMinutos:
-      duration > 0
-        ? start + duration
-        : start
-  });
+  const conflict =
+    await findConflict({
+      data,
+      categoria: cat,
+      inicioMinutos:
+        start,
+      fimMinutos:
+        duration > 0
+          ? start +
+            duration
+          : start
+    });
 
   if (conflict) {
     throw new Error(
@@ -892,100 +1082,132 @@ async function validateManualBooking(body) {
   return {
     nome,
     telefone,
-    servicoId: service.id,
-    tipo: service.nome,
-    categoria: cat,
+    servicoId:
+      service.id,
+    tipo:
+      service.nome,
+    categoria:
+      cat,
     data,
     hora,
-    inicioMinutos: start,
+    inicioMinutos:
+      start,
     fimMinutos:
       duration > 0
-        ? start + duration
+        ? start +
+          duration
         : start,
-    valor: price,
-    oculos: finalOculos,
+    valor:
+      price,
+    oculos:
+      finalOculos,
     protetorSolar,
     observacao,
     promotionId: '',
-    status: 'confirmado',
+    status:
+      'confirmado',
     checkoutToken: '',
-    expiresAt: null
+    expiresAt:
+      null
   };
 }
 
-function parsePromotionPayload(body) {
-  const titulo = clean(
-    body.titulo,
-    80
-  );
+function parsePromotionPayload(
+  body
+) {
+  const titulo =
+    clean(
+      body.titulo,
+      80
+    );
 
-  const descricao = clean(
-    body.descricao,
-    500
-  );
+  const descricao =
+    clean(
+      body.descricao,
+      500
+    );
 
-  const valorTexto = clean(
-    body.valorTexto,
-    120
-  );
+  const valorTexto =
+    clean(
+      body.valorTexto,
+      120
+    );
 
-  const foto = clean(
-    body.foto,
-    2_000_000
-  );
+  const foto =
+    clean(
+      body.foto,
+      2_000_000
+    );
 
-  const preco = normalizeMoney(
-    body.preco
-  );
+  const preco =
+    normalizeMoney(
+      body.preco
+    );
 
-  const categoria = [
-    'Paredão',
-    'Máquina Turbo',
-    'Sol'
-  ].includes(body.categoria)
-    ? body.categoria
-    : '';
+  const categoria =
+    [
+      'Paredão',
+      'Máquina Turbo',
+      'Sol'
+    ].includes(
+      body.categoria
+    )
+      ? body.categoria
+      : '';
 
-  const duracaoMinutos = Number(
-    body.duracaoMinutos ??
-      (categoria === 'Paredão'
-        ? 60
-        : 0)
-  );
+  const duracaoMinutos =
+    Number(
+      body.duracaoMinutos ??
+        (categoria ===
+        'Paredão'
+          ? 60
+          : 0)
+    );
 
-  const horaFixa = clean(
-    body.horaFixa,
-    5
-  );
+  const horaFixa =
+    clean(
+      body.horaFixa,
+      5
+    );
 
-  const diasNum = Array.isArray(
-    body.diasNum
-  )
-    ? [
-        ...new Set(
-          body.diasNum
-            .map((d) => String(d))
-            .filter((d) =>
-              /^[0-6]$/.test(d)
-            )
-        )
-      ]
-    : [];
+  const diasNum =
+    Array.isArray(
+      body.diasNum
+    )
+      ? [
+          ...new Set(
+            body.diasNum
+              .map((d) =>
+                String(d)
+              )
+              .filter((d) =>
+                /^[0-6]$/.test(
+                  d
+                )
+              )
+          )
+        ]
+      : [];
 
-  const dias = diasNum.map(
-    (d) =>
-      [
-        'Dom',
-        'Seg',
-        'Ter',
-        'Qua',
-        'Qui',
-        'Sex',
-        'Sáb'
-      ][Number(d)]
-  );
+  const dias =
+    diasNum.map(
+      (d) =>
+        [
+          'Dom',
+          'Seg',
+          'Ter',
+          'Qua',
+          'Qui',
+          'Sex',
+          'Sáb'
+        ][
+          Number(d)
+        ]
+    );
 
-  if (titulo.length < 3) {
+  if (
+    titulo.length < 3
+  ) {
     return {
       erro:
         'Informe um título válido para a promoção.'
@@ -993,7 +1215,9 @@ function parsePromotionPayload(body) {
   }
 
   if (
-    !Number.isFinite(preco) ||
+    !Number.isFinite(
+      preco
+    ) ||
     preco <= 0 ||
     preco > 9999
   ) {
@@ -1024,7 +1248,8 @@ function parsePromotionPayload(body) {
   }
 
   if (
-    categoria === 'Paredão' &&
+    categoria ===
+      'Paredão' &&
     duracaoMinutos < 60
   ) {
     return {
@@ -1034,8 +1259,10 @@ function parsePromotionPayload(body) {
   }
 
   if (
-    categoria === 'Paredão' &&
-    duracaoMinutos % 60 !== 0
+    categoria ===
+      'Paredão' &&
+    duracaoMinutos % 60 !==
+      0
   ) {
     return {
       erro:
@@ -1044,10 +1271,13 @@ function parsePromotionPayload(body) {
   }
 
   if (
-    categoria === 'Máquina Turbo' &&
+    categoria ===
+      'Máquina Turbo' &&
     (
-      duracaoMinutos < 5 ||
-      duracaoMinutos % 5 !== 0
+      duracaoMinutos <
+        5 ||
+      duracaoMinutos % 5 !==
+        0
     )
   ) {
     return {
@@ -1056,7 +1286,9 @@ function parsePromotionPayload(body) {
     };
   }
 
-  if (!diasNum.length) {
+  if (
+    !diasNum.length
+  ) {
     return {
       erro:
         'Selecione pelo menos um dia da semana.'
@@ -1065,7 +1297,9 @@ function parsePromotionPayload(body) {
 
   if (
     horaFixa &&
-    timeToMinutes(horaFixa) == null
+    timeToMinutes(
+      horaFixa
+    ) == null
   ) {
     return {
       erro:
@@ -1109,7 +1343,8 @@ function parsePromotionPayload(body) {
     horaFixa,
     diasNum,
     dias,
-    ativa: true
+    ativa:
+      true
   };
 }
 
@@ -1117,16 +1352,20 @@ function validateServiceOrPromotion(
   body,
   promo
 ) {
-  const service = body.servicoId
-    ? serviceMap.get(
-        clean(
-          body.servicoId,
-          60
+  const service =
+    body.servicoId
+      ? serviceMap.get(
+          clean(
+            body.servicoId,
+            60
+          )
         )
-      )
-    : null;
+      : null;
 
-  if (!service && !promo) {
+  if (
+    !service &&
+    !promo
+  ) {
     throw new Error(
       'Serviço ou promoção não encontrado.'
     );
@@ -1154,7 +1393,9 @@ async function findConflict({
     'pagamento_pendente'
   ];
 
-  const isActive = (item) => {
+  const isActive = (
+    item
+  ) => {
     if (
       !blockingStatuses.includes(
         item.status ||
@@ -1170,7 +1411,8 @@ async function findConflict({
       item.expiresAt &&
       new Date(
         item.expiresAt
-      ).getTime() <= Date.now()
+      ).getTime() <=
+        Date.now()
     ) {
       return false;
     }
@@ -1184,50 +1426,56 @@ async function findConflict({
         data,
         categoria,
         status: {
-          $in: blockingStatuses
+          $in:
+            blockingStatuses
         }
       }).lean();
 
     return (
-      candidates.find((item) => {
-        if (!isActive(item)) {
-          return false;
-        }
+      candidates.find(
+        (item) => {
+          if (
+            !isActive(item)
+          ) {
+            return false;
+          }
 
-        if (
-          item.inicioMinutos ==
-            null ||
-          item.fimMinutos ==
-            null ||
-          fimMinutos == null
-        ) {
-          return (
-            item.hora ===
-            minutesToTime(
+          if (
+            item.inicioMinutos ==
+              null ||
+            item.fimMinutos ==
+              null ||
+            fimMinutos ==
+              null
+          ) {
+            return (
+              item.hora ===
+              minutesToTime(
+                inicioMinutos
+              )
+            );
+          }
+
+          if (
+            item.fimMinutos <=
+              item.inicioMinutos ||
+            fimMinutos <=
               inicioMinutos
-            )
-          );
-        }
+          ) {
+            return (
+              item.inicioMinutos ===
+              inicioMinutos
+            );
+          }
 
-        if (
-          item.fimMinutos <=
-            item.inicioMinutos ||
-          fimMinutos <=
-            inicioMinutos
-        ) {
           return (
-            item.inicioMinutos ===
-            inicioMinutos
+            inicioMinutos <
+              item.fimMinutos &&
+            fimMinutos >
+              item.inicioMinutos
           );
         }
-
-        return (
-          inicioMinutos <
-            item.fimMinutos &&
-          fimMinutos >
-            item.inicioMinutos
-        );
-      }) || null
+      ) || null
     );
   }
 
@@ -1235,10 +1483,13 @@ async function findConflict({
     memory.agendamentos.find(
       (item) => {
         if (
-          item.data !== data ||
+          item.data !==
+            data ||
           item.categoria !==
             categoria ||
-          !isActive(item)
+          !isActive(
+            item
+          )
         ) {
           return false;
         }
@@ -1248,7 +1499,8 @@ async function findConflict({
             null ||
           item.fimMinutos ==
             null ||
-          fimMinutos == null
+          fimMinutos ==
+            null
         ) {
           return (
             item.hora ===
@@ -1284,42 +1536,52 @@ async function findConflict({
 async function validateCheckout(
   body
 ) {
-  const nome = clean(
-    body.nome,
-    100
-  ).replace(/\s+/g, ' ');
+  const nome =
+    clean(
+      body.nome,
+      100
+    ).replace(
+      /\s+/g,
+      ' '
+    );
 
   const telefone =
     normalizePhone(
       body.telefone
     );
 
-  const data = clean(
-    body.data,
-    10
-  );
+  const data =
+    clean(
+      body.data,
+      10
+    );
 
   const oculosRequested =
-    Boolean(body.oculos);
+    Boolean(
+      body.oculos
+    );
 
-  const protetorSolar = [
-    'local',
-    'proprio'
-  ].includes(
-    body.protetorSolar
-  )
-    ? body.protetorSolar
-    : 'local';
+  const protetorSolar =
+    [
+      'local',
+      'proprio'
+    ].includes(
+      body.protetorSolar
+    )
+      ? body.protetorSolar
+      : 'local';
 
-  const promotionId = clean(
-    body.promotionId,
-    80
-  );
+  const promotionId =
+    clean(
+      body.promotionId,
+      80
+    );
 
-  const hora = clean(
-    body.hora,
-    30
-  );
+  const hora =
+    clean(
+      body.hora,
+      30
+    );
 
   const promo =
     await getPromoById(
@@ -1332,36 +1594,49 @@ async function validateCheckout(
       promo
     );
 
-  if (nome.length < 3) {
+  if (
+    nome.length < 3
+  ) {
     throw new Error(
       'Digite seu nome completo.'
     );
   }
 
-  if (!validPhone(telefone)) {
+  if (
+    !validPhone(
+      telefone
+    )
+  ) {
     throw new Error(
       'Informe um WhatsApp válido.'
     );
   }
 
   if (
-    !isValidDateString(data)
+    !isValidDateString(
+      data
+    )
   ) {
     throw new Error(
       'Data inválida.'
     );
   }
 
-  const today = todayBrazil();
+  const today =
+    todayBrazil();
 
-  if (data < today) {
+  if (
+    data < today
+  ) {
     throw new Error(
       'A data escolhida já passou.'
     );
   }
 
   const day =
-    getBusinessDay(data);
+    getBusinessDay(
+      data
+    );
 
   if (!day) {
     throw new Error(
@@ -1369,7 +1644,9 @@ async function validateCheckout(
     );
   }
 
-  if (day.fechado) {
+  if (
+    day.fechado
+  ) {
     throw new Error(
       'Não funcionamos às segundas-feiras.'
     );
@@ -1377,18 +1654,22 @@ async function validateCheckout(
 
   const effectiveCategory =
     promo
-      ? promo.categoria ||
-        'Paredão'
+      ? (
+          promo.categoria ||
+          'Paredão'
+        )
       : service.categoria;
 
   const effectiveDuration =
     promo
       ? Number(
           promo.duracaoMinutos ??
-            (effectiveCategory ===
-            'Paredão'
-              ? 60
-              : 0)
+            (
+              effectiveCategory ===
+              'Paredão'
+                ? 60
+                : 0
+            )
         )
       : service.duracaoMinutos;
 
@@ -1400,15 +1681,22 @@ async function validateCheckout(
 
   const effectivePrice =
     normalizeMoney(
-      (promo
-        ? promo.preco
-        : service.preco) +
-        (oculos ? 5 : 0)
+      (
+        promo
+          ? promo.preco
+          : service.preco
+      ) +
+        (
+          oculos
+            ? 5
+            : 0
+        )
     );
 
-  const effectiveType = promo
-    ? promo.titulo
-    : service.nome;
+  const effectiveType =
+    promo
+      ? promo.titulo
+      : service.nome;
 
   const selectedDay =
     new Date(
@@ -1420,7 +1708,9 @@ async function validateCheckout(
     (
       !promo.diasNum ||
       !promo.diasNum.includes(
-        String(selectedDay)
+        String(
+          selectedDay
+        )
       )
     )
   ) {
@@ -1432,13 +1722,18 @@ async function validateCheckout(
   let normalizedHour =
     'Ordem de Chegada';
 
-  let inicioMinutos = null;
-  let fimMinutos = null;
+  let inicioMinutos =
+    null;
+
+  let fimMinutos =
+    null;
 
   const usesClock =
     effectiveCategory !==
       'Sol' ||
-    Boolean(promo?.horaFixa);
+    Boolean(
+      promo?.horaFixa
+    );
 
   if (usesClock) {
     const requested =
@@ -1460,7 +1755,9 @@ async function validateCheckout(
         day.fim
       );
 
-    if (start == null) {
+    if (
+      start == null
+    ) {
       throw new Error(
         'Escolha um horário válido.'
       );
@@ -1477,7 +1774,8 @@ async function validateCheckout(
 
     if (
       data === today &&
-      start < nowBrazilMinutes()
+      start <
+        nowBrazilMinutes()
     ) {
       throw new Error(
         'Esse horário já passou hoje.'
@@ -1487,7 +1785,8 @@ async function validateCheckout(
     if (
       effectiveCategory ===
         'Paredão' &&
-      start % 60 !== 0
+      start % 60 !==
+        0
     ) {
       throw new Error(
         'O Paredão trabalha em horários fechados de hora em hora.'
@@ -1497,7 +1796,8 @@ async function validateCheckout(
     if (
       effectiveCategory ===
         'Máquina Turbo' &&
-      start % 5 !== 0
+      start % 5 !==
+        0
     ) {
       throw new Error(
         'A Máquina Turbo trabalha em intervalos de 5 minutos.'
@@ -1506,7 +1806,8 @@ async function validateCheckout(
 
     if (
       promo?.horaFixa &&
-      hora !== promo.horaFixa
+      hora !==
+        promo.horaFixa
     ) {
       throw new Error(
         'Esta promoção possui horário fixo.'
@@ -1531,7 +1832,8 @@ async function validateCheckout(
       start;
 
     fimMinutos =
-      effectiveDuration > 0
+      effectiveDuration >
+        0
         ? start +
           effectiveDuration
         : start;
@@ -1573,20 +1875,26 @@ async function validateCheckout(
       `promo:${String(
         promo._id
       )}`,
-    tipo: effectiveType,
+    tipo:
+      effectiveType,
     categoria:
       effectiveCategory,
     data,
-    hora: normalizedHour,
+    hora:
+      normalizedHour,
     inicioMinutos,
     fimMinutos,
-    valor: effectivePrice,
+    valor:
+      effectivePrice,
     oculos,
     protetorSolar,
     observacao: '',
-    promotionId: promo
-      ? String(promo._id)
-      : '',
+    promotionId:
+      promo
+        ? String(
+            promo._id
+          )
+        : '',
     status:
       'pagamento_pendente',
     checkoutToken,
@@ -1594,25 +1902,36 @@ async function validateCheckout(
   };
 }
 
-function field(id, value) {
+function field(
+  id,
+  value
+) {
   const valueString =
     String(value);
 
   return `${id}${String(
     valueString.length
-  ).padStart(2, '0')}${valueString}`;
+  ).padStart(
+    2,
+    '0'
+  )}${valueString}`;
 }
 
-function crc16(payload) {
-  let crc = 0xffff;
+function crc16(
+  payload
+) {
+  let crc = 0xFFFF;
 
   for (
     let i = 0;
-    i < payload.length;
+    i <
+    payload.length;
     i += 1
   ) {
     crc ^=
-      payload.charCodeAt(i) <<
+      payload.charCodeAt(
+        i
+      ) <<
       8;
 
     for (
@@ -1621,20 +1940,31 @@ function crc16(payload) {
       j += 1
     ) {
       crc =
-        (crc & 0x8000) !==
-        0
-          ? ((crc << 1) ^
-              0x1021) &
-            0xffff
-          : (crc << 1) &
-            0xffff;
+        (
+          crc &
+          0x8000
+        ) !== 0
+          ? (
+              (
+                crc << 1
+              ) ^
+                0x1021
+            ) &
+            0xFFFF
+          : (
+              crc << 1
+            ) &
+            0xFFFF;
     }
   }
 
   return crc
     .toString(16)
     .toUpperCase()
-    .padStart(4, '0');
+    .padStart(
+      4,
+      '0'
+    );
 }
 
 function generatePixBrCode(
@@ -1653,7 +1983,8 @@ function generatePixBrCode(
     normalizedKey.length ===
     11
   ) {
-    normalizedKey = `+55${normalizedKey}`;
+    normalizedKey =
+      `+55${normalizedKey}`;
   }
 
   const merchantAccount =
@@ -1720,39 +2051,56 @@ function parseCookies(
 ) {
   const cookies = {};
 
-  String(header || '')
+  String(
+    header || ''
+  )
     .split(';')
-    .forEach((pair) => {
-      const index =
-        pair.indexOf('=');
-
-      if (index < 0) {
-        return;
-      }
-
-      const key = pair
-        .slice(0, index)
-        .trim();
-
-      const value = pair
-        .slice(index + 1)
-        .trim();
-
-      try {
-        cookies[key] =
-          decodeURIComponent(
-            value
+    .forEach(
+      (pair) => {
+        const index =
+          pair.indexOf(
+            '='
           );
-      } catch {
-        cookies[key] =
-          value;
+
+        if (
+          index < 0
+        ) {
+          return;
+        }
+
+        const key =
+          pair
+            .slice(
+              0,
+              index
+            )
+            .trim();
+
+        const value =
+          pair
+            .slice(
+              index + 1
+            )
+            .trim();
+
+        try {
+          cookies[key] =
+            decodeURIComponent(
+              value
+            );
+        } catch {
+          cookies[key] =
+            value;
+        }
       }
-    });
+    );
 
   return cookies;
 }
 
-function base64url(value) {
+function base64url(
+  value
+) {
   return Buffer.from(
     value
   ).toString(
@@ -1794,8 +2142,13 @@ function verifySession(
     return null;
   }
 
-  const [raw, signature] =
-    String(token).split('.');
+  const [
+    raw,
+    signature
+  ] =
+    String(
+      token
+    ).split('.');
 
   if (
     !raw ||
@@ -1851,7 +2204,8 @@ function verifySession(
       !payload.exp ||
       payload.exp <
         Math.floor(
-          Date.now() / 1000
+          Date.now() /
+            1000
         )
     ) {
       return null;
@@ -1881,7 +2235,9 @@ function setAdminCookie(
     NODE_ENV ===
     'production'
   ) {
-    parts.push('Secure');
+    parts.push(
+      'Secure'
+    );
   }
 
   res.setHeader(
@@ -1905,7 +2261,9 @@ function clearAdminCookie(
     NODE_ENV ===
     'production'
   ) {
-    parts.push('Secure');
+    parts.push(
+      'Secure'
+    );
   }
 
   res.setHeader(
@@ -1948,48 +2306,74 @@ function bookingPublic(
   includeSecret = false
 ) {
   const publicData = {
-    _id: String(item._id),
-    nome: item.nome,
-    telefone: item.telefone,
+    _id:
+      String(
+        item._id
+      ),
+
+    nome:
+      item.nome,
+
+    telefone:
+      item.telefone,
+
     servicoId:
       item.servicoId,
-    tipo: item.tipo,
+
+    tipo:
+      item.tipo,
+
     categoria:
       item.categoria,
-    data: item.data,
-    hora: item.hora,
+
+    data:
+      item.data,
+
+    hora:
+      item.hora,
+
     valor:
       normalizeMoney(
         item.valor
       ),
+
     oculos:
       Boolean(
         item.oculos
       ),
+
     protetorSolar:
       item.protetorSolar ||
       'local',
+
     observacao:
       item.observacao ||
       '',
+
     promotionId:
       item.promotionId ||
       '',
+
     status:
       item.status ||
       'pagamento_pendente',
+
     expiresAt:
       item.expiresAt ||
       null,
+
     createdAt:
       item.createdAt ||
       null,
+
     updatedAt:
       item.updatedAt ||
       null
   };
 
-  if (includeSecret) {
+  if (
+    includeSecret
+  ) {
     publicData.checkoutToken =
       item.checkoutToken ||
       '';
@@ -2022,11 +2406,16 @@ async function checkoutData(
 
   return {
     agendamento:
-      bookingPublic(item),
+      bookingPublic(
+        item
+      ),
+
     pixCopiaECola:
       pix,
+
     qrCodeDataUrl:
       qr,
+
     expiresAt:
       item.expiresAt ||
       null
@@ -2087,15 +2476,20 @@ app.get(
     res.json({
       services:
         SERVICES,
+
       businessHours:
         BUSINESS_HOURS,
+
       bookingHoldMinutes:
         BOOKING_HOLD_MINUTES,
+
       contact: {
         whatsapp:
           '5521983237811',
+
         displayWhatsapp:
           '(21) 98323-7811',
+
         address:
           'Toriba 851, Colégio — RJ'
       }
@@ -2105,13 +2499,20 @@ app.get(
 
 app.get(
   '/promocoes',
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
       res.json(
         await listPromos()
       );
-    } catch (error) {
-      console.error(error);
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
 
       res
         .status(500)
@@ -2125,7 +2526,10 @@ app.get(
 
 app.post(
   '/admin/login',
-  (req, res) => {
+  (
+    req,
+    res
+  ) => {
     const password =
       String(
         req.body?.password ||
@@ -2179,17 +2583,24 @@ app.post(
 
     const token =
       signSession({
-        sub: 'admin',
-        iat: now,
+        sub:
+          'admin',
+
+        iat:
+          now,
+
         exp:
           now +
           SESSION_TTL_SECONDS,
+
         nonce:
           crypto
             .randomBytes(
               8
             )
-            .toString('hex')
+            .toString(
+              'hex'
+            )
       });
 
     setAdminCookie(
@@ -2198,7 +2609,9 @@ app.post(
     );
 
     res.json({
-      ok: true,
+      ok:
+        true,
+
       expiresIn:
         SESSION_TTL_SECONDS
     });
@@ -2208,13 +2621,17 @@ app.post(
 app.post(
   '/admin/logout',
   requireAdmin,
-  (req, res) => {
+  (
+    req,
+    res
+  ) => {
     clearAdminCookie(
       res
     );
 
     res.json({
-      ok: true
+      ok:
+        true
     });
   }
 );
@@ -2222,9 +2639,14 @@ app.post(
 app.get(
   '/admin/session',
   requireAdmin,
-  (req, res) =>
+  (
+    req,
+    res
+  ) =>
     res.json({
-      ok: true,
+      ok:
+        true,
+
       expiresAt:
         req.admin.exp *
         1000
@@ -2234,27 +2656,39 @@ app.get(
 app.post(
   '/promocoes',
   requireAdmin,
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
       const parsed =
         parsePromotionPayload(
-          req.body || {}
+          req.body ||
+            {}
         );
 
-      if (parsed.erro) {
+      if (
+        parsed.erro
+      ) {
         return res
           .status(400)
-          .json(parsed);
+          .json(
+            parsed
+          );
       }
 
-      if (mongoAvailable) {
+      if (
+        mongoAvailable
+      ) {
         const promo =
           await Promo.create(
             parsed
           );
 
         return res
-          .status(201)
+          .status(
+            201
+          )
           .json(
             publicPromo(
               promo
@@ -2265,7 +2699,9 @@ app.post(
       const promo = {
         _id:
           crypto.randomUUID(),
+
         ...parsed,
+
         createdAt:
           new Date()
       };
@@ -2275,14 +2711,20 @@ app.post(
       );
 
       return res
-        .status(201)
+        .status(
+          201
+        )
         .json(
           publicPromo(
             promo
           )
         );
-    } catch (error) {
-      console.error(error);
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
 
       return res
         .status(500)
@@ -2301,7 +2743,9 @@ async function deactivatePromotionById(
     return null;
   }
 
-  if (mongoAvailable) {
+  if (
+    mongoAvailable
+  ) {
     if (
       !mongoose.isValidObjectId(
         id
@@ -2317,11 +2761,13 @@ async function deactivatePromotionById(
       },
       {
         $set: {
-          ativa: false
+          ativa:
+            false
         }
       },
       {
-        new: true
+        new:
+          true
       }
     ).lean();
   }
@@ -2329,8 +2775,12 @@ async function deactivatePromotionById(
   const item =
     memory.promos.find(
       (p) =>
-        String(p._id) ===
-          String(id) &&
+        String(
+          p._id
+        ) ===
+          String(
+            id
+          ) &&
         p.ativa
     );
 
@@ -2338,25 +2788,25 @@ async function deactivatePromotionById(
     return null;
   }
 
-  item.ativa = false;
+  item.ativa =
+    false;
 
   return item;
 }
 
-/*
- * Rota principal usada pelo painel.
- * POST evita problemas de DELETE
- * em alguns ambientes/proxies.
- */
 app.post(
   '/admin/promocoes/:id/desativar',
   requireAdmin,
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
-      const id = clean(
-        req.params.id,
-        80
-      );
+      const id =
+        clean(
+          req.params.id,
+          80
+        );
 
       if (
         mongoAvailable &&
@@ -2377,7 +2827,9 @@ app.post(
           id
         );
 
-      if (!updated) {
+      if (
+        !updated
+      ) {
         return res
           .status(404)
           .json({
@@ -2387,13 +2839,17 @@ app.post(
       }
 
       return res.json({
-        ok: true,
+        ok:
+          true,
+
         promocao:
           publicPromo(
             updated
           )
       });
-    } catch (error) {
+    } catch (
+      error
+    ) {
       console.error(
         '[DESATIVAR PROMOÇÃO]',
         error
@@ -2409,19 +2865,19 @@ app.post(
   }
 );
 
-/*
- * Compatibilidade com versões
- * antigas do painel.
- */
 app.delete(
   '/promocoes/:id',
   requireAdmin,
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
-      const id = clean(
-        req.params.id,
-        80
-      );
+      const id =
+        clean(
+          req.params.id,
+          80
+        );
 
       if (
         mongoAvailable &&
@@ -2442,7 +2898,9 @@ app.delete(
           id
         );
 
-      if (!updated) {
+      if (
+        !updated
+      ) {
         return res
           .status(404)
           .json({
@@ -2452,13 +2910,17 @@ app.delete(
       }
 
       return res.json({
-        ok: true,
+        ok:
+          true,
+
         promocao:
           publicPromo(
             updated
           )
       });
-    } catch (error) {
+    } catch (
+      error
+    ) {
       console.error(
         '[DELETE PROMOÇÃO]',
         error
@@ -2476,11 +2938,15 @@ app.delete(
 
 app.post(
   '/salvar',
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
       const normalized =
         await validateCheckout(
-          req.body || {}
+          req.body ||
+            {}
         );
 
       const saved =
@@ -2497,13 +2963,21 @@ app.post(
         saved.checkoutToken;
 
       return res
-        .status(201)
+        .status(
+          201
+        )
         .json({
-          ok: true,
+          ok:
+            true,
+
           ...payment
         });
-    } catch (error) {
-      console.error(error);
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
 
       return res
         .status(400)
@@ -2518,17 +2992,22 @@ app.post(
 
 app.post(
   '/api/agendamentos/:id/checkout',
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
-      const id = clean(
-        req.params.id,
-        80
-      );
+      const id =
+        clean(
+          req.params.id,
+          80
+        );
 
-      const token = clean(
-        req.body?.checkoutToken,
-        100
-      );
+      const token =
+        clean(
+          req.body?.checkoutToken,
+          100
+        );
 
       const existing =
         await findBookingById(
@@ -2594,8 +3073,12 @@ app.post(
           existing
         )
       );
-    } catch (error) {
-      console.error(error);
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
 
       return res
         .status(500)
@@ -2609,17 +3092,22 @@ app.post(
 
 app.post(
   '/api/agendamentos/:id/confirmar',
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
-      const id = clean(
-        req.params.id,
-        80
-      );
+      const id =
+        clean(
+          req.params.id,
+          80
+        );
 
-      const token = clean(
-        req.body?.checkoutToken,
-        100
-      );
+      const token =
+        clean(
+          req.body?.checkoutToken,
+          100
+        );
 
       const existing =
         await findBookingById(
@@ -2677,14 +3165,20 @@ app.post(
         );
 
       return res.json({
-        ok: true,
+        ok:
+          true,
+
         agendamento:
           bookingPublic(
             updated
           )
       });
-    } catch (error) {
-      console.error(error);
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
 
       return res
         .status(500)
@@ -2696,23 +3190,90 @@ app.post(
   }
 );
 
-/*
- * Consulta segura do status
- * usando o token temporário.
- */
 app.get(
-  '/api/agendamentos/:id/status',
-  async (req, res) => {
+  '/api/agendamentos/:id/public',
+  async (
+    req,
+    res
+  ) => {
     try {
-      const id = clean(
-        req.params.id,
-        80
+      const id =
+        clean(
+          req.params.id,
+          80
+        );
+
+      const token =
+        clean(
+          req.query?.checkoutToken,
+          100
+        );
+
+      const existing =
+        await findBookingById(
+          id
+        );
+
+      if (
+        !existing ||
+        !token ||
+        existing.checkoutToken !==
+          token
+      ) {
+        return res
+          .status(404)
+          .json({
+            erro:
+              'Agendamento não encontrado.'
+          });
+      }
+
+      return res.json({
+        agendamento:
+          bookingPublic(
+            existing
+          ),
+
+        expiresAt:
+          existing.expiresAt ||
+          null
+      });
+    } catch (
+      error
+    ) {
+      console.error(
+        '[AGENDA PÚBLICA]',
+        error
       );
 
-      const token = clean(
-        req.query?.checkoutToken,
-        100
-      );
+      return res
+        .status(500)
+        .json({
+          erro:
+            'Não foi possível consultar o agendamento.'
+        });
+    }
+  }
+);
+
+app.get(
+  '/api/agendamentos/:id/status',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const id =
+        clean(
+          req.params.id,
+          80
+        );
+
+      const token =
+        clean(
+          req.query?.checkoutToken,
+          100
+        );
 
       const existing =
         await findBookingById(
@@ -2737,11 +3298,14 @@ app.get(
         status:
           existing.status ||
           'pagamento_pendente',
+
         expiresAt:
           existing.expiresAt ||
           null
       });
-    } catch (error) {
+    } catch (
+      error
+    ) {
       console.error(
         '[STATUS PÚBLICO]',
         error
@@ -2760,11 +3324,15 @@ app.get(
 app.post(
   '/admin/agendamentos/manual',
   requireAdmin,
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
       const normalized =
         await validateManualBooking(
-          req.body || {}
+          req.body ||
+            {}
         );
 
       const saved =
@@ -2773,15 +3341,21 @@ app.post(
         );
 
       return res
-        .status(201)
+        .status(
+          201
+        )
         .json({
-          ok: true,
+          ok:
+            true,
+
           agendamento:
             bookingPublic(
               saved
             )
         });
-    } catch (error) {
+    } catch (
+      error
+    ) {
       console.error(
         '[MANUAL]',
         error
@@ -2801,7 +3375,10 @@ app.post(
 app.get(
   '/listar',
   requireAdmin,
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
       const data =
         await listBookings();
@@ -2812,8 +3389,12 @@ app.get(
             bookingPublic
           )
       });
-    } catch (error) {
-      console.error(error);
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
 
       return res
         .status(500)
@@ -2828,7 +3409,10 @@ app.get(
 app.patch(
   '/agendamentos/:id/status',
   requireAdmin,
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     const allowed =
       new Set([
         'pagamento_pendente',
@@ -2837,13 +3421,16 @@ app.patch(
         'cancelado'
       ]);
 
-    const status = clean(
-      req.body?.status,
-      30
-    );
+    const status =
+      clean(
+        req.body?.status,
+        30
+      );
 
     if (
-      !allowed.has(status)
+      !allowed.has(
+        status
+      )
     ) {
       return res
         .status(400)
@@ -2854,10 +3441,11 @@ app.patch(
     }
 
     try {
-      const id = clean(
-        req.params.id,
-        80
-      );
+      const id =
+        clean(
+          req.params.id,
+          80
+        );
 
       if (
         mongoAvailable &&
@@ -2878,7 +3466,9 @@ app.patch(
           id
         );
 
-      if (!existing) {
+      if (
+        !existing
+      ) {
         return res
           .status(404)
           .json({
@@ -2888,7 +3478,8 @@ app.patch(
       }
 
       if (
-        status === 'confirmado' &&
+        status ===
+          'confirmado' &&
         existing.status !==
           'pagamento_informado' &&
         existing.status !==
@@ -2907,6 +3498,7 @@ app.patch(
           id,
           {
             status,
+
             expiresAt:
               status ===
               'pagamento_pendente'
@@ -2915,7 +3507,9 @@ app.patch(
           }
         );
 
-      if (!updated) {
+      if (
+        !updated
+      ) {
         return res
           .status(404)
           .json({
@@ -2925,13 +3519,17 @@ app.patch(
       }
 
       return res.json({
-        ok: true,
+        ok:
+          true,
+
         agendamento:
           bookingPublic(
             updated
           )
       });
-    } catch (error) {
+    } catch (
+      error
+    ) {
       console.error(
         '[STATUS]',
         error
@@ -2950,12 +3548,16 @@ app.patch(
 app.delete(
   '/agendamentos/:id',
   requireAdmin,
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
-      const id = clean(
-        req.params.id,
-        80
-      );
+      const id =
+        clean(
+          req.params.id,
+          80
+        );
 
       if (
         mongoAvailable &&
@@ -2972,9 +3574,13 @@ app.delete(
       }
 
       const deleted =
-        await deleteBooking(id);
+        await deleteBooking(
+          id
+        );
 
-      if (!deleted) {
+      if (
+        !deleted
+      ) {
         return res
           .status(404)
           .json({
@@ -2984,9 +3590,12 @@ app.delete(
       }
 
       return res.json({
-        ok: true
+        ok:
+          true
       });
-    } catch (error) {
+    } catch (
+      error
+    ) {
       console.error(
         '[DELETE AGENDAMENTO]',
         error
@@ -3004,7 +3613,10 @@ app.delete(
 
 app.get(
   '/health',
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     res
       .status(
         mongoAvailable ||
@@ -3047,7 +3659,10 @@ app.use(
 );
 
 app.use(
-  (req, res) =>
+  (
+    req,
+    res
+  ) =>
     res
       .status(404)
       .json({
@@ -3080,12 +3695,17 @@ async function connectDatabase() {
       {
         serverSelectionTimeoutMS:
           7000,
-        maxPoolSize: 10,
-        minPoolSize: 1
+
+        maxPoolSize:
+          10,
+
+        minPoolSize:
+          1
       }
     );
 
-    mongoAvailable = true;
+    mongoAvailable =
+      true;
 
     Promo =
       mongoose.model(
@@ -3102,7 +3722,9 @@ async function connectDatabase() {
     console.log(
       '[DB] MongoDB conectado.'
     );
-  } catch (error) {
+  } catch (
+    error
+  ) {
     console.error(
       '[DB] Falha ao conectar no MongoDB:',
       error.message
@@ -3143,12 +3765,16 @@ async function start() {
 }
 
 start().catch(
-  (error) => {
+  (
+    error
+  ) => {
     console.error(
       '[STARTUP]',
       error.message
     );
 
-    process.exit(1);
+    process.exit(
+      1
+    );
   }
 );
