@@ -1,187 +1,56 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#120f0c">
-<title>Pagamento Pix — Pauluzzi Bronze</title>
-<style>
-:root{--bg:#0f0d0b;--panel:#181410;--panel2:#211b15;--line:#3a3027;--gold:#ddb552;--gold2:#f4d986;--pink:#ff6fb1;--green:#39d886;--red:#ff6878;--muted:#b0a69d;--shadow:0 24px 70px rgba(0,0,0,.36)}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% -10%,#3b2b1c 0,#17120e 36%,#0b0a09 76%);color:#fff;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;padding:20px}
-.card{width:min(620px,100%);margin:20px auto;background:rgba(24,20,16,.95);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:24px}
-h1{margin:0 0 8px;font-size:30px}.sub{margin:0 0 20px;color:var(--muted);font-size:13px}
-.summary{background:#211b15;border:1px solid #3f3329;border-radius:16px;padding:15px;margin-bottom:15px}
-.summary h2{margin:0 0 8px;font-size:16px;color:var(--gold2)}
-.row{display:flex;justify-content:space-between;gap:15px;padding:8px 0;border-bottom:1px solid #30271f;font-size:13px}
-.row:last-child{border-bottom:0}.row span{color:var(--muted)}.row strong{text-align:right}
-.total{background:linear-gradient(180deg,#2a2115,#17120e);border:1px solid #4b3b27;border-radius:16px;padding:16px;display:flex;justify-content:space-between;align-items:center;margin:15px 0}
-.total span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}.total strong{font-size:28px;color:var(--green)}
-.qr-wrap{text-align:center;padding:18px;background:#fff;border-radius:18px;border:2px solid var(--gold);margin:15px auto;width:max-content;max-width:100%}
-.qr-wrap img{display:block;width:300px;max-width:100%;height:auto}
-.status{text-align:center;color:var(--muted);font-size:12px;margin:10px 0}
-textarea{width:100%;min-height:105px;resize:vertical;background:#11100e;color:#fff;border:1px solid #4a4037;border-radius:12px;padding:12px;font:12px monospace}
-button,.whats{width:100%;min-height:50px;border:0;border-radius:13px;font-weight:900;font-size:14px;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;margin-top:10px}
-.copy{background:linear-gradient(135deg,#edca6f,#c89431);color:#21180d}
-.confirm{background:var(--pink);color:#fff}.whats{background:#25d366;color:#fff}
-button:disabled{opacity:.55;cursor:wait}.back{display:block;text-align:center;color:var(--muted);text-decoration:none;font-size:12px;margin-top:14px}
-.notice{padding:11px 13px;border-radius:12px;background:#342719;border:1px solid #665035;color:#f5d991;font-size:12px;margin-top:15px}
-.error{background:#3a1c21;border-color:#6a343d;color:#ffb9c0}.hidden{display:none}
-</style>
-</head>
-<body>
-<main class="card">
-  <h1>Pagamento Pix 💳</h1>
-  <p class="sub">Use o QR Code pelo aplicativo do seu banco ou copie o Pix Copia e Cola.</p>
-
-  <section class="summary">
-    <h2>Resumo do agendamento</h2>
-    <div class="row"><span>Nome</span><strong id="nome">—</strong></div>
-    <div class="row"><span>WhatsApp</span><strong id="telefone">—</strong></div>
-    <div class="row"><span>Serviço</span><strong id="servico">—</strong></div>
-    <div class="row"><span>Data</span><strong id="dataHora">—</strong></div>
-    <div class="row"><span>Óculos</span><strong id="oculos">Não</strong></div>
-  </section>
-
-  <div class="total"><span>Valor total</span><strong id="valor">R$ 0,00</strong></div>
-
-  <div id="qrSection" class="hidden">
-    <div class="qr-wrap"><img id="qr" alt="QR Code Pix"></div>
-    <div class="status">Escaneie este QR Code dentro do aplicativo do seu banco.</div>
-
-    <label for="pix" class="status" style="display:block;text-align:left;margin:14px 0 6px">Pix Copia e Cola</label>
-    <textarea id="pix" readonly></textarea>
-    <button class="copy" id="copyBtn" type="button">📋 Copiar Pix Copia e Cola</button>
-
-    <button class="confirm" id="confirmBtn" type="button">✅ Já fiz o Pix — informar pagamento</button>
-    <a id="whatsBtn" class="whats hidden" target="_blank" rel="noopener">📲 Enviar comprovante pelo WhatsApp</a>
-
-    <div class="notice">
-      O agendamento fica temporariamente reservado. Depois de pagar, informe o pagamento e envie o comprovante pelo WhatsApp.
-    </div>
-  </div>
-
-  <div id="error" class="notice error hidden"></div>
-  <a class="back" href="/">← Voltar para o início</a>
-</main>
-
+  <!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#120f0c"><title>Pagamento Pix — Pauluzzi Bronze</title>
+<style>:root{--bg:#0d0c0a;--card:#181410;--line:#42362b;--gold:#e0b954;--gold2:#f4d98a;--green:#39d886;--pink:#ff6fb1;--muted:#aba198;--red:#ff727e}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#342718,#0d0c0a 60%);color:#fff;font-family:Inter,Segoe UI,Arial,sans-serif;padding:14px}.wrap{max-width:650px;margin:20px auto}.brand{text-align:center;color:var(--gold2);font-size:11px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}.card{margin-top:12px;background:rgba(24,20,16,.97);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 25px 70px rgba(0,0,0,.38)}.back{display:inline-block;color:var(--muted);text-decoration:none;font-size:12px;margin-bottom:14px}.hero h1{font-size:34px;margin:0 0 7px}.sub{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 18px}.summary{background:#211b15;border:1px solid #392e25;border-radius:16px;padding:13px}.row{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid #302820;font-size:13px}.row:last-child{border-bottom:0}.muted{color:var(--muted)}.total{margin:16px 0;background:linear-gradient(180deg,#2a2115,#15100c);border:1px solid #4c3c29;border-radius:16px;padding:15px;text-align:center}.total span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.1em}.total strong{display:block;font-size:35px;color:var(--green);margin-top:4px}.qr{background:#fff;border-radius:18px;padding:12px;width:max-content;max-width:100%;margin:14px auto}.qr img{display:block;width:290px;height:290px;max-width:100%;border-radius:7px}.pix{background:#0f0e0c;border:1px dashed #55483b;border-radius:13px;padding:12px;word-break:break-all;font-size:11px;line-height:1.55;color:#d4ccc3}.buttons{display:grid;gap:10px;margin-top:12px}.btn{height:50px;border-radius:13px;border:0;font-weight:900;cursor:pointer;font-size:13px}.copy{background:linear-gradient(135deg,#ebc967,#c59232);color:#1b140c}.confirm{background:linear-gradient(135deg,#ff74b5,#d73d85);color:#fff}.btn:disabled{opacity:.55;cursor:wait}.whats{display:none;margin-top:10px;background:#25d366;color:#fff;text-align:center;padding:14px;border-radius:13px;text-decoration:none;font-size:13px;font-weight:900}.countdown{margin-top:10px;text-align:center;color:var(--gold2);font-size:12px}.status{display:none;margin-top:12px;padding:13px;border-radius:13px;background:#173626;border:1px solid #34754d;color:#c7f7d6;font-size:12px;line-height:1.5}.note{text-align:center;color:var(--muted);font-size:11px;line-height:1.6;margin-top:12px}@media(max-width:520px){.card{padding:17px}.qr img{width:230px;height:230px}.hero h1{font-size:29px}}.not-booked{margin:12px 0;padding:14px;border-radius:13px;background:#3c2815;border:1px solid #71502e;color:#ffe0b5;font-size:12px;line-height:1.55;text-align:center}.not-booked strong{color:#ffd47f}</style></head>
+<body><main class="wrap"><div class="brand">☀️ Pauluzzi Bronze</div><section class="card"><a class="back" href="/">← Voltar para o agendamento</a><div class="hero"><h1>Pagamento Pix</h1><p class="sub">Você chegou à etapa de pagamento. <strong>O agendamento ainda não foi realizado.</strong> Você só entra na nossa agenda depois da confirmação do pagamento.</p></div>
+<div class="not-booked" id="notBooked">⚠️ <strong>Agendamento não realizado.</strong><br>Você ainda não está na nossa agenda por falta de pagamento.</div><section class="summary" id="resumo">Carregando agendamento…</section><div class="total"><span>Total a pagar</span><strong id="total">R$ 0,00</strong></div><div class="countdown" id="countdown"></div><div class="qr"><img id="qr" alt="QR Code Pix"></div><div class="pix"><strong>Pix Copia e Cola</strong><div id="pixText" style="margin-top:8px">Carregando…</div></div><div class="buttons"><button class="btn copy" id="copy">📋 Copiar Pix Copia e Cola</button><button class="btn confirm" id="confirm">✅ Já fiz o Pix — informar pagamento</button></div><a class="whats" id="whats" target="_blank" rel="noopener">📲 Enviar comprovante pelo WhatsApp</a>
+<a class="whats" id="manualWhats" target="_blank" rel="noopener" style="display:block;background:#2d70c9;margin-top:10px">💬 Não tenho Pix — falar para fazer o agendamento manual</a><div class="status" id="status"></div><p class="note">O agendamento só entra na agenda como confirmado depois que a equipe conferir o pagamento. Sem pagamento, você não está na nossa agenda.</p></section></main>
 <script>
-const $ = (id) => document.getElementById(id);
+const $=id=>document.getElementById(id),money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}),fmtDate=v=>new Date(v+'T00:00:00').toLocaleDateString('pt-BR'),params=new URLSearchParams(location.search),id=params.get('id'),checkout=JSON.parse(sessionStorage.getItem('pauluzziCheckout')||'null');
+let current=null,timer=null,statusTimer=null;
+function fail(message){alert(message);location.href='/'}
+async function load(){if(!id||!checkout||checkout.id!==id||!checkout.checkoutToken)return fail('Pagamento não encontrado nesta sessão.');const r=await fetch('/api/agendamentos/'+encodeURIComponent(id)+'/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({checkoutToken:checkout.checkoutToken}),cache:'no-store'});const body=await r.json().catch(()=>({}));if(!r.ok)return fail(body.erro||'Não foi possível carregar o pagamento.');current=body;$('total').textContent=money(body.agendamento.valor);$('pixText').textContent=body.pixCopiaECola;$('qr').src=body.qrCodeDataUrl;$('resumo').innerHTML=`<div class="row"><span class="muted">Nome</span><strong>${escapeHtml(body.agendamento.nome)}</strong></div><div class="row"><span class="muted">WhatsApp</span><strong>${escapeHtml(body.agendamento.telefone)}</strong></div><div class="row"><span class="muted">Serviço</span><strong>${escapeHtml(body.agendamento.tipo)}</strong></div><div class="row"><span class="muted">Data</span><strong>${fmtDate(body.agendamento.data)}</strong></div><div class="row"><span class="muted">Horário</span><strong>${escapeHtml(body.agendamento.hora)}</strong></div><div class="row"><span class="muted">Óculos</span><strong>${body.agendamento.oculos?'Sim (+ R$ 5,00)':'Não'}</strong></div>`;startCountdown(body.expiresAt)}
 
-let checkout = null;
-let agendamento = null;
-
-function money(value) {
-  return Number(value || 0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+function setupManualWhats(){
+  const link=$('manualWhats');
+  if(!link)return;
+  const msg=encodeURIComponent(
+    'Olá, Pauluzzi Bronze! ☀️\n'+
+    'Tentei realizar um agendamento, mas não tenho Pix no momento.\n'+
+    'Gostaria de verificar a possibilidade de fazer o agendamento manualmente e pagar em dinheiro.'
+  );
+  link.href='https://wa.me/5521983237811?text='+msg;
 }
+function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 
-function showError(message) {
-  const box = $('error');
-  box.textContent = message;
-  box.classList.remove('hidden');
-}
-
-function formatDateTime(data, hora) {
-  if (!data) return '—';
-  const parts = String(data).split('-');
-  const date = parts.length === 3 ? parts.reverse().join('/') : data;
-  return hora ? `${date} às ${hora}` : date;
-}
-
-async function api(url, options = {}) {
-  const response = await fetch(url, {cache:'no-store', ...options});
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.erro || 'Não foi possível carregar o pagamento.');
-  return body;
-}
-
-async function carregarPagamento() {
-  try {
-    const stored = sessionStorage.getItem('pauluzziCheckout');
-    if (!stored) throw new Error('A sessão do pagamento não foi encontrada. Faça um novo agendamento.');
-
-    checkout = JSON.parse(stored);
-    if (!checkout.id || !checkout.checkoutToken) {
-      throw new Error('Dados do pagamento incompletos. Faça um novo agendamento.');
+async function refreshBookingStatus(){
+  if(!id||!checkout?.checkoutToken)return;
+  try{
+    const r=await fetch('/api/agendamentos/'+encodeURIComponent(id)+'/status?checkoutToken='+encodeURIComponent(checkout.checkoutToken),{cache:'no-store'});
+    const b=await r.json().catch(()=>({}));
+    if(!r.ok)return;
+    if(b.status==='pagamento_informado'){
+      const btn=$('confirm'); if(btn)btn.style.display='none';
+      $('status').style.display='block';
+      $('status').textContent='✅ Pagamento informado. O agendamento ainda NÃO está confirmado na agenda. A equipe precisa conferir o pagamento.';
+      $('whats').style.display='block';
+      return;
     }
-
-    const result = await api(`/api/agendamentos/${encodeURIComponent(checkout.id)}/checkout`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({checkoutToken: checkout.checkoutToken})
-    });
-
-    agendamento = result.agendamento;
-
-    $('nome').textContent = agendamento.nome || '—';
-    $('telefone').textContent = agendamento.telefone || '—';
-    $('servico').textContent = agendamento.tipo || '—';
-    $('dataHora').textContent = formatDateTime(agendamento.data, agendamento.hora);
-    $('oculos').textContent = agendamento.oculos ? 'Sim (+ R$ 5,00)' : 'Não';
-    $('valor').textContent = money(agendamento.valor);
-
-    $('qr').src = result.qrCodeDataUrl;
-    $('pix').value = result.pixCopiaECola || '';
-    $('qrSection').classList.remove('hidden');
-
-  } catch (error) {
-    showError(error.message);
-  }
+    if(b.status==='confirmado'){
+      $('status').style.display='block';
+      $('status').textContent='✅ Pagamento conferido e agendamento confirmado na agenda.';
+      $('notBooked').innerHTML='✅ <strong>Agendamento confirmado.</strong><br>Você está na nossa agenda.';
+      $('notBooked').style.background='#173626';
+      $('notBooked').style.borderColor='#34754d';
+      $('notBooked').style.color='#c7f7d6';
+      const btn=$('confirm'); if(btn)btn.style.display='none';
+      const mw=$('manualWhats'); if(mw)mw.style.display='none';
+      sessionStorage.removeItem('pauluzziCheckout');clearInterval(statusTimer);
+    }
+  }catch{}
 }
-
-$('copyBtn').addEventListener('click', async () => {
-  const code = $('pix').value;
-  if (!code) return;
-  try {
-    await navigator.clipboard.writeText(code);
-    $('copyBtn').textContent = '✅ Pix copiado!';
-  } catch {
-    $('pix').focus();
-    $('pix').select();
-    document.execCommand('copy');
-    $('copyBtn').textContent = '✅ Pix copiado!';
-  }
-  setTimeout(() => $('copyBtn').textContent = '📋 Copiar Pix Copia e Cola', 2200);
-});
-
-$('confirmBtn').addEventListener('click', async () => {
-  if (!checkout) return;
-
-  const button = $('confirmBtn');
-  button.disabled = true;
-  button.textContent = 'Registrando pagamento…';
-
-  try {
-    await api(`/api/agendamentos/${encodeURIComponent(checkout.id)}/confirmar`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({checkoutToken: checkout.checkoutToken})
-    });
-
-    const dateText = formatDateTime(agendamento.data, agendamento.hora);
-    const amount = money(agendamento.valor);
-    const message = encodeURIComponent(
-      `Olá, Bronze Pauluzzi! ☀️\\n\\n` +
-      `Informei o pagamento do meu agendamento.\\n\\n` +
-      `👤 Nome: ${agendamento.nome}\\n` +
-      `📅 Data: ${dateText}\\n` +
-      `👙 Serviço: ${agendamento.tipo}\\n` +
-      `💰 Valor: ${amount}\\n\\n` +
-      `Vou enviar o comprovante Pix nesta conversa.`
-    );
-
-    $('whatsBtn').href = `https://wa.me/5521983237811?text=${message}`;
-    $('whatsBtn').classList.remove('hidden');
-    button.style.display = 'none';
-
-  } catch (error) {
-    showError(error.message);
-    button.disabled = false;
-    button.textContent = '✅ Já fiz o Pix — informar pagamento';
-  }
-});
-
-carregarPagamento();
-</script>
-</body>
-</html>
+function startCountdown(exp){if(!exp)return;$('countdown').style.display='block';clearInterval(timer);function tick(){const left=Math.max(0,new Date(exp).getTime()-Date.now()),min=Math.floor(left/60000),sec=Math.floor((left%60000)/1000);$('countdown').textContent=left?'Reserva temporária: '+String(min).padStart(2,'0')+':'+String(sec).padStart(2,'0'):'A reserva temporária expirou. Faça um novo agendamento.';if(!left)clearInterval(timer)}tick();timer=setInterval(tick,1000)}
+$('copy').onclick=async()=>{if(!current)return;try{await navigator.clipboard.writeText(current.pixCopiaECola);$('copy').textContent='✅ Pix copiado!';setTimeout(()=>$('copy').textContent='📋 Copiar Pix Copia e Cola',1600)}catch{alert('Seu navegador não permitiu a cópia automática. Selecione o código e copie manualmente.')}};
+$('confirm').onclick=async()=>{if(!current)return;const btn=$('confirm');btn.disabled=true;btn.textContent='Registrando pagamento…';try{const r=await fetch('/api/agendamentos/'+encodeURIComponent(id)+'/confirmar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({checkoutToken:checkout.checkoutToken})});const body=await r.json().catch(()=>({}));if(!r.ok)throw new Error(body.erro||'Não foi possível registrar o pagamento.');const a=body.agendamento;const msg=encodeURIComponent(`Olá, Bronze Pauluzzi! ☀️\nInformei o pagamento do meu agendamento.\n\n👤 Nome: ${a.nome}\n📅 Data: ${fmtDate(a.data)} às ${a.hora}\n☀️ Serviço: ${a.tipo}\n💰 Valor: ${money(a.valor)}\n\nSegue o comprovante Pix em anexo.`);$('whats').href='https://wa.me/5521983237811?text='+msg;$('whats').style.display='block';$('status').style.display='block';$('status').textContent='✅ Pagamento informado. O agendamento ainda NÃO está confirmado na agenda. Envie o comprovante pelo WhatsApp para a equipe.';btn.style.display='none';clearInterval(timer)}catch(err){alert(err.message);btn.disabled=false;btn.textContent='✅ Já fiz o Pix — informar pagamento'}};
+setupManualWhats();
+load().then(()=>{clearInterval(statusTimer);statusTimer=setInterval(refreshBookingStatus,4000);refreshBookingStatus()}).catch(e=>fail(e.message));
+</script></body></html>
