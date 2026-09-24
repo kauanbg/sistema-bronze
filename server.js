@@ -9,181 +9,341 @@ const mongoose = require('mongoose');
 const QRCode = require('qrcode');
 
 const app = express();
+
 const PORT = Number(process.env.PORT || 3000);
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const MONGO_URI = String(process.env.MONGO_URI || '').trim();
-const ADMIN_PASSWORD = String(process.env.ADMIN_PASSWORD || '').trim();
-const SESSION_SECRET = String(process.env.ADMIN_SESSION_SECRET || '').trim();
-const SESSION_TTL_SECONDS = Math.max(900, Number(process.env.ADMIN_SESSION_TTL_SECONDS || 8 * 60 * 60));
-const BOOKING_HOLD_MINUTES = Math.max(5, Number(process.env.BOOKING_HOLD_MINUTES || 20));
-const PIX_KEY = String(process.env.PIX_KEY || '21983237811').trim();
-const PIX_MERCHANT_NAME = String(process.env.PIX_MERCHANT_NAME || 'PAULUZZI BRONZE').trim();
-const PIX_CITY = String(process.env.PIX_CITY || 'RIO DE JANEIRO').trim();
-const PUBLIC_URL = String(process.env.PUBLIC_URL || '').trim().replace(/\/$/, '');
+
+const MONGO_URI = String(
+  process.env.MONGO_URI || ''
+).trim();
+
+const ADMIN_PASSWORD = String(
+  process.env.ADMIN_PASSWORD || ''
+).trim();
+
+const SESSION_SECRET = String(
+  process.env.ADMIN_SESSION_SECRET || ''
+).trim();
+
+const SESSION_TTL_SECONDS = Math.max(
+  900,
+  Number(
+    process.env.ADMIN_SESSION_TTL_SECONDS ||
+      8 * 60 * 60
+  )
+);
+
+const BOOKING_HOLD_MINUTES = Math.max(
+  5,
+  Number(
+    process.env.BOOKING_HOLD_MINUTES ||
+      20
+  )
+);
+
+const PIX_KEY = String(
+  process.env.PIX_KEY ||
+    '21983237811'
+).trim();
+
+const PIX_MERCHANT_NAME = String(
+  process.env.PIX_MERCHANT_NAME ||
+    'PAULUZZI BRONZE'
+).trim();
+
+const PIX_CITY = String(
+  process.env.PIX_CITY ||
+    'RIO DE JANEIRO'
+).trim();
+
+const PUBLIC_URL = String(
+  process.env.PUBLIC_URL || ''
+)
+  .trim()
+  .replace(/\/$/, '');
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      baseUri: ["'self'"],
-      objectSrc: ["'none'"],
-      frameAncestors: ["'none'"],
-      formAction: ["'self'"],
-      imgSrc: ["'self'", 'data:', 'blob:'],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"]
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+        formAction: ["'self'"],
+        imgSrc: [
+          "'self'",
+          'data:',
+          'blob:'
+        ],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'"
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'"
+        ]
+      }
+    },
+    referrerPolicy: {
+      policy:
+        'strict-origin-when-cross-origin'
     }
-  },
-  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
-}));
-
-app.use(express.json({ limit: '2.5mb' }));
-app.use(express.urlencoded({ extended: false, limit: '100kb' }));
-
-const publicLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: 120,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    erro: 'Muitas tentativas. Aguarde alguns minutos e tente novamente.'
-  }
-});
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    erro: 'Muitas tentativas de login. Aguarde alguns minutos.'
-  }
-});
-
-app.use(['/config', '/promocoes'], publicLimiter);
-app.use('/salvar', publicLimiter);
-app.use('/api/agendamentos', publicLimiter);
-app.use('/admin/login', authLimiter);
-
-const BUSINESS_HOURS = Object.freeze({
-  0: { inicio: '08:00', fim: '14:00', nome: 'Domingo' },
-  1: { fechado: true, nome: 'Segunda-feira' },
-  2: { inicio: '08:00', fim: '18:00', nome: 'Terça-feira' },
-  3: { inicio: '08:00', fim: '18:00', nome: 'Quarta-feira' },
-  4: { inicio: '08:00', fim: '19:00', nome: 'Quinta-feira' },
-  5: { inicio: '08:00', fim: '19:00', nome: 'Sexta-feira' },
-  6: { inicio: '08:00', fim: '19:00', nome: 'Sábado' }
-});
-
-const SERVICES = Object.freeze([
-  {
-    id: 'paredao-60',
-    nome: 'Paredão Duplo — 1 Hora',
-    categoria: 'Paredão',
-    preco: 39.99,
-    duracaoMinutos: 60
-  },
-  {
-    id: 'paredao-90',
-    nome: 'Paredão Duplo — 1h30',
-    categoria: 'Paredão',
-    preco: 49.99,
-    duracaoMinutos: 90
-  },
-  {
-    id: 'paredao-120',
-    nome: 'Paredão Duplo — 2 Horas',
-    categoria: 'Paredão',
-    preco: 59.99,
-    duracaoMinutos: 120
-  },
-  {
-    id: 'cabine-10',
-    nome: 'Cabine 360° Turbo — 10 Min',
-    categoria: 'Máquina Turbo',
-    preco: 89.99,
-    duracaoMinutos: 10
-  },
-  {
-    id: 'cabine-15',
-    nome: 'Cabine 360° Turbo — 15 Min',
-    categoria: 'Máquina Turbo',
-    preco: 119.99,
-    duracaoMinutos: 15
-  },
-  {
-    id: 'cabine-20',
-    nome: 'Cabine 360° Turbo — 20 Min',
-    categoria: 'Máquina Turbo',
-    preco: 134.99,
-    duracaoMinutos: 20
-  },
-  {
-    id: 'sol-60',
-    nome: 'Bronze Sol — 1 Hora',
-    categoria: 'Sol',
-    preco: 39.99,
-    duracaoMinutos: 0
-  },
-  {
-    id: 'sol-90',
-    nome: 'Bronze Sol — 1h30',
-    categoria: 'Sol',
-    preco: 49.99,
-    duracaoMinutos: 0
-  },
-  {
-    id: 'sol-livre',
-    nome: 'Bronze Sol — Tempo Livre',
-    categoria: 'Sol',
-    preco: 69.99,
-    duracaoMinutos: 0
-  },
-  {
-    id: 'banho-lua',
-    nome: 'Banho de Lua',
-    categoria: 'Sol',
-    preco: 24.99,
-    duracaoMinutos: 0
-  },
-  {
-    id: 'intensificador',
-    nome: 'Intensificador',
-    categoria: 'Sol',
-    preco: 29.99,
-    duracaoMinutos: 0
-  },
-  {
-    id: 'biquini',
-    nome: 'Apenas Montagem Biquíni',
-    categoria: 'Sol',
-    preco: 24.99,
-    duracaoMinutos: 0
-  },
-  {
-    id: 'cueca',
-    nome: 'Apenas Montagem Cueca',
-    categoria: 'Sol',
-    preco: 29.99,
-    duracaoMinutos: 0
-  },
-  {
-    id: 'decapagem',
-    nome: 'Decapagem',
-    categoria: 'Sol',
-    preco: 24.99,
-    duracaoMinutos: 0
-  }
-]);
-
-const serviceMap = new Map(
-  SERVICES.map((service) => [service.id, service])
+  })
 );
 
-let mongoAvailable = false;
+app.use(
+  express.json({
+    limit: '2.5mb'
+  })
+);
+
+app.use(
+  express.urlencoded({
+    extended: false,
+    limit: '100kb'
+  })
+);
+
+const publicLimiter =
+  rateLimit({
+    windowMs:
+      15 * 60 * 1000,
+    limit: 120,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+      erro:
+        'Muitas tentativas. Aguarde alguns minutos e tente novamente.'
+    }
+  });
+
+const authLimiter =
+  rateLimit({
+    windowMs:
+      15 * 60 * 1000,
+    limit: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+      erro:
+        'Muitas tentativas de login. Aguarde alguns minutos.'
+    }
+  });
+
+app.use(
+  [
+    '/config',
+    '/promocoes'
+  ],
+  publicLimiter
+);
+
+app.use(
+  '/salvar',
+  publicLimiter
+);
+
+app.use(
+  '/api/agendamentos',
+  publicLimiter
+);
+
+app.use(
+  '/admin/login',
+  authLimiter
+);
+
+const BUSINESS_HOURS =
+  Object.freeze({
+    0: {
+      inicio: '08:00',
+      fim: '14:00',
+      nome: 'Domingo'
+    },
+
+    1: {
+      fechado: true,
+      nome: 'Segunda-feira'
+    },
+
+    2: {
+      inicio: '08:00',
+      fim: '18:00',
+      nome: 'Terça-feira'
+    },
+
+    3: {
+      inicio: '08:00',
+      fim: '18:00',
+      nome: 'Quarta-feira'
+    },
+
+    4: {
+      inicio: '08:00',
+      fim: '19:00',
+      nome: 'Quinta-feira'
+    },
+
+    5: {
+      inicio: '08:00',
+      fim: '19:00',
+      nome: 'Sexta-feira'
+    },
+
+    6: {
+      inicio: '08:00',
+      fim: '19:00',
+      nome: 'Sábado'
+    }
+  });
+
+const SERVICES =
+  Object.freeze([
+    {
+      id: 'paredao-60',
+      nome:
+        'Paredão Duplo — 1 Hora',
+      categoria: 'Paredão',
+      preco: 39.99,
+      duracaoMinutos: 60
+    },
+
+    {
+      id: 'paredao-90',
+      nome:
+        'Paredão Duplo — 1h30',
+      categoria: 'Paredão',
+      preco: 49.99,
+      duracaoMinutos: 90
+    },
+
+    {
+      id: 'paredao-120',
+      nome:
+        'Paredão Duplo — 2 Horas',
+      categoria: 'Paredão',
+      preco: 59.99,
+      duracaoMinutos: 120
+    },
+
+    {
+      id: 'cabine-10',
+      nome:
+        'Cabine 360° Turbo — 10 Min',
+      categoria:
+        'Máquina Turbo',
+      preco: 89.99,
+      duracaoMinutos: 10
+    },
+
+    {
+      id: 'cabine-15',
+      nome:
+        'Cabine 360° Turbo — 15 Min',
+      categoria:
+        'Máquina Turbo',
+      preco: 119.99,
+      duracaoMinutos: 15
+    },
+
+    {
+      id: 'cabine-20',
+      nome:
+        'Cabine 360° Turbo — 20 Min',
+      categoria:
+        'Máquina Turbo',
+      preco: 134.99,
+      duracaoMinutos: 20
+    },
+
+    {
+      id: 'sol-60',
+      nome:
+        'Bronze Sol — 1 Hora',
+      categoria: 'Sol',
+      preco: 39.99,
+      duracaoMinutos: 0
+    },
+
+    {
+      id: 'sol-90',
+      nome:
+        'Bronze Sol — 1h30',
+      categoria: 'Sol',
+      preco: 49.99,
+      duracaoMinutos: 0
+    },
+
+    {
+      id: 'sol-livre',
+      nome:
+        'Bronze Sol — Tempo Livre',
+      categoria: 'Sol',
+      preco: 69.99,
+      duracaoMinutos: 0
+    },
+
+    {
+      id: 'banho-lua',
+      nome: 'Banho de Lua',
+      categoria: 'Sol',
+      preco: 24.99,
+      duracaoMinutos: 0
+    },
+
+    {
+      id: 'intensificador',
+      nome: 'Intensificador',
+      categoria: 'Sol',
+      preco: 29.99,
+      duracaoMinutos: 0
+    },
+
+    {
+      id: 'biquini',
+      nome:
+        'Apenas Montagem Biquíni',
+      categoria: 'Sol',
+      preco: 24.99,
+      duracaoMinutos: 0
+    },
+
+    {
+      id: 'cueca',
+      nome:
+        'Apenas Montagem Cueca',
+      categoria: 'Sol',
+      preco: 29.99,
+      duracaoMinutos: 0
+    },
+
+    {
+      id: 'decapagem',
+      nome: 'Decapagem',
+      categoria: 'Sol',
+      preco: 24.99,
+      duracaoMinutos: 0
+    }
+  ]);
+
+const serviceMap =
+  new Map(
+    SERVICES.map(
+      (service) => [
+        service.id,
+        service
+      ]
+    )
+  );
+
+let mongoAvailable =
+  false;
+
 let Promo = null;
 let Agendamento = null;
 
@@ -192,250 +352,303 @@ const memory = {
   agendamentos: []
 };
 
-const PromoSchema = new mongoose.Schema({
-  titulo: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 80
-  },
+const PromoSchema =
+  new mongoose.Schema({
+    titulo: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 80
+    },
 
-  descricao: {
-    type: String,
-    default: '',
-    trim: true,
-    maxlength: 500
-  },
+    descricao: {
+      type: String,
+      default: '',
+      trim: true,
+      maxlength: 500
+    },
 
-  valorTexto: {
-    type: String,
-    default: '',
-    trim: true,
-    maxlength: 120
-  },
+    valorTexto: {
+      type: String,
+      default: '',
+      trim: true,
+      maxlength: 120
+    },
 
-  foto: {
-    type: String,
-    default: '',
-    maxlength: 2_000_000
-  },
+    foto: {
+      type: String,
+      default: '',
+      maxlength: 2000000
+    },
 
-  preco: {
-    type: Number,
-    required: true,
-    min: 0
-  },
+    preco: {
+      type: Number,
+      required: true,
+      min: 0
+    },
 
-  categoria: {
-    type: String,
-    default: 'Paredão',
-    enum: ['Paredão', 'Máquina Turbo', 'Sol']
-  },
+    categoria: {
+      type: String,
+      default: 'Paredão',
+      enum: [
+        'Paredão',
+        'Máquina Turbo',
+        'Sol'
+      ]
+    },
 
-  duracaoMinutos: {
-    type: Number,
-    default: 60,
-    min: 0,
-    max: 240
-  },
+    duracaoMinutos: {
+      type: Number,
+      default: 60,
+      min: 0,
+      max: 240
+    },
 
-  horaFixa: {
-    type: String,
-    default: '',
-    trim: true,
-    maxlength: 5
-  },
+    horaFixa: {
+      type: String,
+      default: '',
+      trim: true,
+      maxlength: 5
+    },
 
-  diasNum: {
-    type: [String],
-    required: true,
-    default: []
-  },
+    diasNum: {
+      type: [String],
+      required: true,
+      default: []
+    },
 
-  dias: {
-    type: [String],
-    required: true,
-    default: []
-  },
+    dias: {
+      type: [String],
+      required: true,
+      default: []
+    },
 
-  ativa: {
-    type: Boolean,
-    default: true
-  },
+    ativa: {
+      type: Boolean,
+      default: true
+    },
 
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  });
 
-const AgendamentoSchema = new mongoose.Schema({
-  nome: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 100
-  },
+const AgendamentoSchema =
+  new mongoose.Schema({
+    nome: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100
+    },
 
-  telefone: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 15
-  },
+    telefone: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 15
+    },
 
-  servicoId: {
-    type: String,
-    required: true,
-    maxlength: 60
-  },
+    servicoId: {
+      type: String,
+      required: true,
+      maxlength: 60
+    },
 
-  tipo: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 100
-  },
+    tipo: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100
+    },
 
-  categoria: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 40
-  },
+    categoria: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 40
+    },
 
-  data: {
-    type: String,
-    required: true
-  },
+    data: {
+      type: String,
+      required: true
+    },
 
-  hora: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 30
-  },
+    hora: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 30
+    },
 
-  inicioMinutos: {
-    type: Number,
-    default: null
-  },
+    inicioMinutos: {
+      type: Number,
+      default: null
+    },
 
-  fimMinutos: {
-    type: Number,
-    default: null
-  },
+    fimMinutos: {
+      type: Number,
+      default: null
+    },
 
-  valor: {
-    type: Number,
-    required: true,
-    min: 0
-  },
+    valor: {
+      type: Number,
+      required: true,
+      min: 0
+    },
 
-  oculos: {
-    type: Boolean,
-    default: false
-  },
+    oculos: {
+      type: Boolean,
+      default: false
+    },
 
-  protetorSolar: {
-    type: String,
-    enum: ['local', 'proprio'],
-    default: 'local'
-  },
+    protetorSolar: {
+      type: String,
+      enum: [
+        'local',
+        'proprio'
+      ],
+      default: 'local'
+    },
 
-  observacao: {
-    type: String,
-    default: '',
-    trim: true,
-    maxlength: 200
-  },
+    observacao: {
+      type: String,
+      default: '',
+      trim: true,
+      maxlength: 200
+    },
 
-  promotionId: {
-    type: String,
-    default: ''
-  },
+    promotionId: {
+      type: String,
+      default: ''
+    },
 
-  status: {
-    type: String,
-    enum: [
-      'pagamento_pendente',
-      'pagamento_informado',
-      'confirmado',
-      'cancelado'
-    ],
-    default: 'pagamento_pendente'
-  },
+    status: {
+      type: String,
+      enum: [
+        'pagamento_pendente',
+        'pagamento_informado',
+        'confirmado',
+        'cancelado'
+      ],
+      default:
+        'pagamento_pendente'
+    },
 
-  checkoutToken: {
-    type: String,
-    default: '',
-    index: true
-  },
+    checkoutToken: {
+      type: String,
+      default: '',
+      index: true
+    },
 
-  expiresAt: {
-    type: Date,
-    default: null
-  },
+    expiresAt: {
+      type: Date,
+      default: null
+    },
 
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
 
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    }
+  });
 
-function clean(value, max = 200) {
-  return String(value ?? '')
+function clean(
+  value,
+  max = 200
+) {
+  return String(
+    value ?? ''
+  )
     .trim()
     .slice(0, max);
 }
 
-function normalizeMoney(value) {
-  const parsed = Number(value);
+function normalizeMoney(
+  value
+) {
+  const parsed =
+    Number(value);
 
-  if (!Number.isFinite(parsed)) {
+  if (
+    !Number.isFinite(
+      parsed
+    )
+  ) {
     return NaN;
   }
 
   return Math.round(
-    (parsed + Number.EPSILON) * 100
+    (parsed +
+      Number.EPSILON) *
+      100
   ) / 100;
 }
 
-function normalizePhone(value) {
-  const digits = String(value ?? '')
-    .replace(/\D/g, '');
+function normalizePhone(
+  value
+) {
+  const digits =
+    String(
+      value ?? ''
+    ).replace(
+      /\D/g,
+      ''
+    );
 
   if (
-    digits.startsWith('55') &&
+    digits.startsWith(
+      '55'
+    ) &&
     digits.length === 13
   ) {
-    return digits.slice(2);
+    return digits.slice(
+      2
+    );
   }
 
   return digits;
 }
 
-function validPhone(phone) {
-  return /^(?:\d{10}|\d{11})$/.test(phone);
+function validPhone(
+  phone
+) {
+  return /^(?:\d{10}|\d{11})$/.test(
+    phone
+  );
 }
 
-function isValidDateString(value) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+function isValidDateString(
+  value
+) {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(
+      value
+    )
+  ) {
     return false;
   }
 
-  const date = new Date(
-    `${value}T00:00:00`
-  );
+  const date =
+    new Date(
+      `${value}T00:00:00`
+    );
 
   return (
-    !Number.isNaN(date.getTime()) &&
-    date.toISOString().slice(0, 10) === value
+    !Number.isNaN(
+      date.getTime()
+    ) &&
+    date
+      .toISOString()
+      .slice(
+        0,
+        10
+      ) === value
   );
 }
 
@@ -443,12 +656,15 @@ function todayBrazil() {
   return new Intl.DateTimeFormat(
     'en-CA',
     {
-      timeZone: 'America/Sao_Paulo',
+      timeZone:
+        'America/Sao_Paulo',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
     }
-  ).format(new Date());
+  ).format(
+    new Date()
+  );
 }
 
 function nowBrazilMinutes() {
@@ -456,24 +672,33 @@ function nowBrazilMinutes() {
     new Intl.DateTimeFormat(
       'en-US',
       {
-        timeZone: 'America/Sao_Paulo',
+        timeZone:
+          'America/Sao_Paulo',
         hour: '2-digit',
         minute: '2-digit',
         hour12: false
       }
-    ).formatToParts(new Date());
+    ).formatToParts(
+      new Date()
+    );
 
-  const h = Number(
-    parts.find(
-      (x) => x.type === 'hour'
-    )?.value || 0
-  );
+  const h =
+    Number(
+      parts.find(
+        (x) =>
+          x.type ===
+          'hour'
+      )?.value || 0
+    );
 
-  const m = Number(
-    parts.find(
-      (x) => x.type === 'minute'
-    )?.value || 0
-  );
+  const m =
+    Number(
+      parts.find(
+        (x) =>
+          x.type ===
+          'minute'
+      )?.value || 0
+    );
 
   return h * 60 + m;
 }
@@ -489,9 +714,10 @@ function getBusinessDay(
     return null;
   }
 
-  const date = new Date(
-    `${dateString}T00:00:00`
-  );
+  const date =
+    new Date(
+      `${dateString}T00:00:00`
+    );
 
   return (
     BUSINESS_HOURS[
@@ -500,7 +726,9 @@ function getBusinessDay(
   );
 }
 
-function timeToMinutes(time) {
+function timeToMinutes(
+  time
+) {
   const match =
     /^(\d{2}):(\d{2})$/.exec(
       String(time)
@@ -510,13 +738,11 @@ function timeToMinutes(time) {
     return null;
   }
 
-  const hours = Number(
-    match[1]
-  );
+  const hours =
+    Number(match[1]);
 
-  const minutes = Number(
-    match[2]
-  );
+  const minutes =
+    Number(match[2]);
 
   if (
     hours > 23 ||
@@ -525,20 +751,37 @@ function timeToMinutes(time) {
     return null;
   }
 
-  return hours * 60 + minutes;
+  return (
+    hours * 60 +
+    minutes
+  );
 }
 
-function minutesToTime(total) {
+function minutesToTime(
+  total
+) {
   return `${String(
-    Math.floor(total / 60)
-  ).padStart(2, '0')}:${String(
+    Math.floor(
+      total / 60
+    )
+  ).padStart(
+    2,
+    '0'
+  )}:${String(
     total % 60
-  ).padStart(2, '0')}`;
+  ).padStart(
+    2,
+    '0'
+  )}`;
 }
 
-function getPromoById(id) {
+function getPromoById(
+  id
+) {
   if (!id) {
-    return Promise.resolve(null);
+    return Promise.resolve(
+      null
+    );
   }
 
   if (mongoAvailable) {
@@ -547,7 +790,9 @@ function getPromoById(id) {
         id
       )
     ) {
-      return Promise.resolve(null);
+      return Promise.resolve(
+        null
+      );
     }
 
     return Promo.findOne({
@@ -566,7 +811,9 @@ function getPromoById(id) {
   );
 }
 
-function publicPromo(promo) {
+function publicPromo(
+  promo
+) {
   if (!promo) {
     return null;
   }
@@ -575,12 +822,16 @@ function publicPromo(promo) {
     promo.categoria ||
     'Paredão';
 
-  const duration = Number(
-    promo.duracaoMinutos ??
-      (category === 'Paredão'
-        ? 60
-        : 0)
-  );
+  const duration =
+    Number(
+      promo.duracaoMinutos ??
+        (
+          category ===
+          'Paredão'
+            ? 60
+            : 0
+        )
+    );
 
   return {
     _id: String(
@@ -637,7 +888,9 @@ function publicPromo(promo) {
 }
 
 async function listPromos() {
-  if (mongoAvailable) {
+  if (
+    mongoAvailable
+  ) {
     const docs =
       await Promo.find({
         ativa: true
@@ -673,7 +926,9 @@ async function listPromos() {
 async function findBookingById(
   id
 ) {
-  if (mongoAvailable) {
+  if (
+    mongoAvailable
+  ) {
     if (
       !mongoose.isValidObjectId(
         id
@@ -699,8 +954,11 @@ async function findBookingById(
 }
 
 async function listBookings() {
-  if (mongoAvailable) {
-    return Agendamento.find()
+  if (
+    mongoAvailable
+  ) {
+    return Agendamento
+      .find()
       .sort({
         data: 1,
         hora: 1,
@@ -722,7 +980,9 @@ async function listBookings() {
 async function insertBooking(
   data
 ) {
-  if (mongoAvailable) {
+  if (
+    mongoAvailable
+  ) {
     return Agendamento.create(
       data
     );
@@ -731,9 +991,12 @@ async function insertBooking(
   const item = {
     _id:
       crypto.randomUUID(),
+
     ...data,
+
     createdAt:
       new Date(),
+
     updatedAt:
       new Date()
   };
@@ -749,7 +1012,9 @@ async function updateBooking(
   id,
   changes
 ) {
-  if (mongoAvailable) {
+  if (
+    mongoAvailable
+  ) {
     return Agendamento
       .findByIdAndUpdate(
         id,
@@ -793,7 +1058,9 @@ async function updateBooking(
 async function deleteBooking(
   id
 ) {
-  if (mongoAvailable) {
+  if (
+    mongoAvailable
+  ) {
     return Agendamento
       .findByIdAndDelete(
         id
@@ -810,7 +1077,9 @@ async function deleteBooking(
         String(id)
     );
 
-  if (index === -1) {
+  if (
+    index === -1
+  ) {
     return null;
   }
 
@@ -949,11 +1218,14 @@ async function validateManualBooking(
         );
 
   if (
-    cat === 'Paredão'
+    cat ===
+    'Paredão'
   ) {
     if (
-      duration < 60 ||
-      duration % 60 !== 0
+      duration <
+        60 ||
+      duration % 60 !==
+        0
     ) {
       throw new Error(
         'Paredão deve usar blocos de 60 minutos.'
@@ -966,8 +1238,10 @@ async function validateManualBooking(
     'Máquina Turbo'
   ) {
     if (
-      duration < 5 ||
-      duration % 5 !== 0
+      duration <
+        5 ||
+      duration % 5 !==
+        0
     ) {
       throw new Error(
         'Máquina Turbo deve usar múltiplos de 5 minutos.'
@@ -976,7 +1250,8 @@ async function validateManualBooking(
   }
 
   if (
-    cat === 'Sol'
+    cat ===
+    'Sol'
   ) {
     duration = 0;
   }
@@ -990,11 +1265,14 @@ async function validateManualBooking(
   const price =
     normalizeMoney(
       Number(
-        service.preco || 0
+        service.preco ||
+          0
       ) +
-        (finalOculos
-          ? 5
-          : 0)
+        (
+          finalOculos
+            ? 5
+            : 0
+        )
     );
 
   const start =
@@ -1032,7 +1310,8 @@ async function validateManualBooking(
   if (
     cat ===
       'Paredão' &&
-    start % 60 !== 0
+    start % 60 !==
+      0
   ) {
     throw new Error(
       'Paredão usa horários fechados de hora em hora.'
@@ -1042,7 +1321,8 @@ async function validateManualBooking(
   if (
     cat ===
       'Máquina Turbo' &&
-    start % 5 !== 0
+    start % 5 !==
+      0
   ) {
     throw new Error(
       'Máquina Turbo usa intervalos de 5 minutos.'
@@ -1063,7 +1343,8 @@ async function validateManualBooking(
   const conflict =
     await findConflict({
       data,
-      categoria: cat,
+      categoria:
+        cat,
       inicioMinutos:
         start,
       fimMinutos:
@@ -1107,8 +1388,7 @@ async function validateManualBooking(
     status:
       'confirmado',
     checkoutToken: '',
-    expiresAt:
-      null
+    expiresAt: null
   };
 }
 
@@ -1136,7 +1416,7 @@ function parsePromotionPayload(
   const foto =
     clean(
       body.foto,
-      2_000_000
+      2000000
     );
 
   const preco =
@@ -1158,10 +1438,12 @@ function parsePromotionPayload(
   const duracaoMinutos =
     Number(
       body.duracaoMinutos ??
-        (categoria ===
-        'Paredão'
-          ? 60
-          : 0)
+        (
+          categoria ===
+          'Paredão'
+            ? 60
+            : 0
+        )
     );
 
   const horaFixa =
@@ -1177,13 +1459,15 @@ function parsePromotionPayload(
       ? [
           ...new Set(
             body.diasNum
-              .map((d) =>
-                String(d)
+              .map(
+                (d) =>
+                  String(d)
               )
-              .filter((d) =>
-                /^[0-6]$/.test(
-                  d
-                )
+              .filter(
+                (d) =>
+                  /^[0-6]$/.test(
+                    d
+                  )
               )
           )
         ]
@@ -1324,7 +1608,8 @@ function parsePromotionPayload(
     Buffer.byteLength(
       foto,
       'utf8'
-    ) > 2_000_000
+    ) >
+    2000000
   ) {
     return {
       erro:
@@ -1381,55 +1666,61 @@ async function findConflict({
   fimMinutos
 }) {
   if (
-    categoria === 'Sol' &&
-    inicioMinutos == null
+    categoria ===
+      'Sol' &&
+    inicioMinutos ==
+      null
   ) {
     return null;
   }
 
-  const blockingStatuses = [
-    'pagamento_informado',
-    'confirmado',
-    'pagamento_pendente'
-  ];
+  const blockingStatuses =
+    [
+      'pagamento_informado',
+      'confirmado',
+      'pagamento_pendente'
+    ];
 
-  const isActive = (
-    item
-  ) => {
-    if (
-      !blockingStatuses.includes(
-        item.status ||
-          'pagamento_pendente'
-      )
-    ) {
-      return false;
-    }
+  const isActive =
+    (item) => {
+      if (
+        !blockingStatuses.includes(
+          item.status ||
+            'pagamento_pendente'
+        )
+      ) {
+        return false;
+      }
 
-    if (
-      item.status ===
-        'pagamento_pendente' &&
-      item.expiresAt &&
-      new Date(
-        item.expiresAt
-      ).getTime() <=
-        Date.now()
-    ) {
-      return false;
-    }
+      if (
+        item.status ===
+          'pagamento_pendente' &&
+        item.expiresAt &&
+        new Date(
+          item.expiresAt
+        ).getTime() <=
+          Date.now()
+      ) {
+        return false;
+      }
 
-    return true;
-  };
+      return true;
+    };
 
-  if (mongoAvailable) {
+  if (
+    mongoAvailable
+  ) {
     const candidates =
-      await Agendamento.find({
-        data,
-        categoria,
-        status: {
-          $in:
-            blockingStatuses
-        }
-      }).lean();
+      await Agendamento
+        .find({
+          data,
+          categoria,
+          status: {
+            $in:
+              blockingStatuses
+          }
+        })
+        .lean();
 
     return (
       candidates.find(
@@ -1857,7 +2148,9 @@ async function validateCheckout(
   const checkoutToken =
     crypto.randomBytes(
       32
-    ).toString('hex');
+    ).toString(
+      'hex'
+    );
 
   const expiresAt =
     new Date(
@@ -1870,34 +2163,49 @@ async function validateCheckout(
   return {
     nome,
     telefone,
+
     servicoId:
       service?.id ||
       `promo:${String(
         promo._id
       )}`,
+
     tipo:
       effectiveType,
+
     categoria:
       effectiveCategory,
+
     data,
+
     hora:
       normalizedHour,
+
     inicioMinutos,
     fimMinutos,
+
     valor:
       effectivePrice,
+
     oculos,
+
     protetorSolar,
-    observacao: '',
+
+    observacao:
+      '',
+
     promotionId:
       promo
         ? String(
             promo._id
           )
         : '',
+
     status:
       'pagamento_pendente',
+
     checkoutToken,
+
     expiresAt
   };
 }
@@ -1920,7 +2228,8 @@ function field(
 function crc16(
   payload
 ) {
-  let crc = 0xFFFF;
+  let crc =
+    0xFFFF;
 
   for (
     let i = 0;
@@ -1946,13 +2255,15 @@ function crc16(
         ) !== 0
           ? (
               (
-                crc << 1
+                crc <<
+                1
               ) ^
                 0x1021
             ) &
             0xFFFF
           : (
-              crc << 1
+              crc <<
+              1
             ) &
             0xFFFF;
     }
@@ -1974,7 +2285,9 @@ function generatePixBrCode(
   amount
 ) {
   let normalizedKey =
-    String(key).replace(
+    String(
+      key
+    ).replace(
       /\D/g,
       ''
     );
@@ -1999,19 +2312,25 @@ function generatePixBrCode(
 
   const payload = [
     '000201',
+
     field(
       '26',
       merchantAccount
     ),
+
     '52040000',
+
     '5303986',
+
     field(
       '54',
       normalizeMoney(
         amount
       ).toFixed(2)
     ),
+
     '5802BR',
+
     field(
       '59',
       String(name)
@@ -2021,6 +2340,7 @@ function generatePixBrCode(
         )
         .toUpperCase()
     ),
+
     field(
       '60',
       String(city)
@@ -2030,6 +2350,7 @@ function generatePixBrCode(
         )
         .toUpperCase()
     ),
+
     field(
       '62',
       field(
@@ -2037,19 +2358,23 @@ function generatePixBrCode(
         '***'
       )
     ),
+
     '6304'
   ].join('');
 
   return (
     payload +
-    crc16(payload)
+    crc16(
+      payload
+    )
   );
 }
 
 function parseCookies(
   header
 ) {
-  const cookies = {};
+  const cookies =
+    {};
 
   String(
     header || ''
@@ -2101,11 +2426,11 @@ function parseCookies(
 function base64url(
   value
 ) {
-  return Buffer.from(
-    value
-  ).toString(
-    'base64url'
-  );
+  return Buffer
+    .from(value)
+    .toString(
+      'base64url'
+    );
 }
 
 function signSession(
@@ -2225,9 +2550,11 @@ function setAdminCookie(
     `admin_session=${encodeURIComponent(
       token
     )}`,
+
     'Path=/',
     'HttpOnly',
     'SameSite=Lax',
+
     `Max-Age=${SESSION_TTL_SECONDS}`
   ];
 
@@ -2296,7 +2623,8 @@ function requireAdmin(
       });
   }
 
-  req.admin = session;
+  req.admin =
+    session;
 
   return next();
 }
@@ -2630,8 +2958,7 @@ app.post(
     );
 
     res.json({
-      ok:
-        true
+      ok: true
     });
   }
 );
@@ -2686,9 +3013,7 @@ app.post(
           );
 
         return res
-          .status(
-            201
-          )
+          .status(201)
           .json(
             publicPromo(
               promo
@@ -2711,9 +3036,7 @@ app.post(
       );
 
       return res
-        .status(
-          201
-        )
+        .status(201)
         .json(
           publicPromo(
             promo
@@ -2759,12 +3082,14 @@ async function deactivatePromotionById(
         _id: id,
         ativa: true
       },
+
       {
         $set: {
           ativa:
             false
         }
       },
+
       {
         new:
           true
@@ -2963,9 +3288,7 @@ app.post(
         saved.checkoutToken;
 
       return res
-        .status(
-          201
-        )
+        .status(201)
         .json({
           ok:
             true,
@@ -3341,9 +3664,7 @@ app.post(
         );
 
       return res
-        .status(
-          201
-        )
+        .status(201)
         .json({
           ok:
             true,
@@ -3672,7 +3993,9 @@ app.use(
 );
 
 async function connectDatabase() {
-  if (!MONGO_URI) {
+  if (
+    !MONGO_URI
+  ) {
     if (
       NODE_ENV ===
       'production'
