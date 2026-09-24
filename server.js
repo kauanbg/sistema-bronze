@@ -95,6 +95,8 @@ const memory = { promos: [], agendamentos: [] };
 
 const PromoSchema = new mongoose.Schema({
   titulo: { type: String, required: true, trim: true, maxlength: 80 },
+  descricao: { type: String, default: '', trim: true, maxlength: 500 },
+  valorTexto: { type: String, default: '', trim: true, maxlength: 120 },
   foto: { type: String, default: '', maxlength: 2_000_000 },
   preco: { type: Number, required: true, min: 0 },
   categoria: { type: String, default: 'Paredão', enum: ['Paredão', 'Máquina Turbo', 'Sol'] },
@@ -118,6 +120,8 @@ const AgendamentoSchema = new mongoose.Schema({
   fimMinutos: { type: Number, default: null },
   valor: { type: Number, required: true, min: 0 },
   oculos: { type: Boolean, default: false },
+  protetorSolar: { type: String, enum: ['local','proprio'], default: 'local' },
+  observacao: { type: String, default: '', trim: true, maxlength: 200 },
   promotionId: { type: String, default: '' },
   status: { type: String, enum: ['pagamento_pendente', 'pagamento_informado', 'confirmado', 'cancelado'], default: 'pagamento_pendente' },
   checkoutToken: { type: String, default: '', index: true },
@@ -198,6 +202,8 @@ function publicPromo(promo) {
   return {
     _id: String(promo._id),
     titulo: promo.titulo,
+    descricao: promo.descricao || '',
+    valorTexto: promo.valorTexto || '',
     foto: promo.foto || '',
     preco: normalizeMoney(promo.preco),
     categoria: category,
@@ -252,8 +258,82 @@ async function deleteBooking(id) {
   return memory.agendamentos.splice(index, 1)[0];
 }
 
+
+async function validateManualBooking(body) {
+  const nome=clean(body.nome,100).replace(/\s+/g,' ');
+  const telefone=normalizePhone(body.telefone);
+  const servicoId=clean(body.servicoId,60);
+  const data=clean(body.data,10);
+  const hora=clean(body.hora,10);
+  const oculos=Boolean(body.oculos);
+  const protetorSolar=['local','proprio'].includes(body.protetorSolar)?body.protetorSolar:'local';
+  const observacao=clean(body.observacao,200);
+  const requestedDuration=Number(body.duracaoMinutos);
+
+  if(nome.length<3)throw new Error('Digite o nome completo.');
+  if(!validPhone(telefone))throw new Error('Informe um WhatsApp válido.');
+  if(!isValidDateString(data))throw new Error('Data inválida.');
+
+  const service=serviceMap.get(servicoId);
+  if(!service)throw new Error('Serviço inválido.');
+
+  const day=getBusinessDay(data);
+  if(!day||day.fechado)throw new Error('A data escolhida está fechada.');
+
+  const cat=service.categoria;
+  let duration=Number.isFinite(requestedDuration)&&requestedDuration>0
+    ? requestedDuration
+    : Number(service.duracaoMinutos||0);
+
+  if(cat==='Paredão'){
+    if(duration<60||duration%60!==0)throw new Error('Paredão deve usar blocos de 60 minutos.');
+  }
+  if(cat==='Máquina Turbo'){
+    if(duration<5||duration%5!==0)throw new Error('Máquina Turbo deve usar múltiplos de 5 minutos.');
+  }
+  if(cat==='Sol'){
+    duration=0;
+  }
+
+  const finalOculos=cat==='Máquina Turbo'?true:oculos;
+  const price=normalizeMoney(Number(service.preco||0)+(finalOculos?5:0));
+
+  const start=timeToMinutes(hora);
+  if(start==null)throw new Error('Informe um horário válido.');
+
+  const open=timeToMinutes(day.inicio),close=timeToMinutes(day.fim);
+  if(start<open||start>=close)throw new Error('Horário fora do expediente.');
+  if(cat==='Paredão'&&start%60!==0)throw new Error('Paredão usa horários fechados de hora em hora.');
+  if(cat==='Máquina Turbo'&&start%5!==0)throw new Error('Máquina Turbo usa intervalos de 5 minutos.');
+  if(duration>0&&start+duration>close)throw new Error(`Esse horário ultrapassa o fechamento das ${day.fim}.`);
+
+  const conflict=await findConflict({
+    data,
+    categoria:cat,
+    inicioMinutos:start,
+    fimMinutos:duration>0?start+duration:start
+  });
+  if(conflict)throw new Error('Esse horário entra em conflito com outro agendamento.');
+
+  return {
+    nome,telefone,servicoId:service.id,tipo:service.nome,categoria:cat,data,hora,
+    inicioMinutos:start,
+    fimMinutos:duration>0?start+duration:start,
+    valor:price,
+    oculos:finalOculos,
+    protetorSolar,
+    observacao,
+    promotionId:'',
+    status:'confirmado',
+    checkoutToken:'',
+    expiresAt:null
+  };
+}
+
 function parsePromotionPayload(body) {
   const titulo = clean(body.titulo, 80);
+  const descricao = clean(body.descricao, 500);
+  const valorTexto = clean(body.valorTexto, 120);
   const foto = clean(body.foto, 2_000_000);
   const preco = normalizeMoney(body.preco);
   const categoria = ['Paredão', 'Máquina Turbo', 'Sol'].includes(body.categoria) ? body.categoria : '';
@@ -266,12 +346,15 @@ function parsePromotionPayload(body) {
   if (!Number.isFinite(preco) || preco <= 0 || preco > 9999) return { erro: 'Valor da promoção inválido.' };
   if (!categoria) return { erro: 'Selecione a categoria da promoção.' };
   if (!Number.isInteger(duracaoMinutos) || duracaoMinutos < 0 || duracaoMinutos > 240) return { erro: 'Duração da promoção inválida.' };
+  if (categoria === 'Paredão' && duracaoMinutos < 60) return { erro: 'Paredão deve ter pelo menos 60 minutos.' };
+  if (categoria === 'Paredão' && duracaoMinutos % 60 !== 0) return { erro: 'Paredão deve usar blocos de 60 minutos.' };
+  if (categoria === 'Máquina Turbo' && (duracaoMinutos < 5 || duracaoMinutos % 5 !== 0)) return { erro: 'Máquina Turbo deve usar múltiplos de 5 minutos.' };
   if (!diasNum.length) return { erro: 'Selecione pelo menos um dia da semana.' };
   if (horaFixa && timeToMinutes(horaFixa) == null) return { erro: 'O horário fixo deve estar no formato HH:MM.' };
   if (foto && !/^data:image\/(png|jpe?g|webp);base64,/i.test(foto)) return { erro: 'A imagem precisa ser PNG, JPG ou WebP em base64.' };
   if (foto && Buffer.byteLength(foto, 'utf8') > 2_000_000) return { erro: 'A imagem da promoção está muito grande.' };
 
-  return { titulo, foto, preco, categoria, duracaoMinutos, horaFixa, diasNum, dias, ativa: true };
+  return { titulo, descricao, valorTexto, foto, preco, categoria, duracaoMinutos, horaFixa, diasNum, dias, ativa: true };
 }
 
 function validateServiceOrPromotion(body, promo) {
@@ -312,7 +395,8 @@ async function validateCheckout(body) {
   const nome = clean(body.nome, 100).replace(/\s+/g, ' ');
   const telefone = normalizePhone(body.telefone);
   const data = clean(body.data, 10);
-  const oculos = Boolean(body.oculos);
+  const oculosRequested = Boolean(body.oculos);
+  const protetorSolar = ['local','proprio'].includes(body.protetorSolar) ? body.protetorSolar : 'local';
   const promotionId = clean(body.promotionId, 80);
   const hora = clean(body.hora, 30);
   const promo = await getPromoById(promotionId);
@@ -330,6 +414,7 @@ async function validateCheckout(body) {
 
   const effectiveCategory = promo ? (promo.categoria || 'Paredão') : service.categoria;
   const effectiveDuration = promo ? Number(promo.duracaoMinutos ?? (effectiveCategory === 'Paredão' ? 60 : 0)) : service.duracaoMinutos;
+  const oculos = effectiveCategory === 'Máquina Turbo' ? true : oculosRequested;
   const effectivePrice = normalizeMoney((promo ? promo.preco : service.preco) + (oculos ? 5 : 0));
   const effectiveType = promo ? promo.titulo : service.nome;
   const selectedDay = new Date(`${data}T00:00:00`).getDay();
@@ -352,7 +437,7 @@ async function validateCheckout(body) {
     if (start < open || start >= close) throw new Error('Horário fora do expediente.');
     if (data === today && start < nowBrazilMinutes()) throw new Error('Esse horário já passou hoje.');
     if (effectiveCategory === 'Paredão' && start % 60 !== 0) throw new Error('O Paredão trabalha em horários fechados de hora em hora.');
-    if (effectiveCategory === 'Máquina Turbo' && start % 20 !== 0) throw new Error('A Máquina Turbo trabalha em intervalos de 20 minutos.');
+    if (effectiveCategory === 'Máquina Turbo' && start % 5 !== 0) throw new Error('A Máquina Turbo trabalha em intervalos de 5 minutos.');
     if (promo?.horaFixa && hora !== promo.horaFixa) throw new Error('Esta promoção possui horário fixo.');
     if (effectiveDuration > 0 && start + effectiveDuration > close) throw new Error(`Esse horário ultrapassa o fechamento das ${day.fim}.`);
     normalizedHour = requested;
@@ -378,6 +463,8 @@ async function validateCheckout(body) {
     fimMinutos,
     valor: effectivePrice,
     oculos,
+    protetorSolar,
+    observacao: '',
     promotionId: promo ? String(promo._id) : '',
     status: 'pagamento_pendente',
     checkoutToken,
@@ -497,6 +584,8 @@ function bookingPublic(item, includeSecret = false) {
     hora: item.hora,
     valor: normalizeMoney(item.valor),
     oculos: Boolean(item.oculos),
+    protetorSolar: item.protetorSolar || 'local',
+    observacao: item.observacao || '',
     promotionId: item.promotionId || '',
     status: item.status || 'pagamento_pendente',
     expiresAt: item.expiresAt || null,
@@ -630,6 +719,17 @@ app.post('/api/agendamentos/:id/confirmar', async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ erro: 'Não foi possível registrar o pagamento informado.' });
+  }
+});
+
+app.post('/admin/agendamentos/manual', requireAdmin, async (req,res)=>{
+  try{
+    const normalized=await validateManualBooking(req.body||{});
+    const saved=await insertBooking(normalized);
+    return res.status(201).json({ok:true,agendamento:bookingPublic(saved)});
+  }catch(error){
+    console.error('[MANUAL]',error);
+    return res.status(400).json({erro:error.message||'Não foi possível criar o agendamento manual.'});
   }
 });
 
