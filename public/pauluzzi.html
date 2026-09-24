@@ -1,287 +1,3467 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#120f0c"><title>Administração — Pauluzzi Bronze</title>
-<style>:root{--bg:#0d0b09;--panel:#17130f;--panel2:#201912;--line:#3f3328;--gold:#e0b954;--gold2:#f5da8a;--pink:#ff6fb1;--green:#39d886;--red:#ff6f79;--blue:#74b5ff;--muted:#a79d94}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#312317,#0c0b09 58%);color:#fff;font-family:Inter,Segoe UI,Arial,sans-serif;padding:14px}.wrap{max-width:1240px;margin:0 auto}.login{max-width:430px;margin:9vh auto;background:rgba(23,19,15,.97);border:1px solid var(--line);border-radius:22px;padding:25px;box-shadow:0 25px 70px rgba(0,0,0,.4)}.brand{color:var(--gold2);font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;text-align:center}.login h1{text-align:center;margin:7px 0}.muted{color:var(--muted);font-size:12px;line-height:1.5}.input,.select{width:100%;height:46px;border:1px solid #4b4036;background:#100f0d;color:#fff;border-radius:11px;padding:0 12px;font:inherit;outline:none}.input:focus,.select:focus{border-color:var(--gold)}.btn{border:1px solid transparent;border-radius:11px;height:44px;padding:0 14px;font-weight:900;cursor:pointer;font-size:12px}.primary{background:linear-gradient(135deg,#edca6f,#c89431);color:#21170b}.ghost{background:#211b16;color:#fff;border-color:#4b3e32}.danger{background:#321b1e;color:#ffb2b8;border-color:#5c2b32}.success{background:#173326;color:#a8efc1;border-color:#2c6f48}.login .btn{width:100%;margin-top:10px}.dash{display:none}.top{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding:9px 0 18px}.top h1{margin:6px 0 3px;font-size:30px}.actions{display:flex;gap:8px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px}.stat{background:rgba(23,19,15,.96);border:1px solid var(--line);border-radius:16px;padding:14px}.stat small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.07em}.stat strong{display:block;font-size:25px;margin-top:5px;color:var(--gold2)}.grid{display:grid;grid-template-columns:390px 1fr;gap:15px;align-items:start}.card{background:rgba(23,19,15,.96);border:1px solid var(--line);border-radius:20px;padding:17px;box-shadow:0 18px 50px rgba(0,0,0,.22)}.card h2{font-size:18px;margin:0 0 7px}.field{margin:12px 0}.field label{display:block;font-size:11px;font-weight:900;margin-bottom:6px;color:#e8dfd8}.checks{display:flex;flex-wrap:wrap;gap:6px}.checks label{display:flex;align-items:center;gap:6px;background:#251f19;border:1px solid #3b3026;border-radius:999px;padding:8px 10px;font-size:11px;cursor:pointer}.checks input{accent-color:var(--pink)}.preview{display:none;width:100%;height:auto;max-width:100%;max-height:none;margin-top:8px;border-radius:12px;object-fit:contain}.hint{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.5}.table-wrap{overflow:auto}.filters{display:grid;grid-template-columns:1fr 170px;gap:8px;margin:12px 0}.table{width:100%;border-collapse:collapse;min-width:800px}.table th,.table td{padding:10px 8px;border-bottom:1px solid #302820;text-align:left;font-size:11px;vertical-align:top}.table th{font-size:10px;color:var(--gold2);text-transform:uppercase;letter-spacing:.06em}.tag{display:inline-flex;align-items:center;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900}.pending{background:#332a1b;color:#f4d384}.informed{background:#173326;color:#a9edc2}.confirmed{background:#183252;color:#a8d5ff}.cancelled{background:#391c21;color:#ffb9c0}.row-actions{display:flex;gap:5px;flex-wrap:wrap}.row-actions .btn{height:32px;padding:0 9px;font-size:10px}.promo-list{display:grid;gap:8px;margin-top:12px}.promo-line{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#211b16;border:1px solid #342b24;border-radius:12px;padding:10px}.promo-line strong{font-size:12px}.promo-line small{display:block;color:var(--muted);font-size:10px;margin-top:2px}.photo-note{padding:9px 10px;border:1px dashed #4a3e34;color:var(--muted);border-radius:10px;font-size:10px;margin-top:7px}.empty{padding:20px;text-align:center;color:var(--muted);font-size:12px}@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}@media(max-width:600px){
-html,body{width:100%;max-width:100%;overflow-x:hidden}
-body{padding:10px 10px calc(18px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
-.top{align-items:flex-start;flex-direction:column;gap:12px}
-.top h1{font-size:25px;line-height:1.1}
-.actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.actions .btn{width:100%;min-height:48px}
-.stats{grid-template-columns:1fr 1fr;gap:8px}
-.stat{padding:12px;border-radius:14px}
-.stat strong{font-size:21px}
-.filters{grid-template-columns:1fr;gap:8px}
-.grid{gap:10px}
-.card{padding:14px;border-radius:17px}
-.input,.select{height:50px;font-size:16px}
-.btn{min-height:46px;font-size:12px;touch-action:manipulation}
-.grid2{grid-template-columns:1fr}
-.check{min-height:48px}
-.preview{max-height:none}
-.promo-line{align-items:flex-start;flex-direction:column}
-.promo-line .btn{width:100%}
-.login{width:100%;margin:10vh auto;padding:19px;border-radius:18px}
-}
-@media(max-width:700px){
-.table-wrap{overflow:visible}
-.table{min-width:0;width:100%;border-collapse:separate;border-spacing:0}
-.table thead{display:none}
-.table,.table tbody,.table tr,.table td{display:block;width:100%}
-.table tr{margin-bottom:12px;padding:8px 10px;background:#211b16;border:1px solid var(--line);border-radius:14px}
-.table td{border:0;border-bottom:1px solid #302820;padding:8px 2px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;text-align:right}
-.table td::before{color:var(--gold2);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;flex:0 0 86px;text-align:left}
-.table td:nth-child(1)::before{content:"Cliente"}
-.table td:nth-child(2)::before{content:"Serviço"}
-.table td:nth-child(3)::before{content:"Data / hora"}
-.table td:nth-child(4)::before{content:"Valor"}
-.table td:nth-child(5)::before{content:"Status"}
-.table td:nth-child(6)::before{content:"Ações"}
-.table td:last-child{border-bottom:0;display:block;padding-top:10px}
-.table td:last-child::before{display:block;margin-bottom:7px}
-.row-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.row-actions .btn{width:100%;min-height:42px}
-.row-actions .btn:last-child{grid-column:1/-1}
-}
-button,a,input,select{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-input,select,button{font-size:16px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.check{display:flex;align-items:center;gap:8px;background:#211b16;border:1px solid #3b3027;padding:10px 12px;border-radius:12px;font-size:11px}.check input{accent-color:var(--pink)}.promo-line img{width:100%;height:auto;object-fit:contain}@media(max-width:720px){.grid2{grid-template-columns:1fr}}.promo-description{margin-top:6px;color:#d9cfc4;font-size:10px;line-height:1.5;white-space:pre-wrap}
-.photo-open{display:block;border:0;background:none;padding:0;cursor:zoom-in}
-.promo-line{align-items:flex-start}
-.promo-main{display:flex;gap:10px;align-items:flex-start;min-width:0}
-.promo-photo-thumb{width:76px;height:76px;object-fit:contain;border-radius:10px;border:1px solid #493e33;background:#100f0d;cursor:zoom-in;flex:0 0 76px}
-.preview{cursor:zoom-in}
-.photo-viewer{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.88)}
-.photo-viewer.show{display:flex}
-.photo-viewer img{display:block;max-width:96vw;max-height:90vh;width:auto;height:auto;object-fit:contain;border-radius:14px;box-shadow:0 25px 80px rgba(0,0,0,.65)}
-.photo-viewer-close{position:fixed;top:14px;right:14px;width:46px;height:46px;border:1px solid #5a4a3c;border-radius:50%;background:#19140f;color:#fff;font-size:24px;cursor:pointer}
-.photo-viewer-hint{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);color:#ddd;font-size:12px;background:rgba(20,16,12,.85);padding:8px 12px;border-radius:999px;white-space:nowrap}
-@media(max-width:560px){.row-actions{display:grid;grid-template-columns:1fr 1fr 1fr;width:100%}.row-actions .btn{width:100%}.promo-line{flex-direction:column}.promo-line>.btn{width:100%}.promo-main{width:100%}.promo-photo-thumb{width:70px;height:70px;flex-basis:70px}.photo-viewer{padding:8px}.photo-viewer img{max-width:98vw;max-height:84vh}.photo-viewer-hint{max-width:90vw;overflow:hidden;text-overflow:ellipsis}}
-.admin-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:1100;display:none;max-width:min(92vw,420px);padding:12px 16px;border-radius:12px;background:#173626;border:1px solid #34754d;color:#d5ffe1;font-size:12px;font-weight:800;text-align:center;box-shadow:0 15px 45px rgba(0,0,0,.35)}.admin-toast.show{display:block}@media(max-width:600px){.admin-toast{bottom:calc(14px + env(safe-area-inset-bottom));width:92vw}}
-</style></head>
-<body><main class="wrap"><section class="login" id="login"><div class="brand">☀️ Pauluzzi Bronze</div><h1>Acesso administrativo</h1><p class="muted" style="text-align:center">A sessão é criada pelo servidor e armazenada em cookie HttpOnly. A senha não fica no JavaScript.</p><form id="loginForm"><input class="input" id="senha" type="password" autocomplete="current-password" placeholder="Senha administrativa" required><button class="btn primary">Entrar no painel</button></form></section>
-<section class="dash" id="dash"><header class="top"><div><div class="brand" style="text-align:left">☀️ Pauluzzi Bronze</div><h1>Painel administrativo</h1><div class="muted">Controle de promoções, horários e pagamentos.</div></div><div class="actions"><button class="btn ghost" id="refresh">↻ Atualizar</button><button class="btn danger" id="logout">Sair</button></div></header>
-<div class="stats"><div class="stat"><small>Agendamentos</small><strong id="sTotal">0</strong></div><div class="stat"><small>Pagamento informado</small><strong id="sInformed">0</strong></div><div class="stat"><small>Confirmados</small><strong id="sConfirmed">0</strong></div><div class="stat"><small>Valor confirmado</small><strong id="sRevenue">R$ 0,00</strong></div></div>
-<div class="grid"><div><section class="card"><h2>Nova promoção</h2><div class="muted">A imagem é otimizada no navegador antes do envio.</div><form id="promoForm"><div class="field"><label>Título</label><input class="input" id="titulo" maxlength="80" placeholder="Ex.: Combo Bronze" required></div>
-<div class="field"><label>Descrição / especificação da promoção</label><textarea class="input" id="descricao" maxlength="500" rows="3" style="height:auto;padding:10px 12px;resize:vertical" placeholder="Ex.: 60 min na Turbo + 5 min no Paredão"></textarea><div class="hint">Texto livre. Você pode escrever combinações e especificações da promoção.</div></div>
-<div class="field"><label>Texto junto do valor (opcional)</label><input class="input" id="valorTexto" maxlength="120" placeholder="Ex.: combo completo / por pessoa"></div>
-<div class="field"><label>Categoria</label><select class="select" id="categoria"><option>Paredão</option><option>Máquina Turbo</option><option>Sol</option></select></div><div class="field"><label>Preço</label><input class="input" id="preco" type="number" min="0.01" max="9999" step="0.01" placeholder="59.99" required></div><div class="field"><label>Duração (minutos)</label><input class="input" id="duracao" type="number" min="0" max="240" step="1" value="60"><div class="hint">Use 0 em promoções sem reserva de duração, como ordem de chegada.</div></div><div class="field"><label>Horário fixo (opcional)</label><input class="input" id="horaFixa" maxlength="5" placeholder="08:00"></div><div class="field"><label>Dias válidos</label><div class="checks"><label><input type="checkbox" name="dia" value="0">Dom</label><label><input type="checkbox" name="dia" value="1">Seg</label><label><input type="checkbox" name="dia" value="2">Ter</label><label><input type="checkbox" name="dia" value="3">Qua</label><label><input type="checkbox" name="dia" value="4">Qui</label><label><input type="checkbox" name="dia" value="5">Sex</label><label><input type="checkbox" name="dia" value="6">Sáb</label></div></div><div class="field"><label>Imagem</label><input class="input" id="foto" type="file" accept="image/png,image/jpeg,image/webp"><img class="preview" id="preview" alt="Prévia da promoção"><div class="photo-note">Prefira imagens de até aproximadamente 1 MB.</div></div><button class="btn primary" style="width:100%">Salvar promoção</button></form></section><section class="card" style="margin-top:15px"><h2>Promoções ativas</h2><div id="promoList" class="promo-list"></div></section></div>
+<html lang="pt-BR">
 
-<section class="card" style="margin-bottom:15px">
-<h2>Agendamento manual</h2>
-<div class="muted">Use quando o cliente não conseguir pagar pelo Pix e combinar pagamento em dinheiro. O agendamento entra diretamente como <strong>Confirmado</strong>.</div>
-<form id="manualForm" style="margin-top:12px">
-  <div class="grid2">
-    <div class="field"><label>Nome</label><input class="input" id="manualNome" maxlength="100" required></div>
-    <div class="field"><label>WhatsApp</label><input class="input" id="manualTelefone" maxlength="20" required></div>
-  </div>
-  <div class="grid2">
-    <div class="field"><label>Serviço</label><select class="select" id="manualServico" required></select></div>
-    <div class="field"><label>Data</label><input class="input" id="manualData" type="date" required></div>
-  </div>
-  <div class="grid2">
-    <div class="field"><label>Horário</label><input class="input" id="manualHora" type="time" required></div>
-    <div class="field"><label>Duração (minutos)</label><input class="input" id="manualDuracao" type="number" min="5" max="240" step="5" value="60" required></div>
-  </div>
-  <label class="check"><input type="checkbox" id="manualOculos"><b id="manualOculosText">👓 Óculos (+ R$ 5,00)</b></label>
-  <div class="hint" id="manualOculosHint">Opcional nos demais serviços. Você pode trazer o seu.</div>
-  <div class="field"><label>Protetor solar</label>
-    <select class="select" id="manualProtetor">
-      <option value="local">Comprar no local</option>
-      <option value="proprio">Vou trazer o meu</option>
-    </select>
-    <div class="hint">Obrigatório para o atendimento. Você pode trazer o seu ou comprar no local.</div>
-  </div>
-  <div class="field"><label>Observação</label><input class="input" id="manualObs" maxlength="200" placeholder="Ex.: pagamento em dinheiro"></div>
-  <button class="btn primary" style="width:100%">Adicionar à agenda manualmente</button>
-  <div class="muted" id="manualMsg" style="margin-top:8px"></div>
-</form>
-</section>
-<section class="card"><h2>Agendamentos</h2><div class="muted">“Pagamento informado” significa que o cliente avisou que pagou. “Confirmado” é o status definido pelo atendimento após conferir o Pix.</div><div class="filters"><input class="input" id="busca" placeholder="Pesquisar por nome, telefone ou serviço"><select class="select" id="filtro"><option value="todos">Todos os status</option><option value="pagamento_pendente">Pagamento pendente</option><option value="pagamento_informado">Pagamento informado</option><option value="confirmado">Confirmado</option><option value="cancelado">Cancelado</option></select></div><div class="table-wrap"><table class="table"><thead><tr><th>Cliente</th><th>Serviço</th><th>Data / hora</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead><tbody id="bookingTable"></tbody></table></div></section></div></section></main>
-<div class="photo-viewer" id="photoViewer" aria-hidden="true">
-  <button type="button" class="photo-viewer-close" id="photoViewerClose" aria-label="Fechar imagem">×</button>
-  <img id="photoViewerImg" alt="Visualização da promoção">
-  <div class="photo-viewer-hint">Toque fora da imagem ou no × para fechar</div>
+<head>
+
+<meta charset="utf-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1,viewport-fit=cover"
+>
+
+<meta
+name="theme-color"
+content="#120f0c"
+>
+
+<title>
+Administração — Pauluzzi Bronze
+</title>
+
+<style>
+
+:root{
+--bg:#0d0b09;
+--panel:#17130f;
+--panel2:#201912;
+--line:#3f3328;
+--gold:#e0b954;
+--gold2:#f5da8a;
+--pink:#ff6fb1;
+--green:#39d886;
+--red:#ff6f79;
+--blue:#74b5ff;
+--muted:#a79d94
+}
+
+*{
+box-sizing:border-box
+}
+
+body{
+margin:0;
+background:radial-gradient(circle at top,#312317,#0c0b09 58%);
+color:#fff;
+font-family:Inter,Segoe UI,Arial,sans-serif;
+padding:14px
+}
+
+.wrap{
+max-width:1240px;
+margin:0 auto
+}
+
+.login{
+max-width:430px;
+margin:9vh auto;
+background:rgba(23,19,15,.97);
+border:1px solid var(--line);
+border-radius:22px;
+padding:25px;
+box-shadow:0 25px 70px rgba(0,0,0,.4)
+}
+
+.brand{
+color:var(--gold2);
+font-size:12px;
+font-weight:900;
+letter-spacing:.14em;
+text-transform:uppercase;
+text-align:center
+}
+
+.login h1{
+text-align:center;
+margin:7px 0
+}
+
+.muted{
+color:var(--muted);
+font-size:12px;
+line-height:1.5
+}
+
+.input,
+.select{
+width:100%;
+height:46px;
+border:1px solid #4b4036;
+background:#100f0d;
+color:#fff;
+border-radius:11px;
+padding:0 12px;
+font:inherit;
+outline:none
+}
+
+.input:focus,
+.select:focus{
+border-color:var(--gold)
+}
+
+.btn{
+border:1px solid transparent;
+border-radius:11px;
+height:44px;
+padding:0 14px;
+font-weight:900;
+cursor:pointer;
+font-size:12px
+}
+
+.primary{
+background:linear-gradient(135deg,#edca6f,#c89431);
+color:#21170b
+}
+
+.ghost{
+background:#211b16;
+color:#fff;
+border-color:#4b3e32
+}
+
+.danger{
+background:#321b1e;
+color:#ffb2b8;
+border-color:#5c2b32
+}
+
+.success{
+background:#173326;
+color:#a8efc1;
+border-color:#2c6f48
+}
+
+.login .btn{
+width:100%;
+margin-top:10px
+}
+
+.dash{
+display:none
+}
+
+.top{
+display:flex;
+justify-content:space-between;
+align-items:flex-end;
+gap:18px;
+padding:9px 0 18px
+}
+
+.top h1{
+margin:6px 0 3px;
+font-size:30px
+}
+
+.actions{
+display:flex;
+gap:8px
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+margin-bottom:15px
+}
+
+.stat{
+background:rgba(23,19,15,.96);
+border:1px solid var(--line);
+border-radius:16px;
+padding:14px
+}
+
+.stat small{
+display:block;
+color:var(--muted);
+font-size:10px;
+text-transform:uppercase;
+letter-spacing:.07em
+}
+
+.stat strong{
+display:block;
+font-size:25px;
+margin-top:5px;
+color:var(--gold2)
+}
+
+.grid{
+display:grid;
+grid-template-columns:390px 1fr;
+gap:15px;
+align-items:start
+}
+
+.card{
+background:rgba(23,19,15,.96);
+border:1px solid var(--line);
+border-radius:20px;
+padding:17px;
+box-shadow:0 18px 50px rgba(0,0,0,.22)
+}
+
+.card h2{
+font-size:18px;
+margin:0 0 7px
+}
+
+.field{
+margin:12px 0
+}
+
+.field label{
+display:block;
+font-size:11px;
+font-weight:900;
+margin-bottom:6px;
+color:#e8dfd8
+}
+
+.checks{
+display:flex;
+flex-wrap:wrap;
+gap:6px
+}
+
+.checks label{
+display:flex;
+align-items:center;
+gap:6px;
+background:#251f19;
+border:1px solid #3b3026;
+border-radius:999px;
+padding:8px 10px;
+font-size:11px;
+cursor:pointer
+}
+
+.checks input{
+accent-color:var(--pink)
+}
+
+.preview{
+display:none;
+width:100%;
+height:auto;
+max-width:100%;
+max-height:none;
+margin-top:8px;
+border-radius:12px;
+object-fit:contain
+}
+
+.hint{
+font-size:10px;
+color:var(--muted);
+margin-top:5px;
+line-height:1.5
+}
+
+.table-wrap{
+overflow:auto
+}
+
+.filters{
+display:grid;
+grid-template-columns:1fr 170px;
+gap:8px;
+margin:12px 0
+}
+
+.table{
+width:100%;
+border-collapse:collapse;
+min-width:800px
+}
+
+.table th,
+.table td{
+padding:10px 8px;
+border-bottom:1px solid #302820;
+text-align:left;
+font-size:11px;
+vertical-align:top
+}
+
+.table th{
+font-size:10px;
+color:var(--gold2);
+text-transform:uppercase;
+letter-spacing:.06em
+}
+
+.tag{
+display:inline-flex;
+align-items:center;
+border-radius:999px;
+padding:5px 8px;
+font-size:10px;
+font-weight:900
+}
+
+.pending{
+background:#332a1b;
+color:#f4d384
+}
+
+.informed{
+background:#173326;
+color:#a9edc2
+}
+
+.confirmed{
+background:#183252;
+color:#a8d5ff
+}
+
+.cancelled{
+background:#391c21;
+color:#ffb9c0
+}
+
+.row-actions{
+display:flex;
+gap:5px;
+flex-wrap:wrap
+}
+
+.row-actions .btn{
+height:32px;
+padding:0 9px;
+font-size:10px
+}
+
+.promo-list{
+display:grid;
+gap:8px;
+margin-top:12px
+}
+
+.promo-line{
+display:flex;
+justify-content:space-between;
+gap:8px;
+align-items:center;
+background:#211b16;
+border:1px solid #342b24;
+border-radius:12px;
+padding:10px
+}
+
+.promo-line strong{
+font-size:12px
+}
+
+.promo-line small{
+display:block;
+color:var(--muted);
+font-size:10px;
+margin-top:2px
+}
+
+.photo-note{
+padding:9px 10px;
+border:1px dashed #4a3e34;
+color:var(--muted);
+border-radius:10px;
+font-size:10px;
+margin-top:7px
+}
+
+.empty{
+padding:20px;
+text-align:center;
+color:var(--muted);
+font-size:12px
+}
+
+@media(max-width:1000px){
+
+.stats{
+grid-template-columns:repeat(2,1fr)
+}
+
+.grid{
+grid-template-columns:1fr
+}
+
+}
+
+@media(max-width:600px){
+
+html,
+body{
+width:100%;
+max-width:100%;
+overflow-x:hidden
+}
+
+body{
+padding:10px 10px calc(18px + env(safe-area-inset-bottom));
+-webkit-tap-highlight-color:transparent
+}
+
+.top{
+align-items:flex-start;
+flex-direction:column;
+gap:12px
+}
+
+.top h1{
+font-size:25px;
+line-height:1.1
+}
+
+.actions{
+width:100%;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px
+}
+
+.actions .btn{
+width:100%;
+min-height:48px
+}
+
+.stats{
+grid-template-columns:1fr 1fr;
+gap:8px
+}
+
+.stat{
+padding:12px;
+border-radius:14px
+}
+
+.stat strong{
+font-size:21px
+}
+
+.filters{
+grid-template-columns:1fr;
+gap:8px
+}
+
+.grid{
+gap:10px
+}
+
+.card{
+padding:14px;
+border-radius:17px
+}
+
+.input,
+.select{
+height:50px;
+font-size:16px
+}
+
+.btn{
+min-height:46px;
+font-size:12px;
+touch-action:manipulation
+}
+
+.grid2{
+grid-template-columns:1fr
+}
+
+.check{
+min-height:48px
+}
+
+.preview{
+max-height:none
+}
+
+.promo-line{
+align-items:flex-start;
+flex-direction:column
+}
+
+.promo-line .btn{
+width:100%
+}
+
+.login{
+width:100%;
+margin:10vh auto;
+padding:19px;
+border-radius:18px
+}
+
+}
+
+@media(max-width:700px){
+
+.table-wrap{
+overflow:visible
+}
+
+.table{
+min-width:0;
+width:100%;
+border-collapse:separate;
+border-spacing:0
+}
+
+.table thead{
+display:none
+}
+
+.table,
+.table tbody,
+.table tr,
+.table td{
+display:block;
+width:100%
+}
+
+.table tr{
+margin-bottom:12px;
+padding:8px 10px;
+background:#211b16;
+border:1px solid var(--line);
+border-radius:14px
+}
+
+.table td{
+border:0;
+border-bottom:1px solid #302820;
+padding:8px 2px;
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:12px;
+text-align:right
+}
+
+.table td::before{
+color:var(--gold2);
+font-size:9px;
+font-weight:900;
+text-transform:uppercase;
+letter-spacing:.05em;
+flex:0 0 86px;
+text-align:left
+}
+
+.table td:nth-child(1)::before{
+content:"Cliente"
+}
+
+.table td:nth-child(2)::before{
+content:"Serviço"
+}
+
+.table td:nth-child(3)::before{
+content:"Data / hora"
+}
+
+.table td:nth-child(4)::before{
+content:"Valor"
+}
+
+.table td:nth-child(5)::before{
+content:"Status"
+}
+
+.table td:nth-child(6)::before{
+content:"Ações"
+}
+
+.table td:last-child{
+border-bottom:0;
+display:block;
+padding-top:10px
+}
+
+.table td:last-child::before{
+display:block;
+margin-bottom:7px
+}
+
+.row-actions{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:6px
+}
+
+.row-actions .btn{
+width:100%;
+min-height:42px
+}
+
+.row-actions .btn:last-child{
+grid-column:1/-1
+}
+
+}
+
+button,
+a,
+input,
+select{
+touch-action:manipulation;
+-webkit-tap-highlight-color:transparent
+}
+
+input,
+select,
+button{
+font-size:16px
+}
+
+.grid2{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px
+}
+
+.check{
+display:flex;
+align-items:center;
+gap:8px;
+background:#211b16;
+border:1px solid #3b3027;
+padding:10px 12px;
+border-radius:12px;
+font-size:11px
+}
+
+.check input{
+accent-color:var(--pink)
+}
+
+.promo-line img{
+width:100%;
+height:auto;
+object-fit:contain
+}
+
+@media(max-width:720px){
+.grid2{
+grid-template-columns:1fr
+}
+}
+
+.promo-description{
+margin-top:6px;
+color:#d9cfc4;
+font-size:10px;
+line-height:1.5;
+white-space:pre-wrap
+}
+
+.photo-open{
+display:block;
+border:0;
+background:none;
+padding:0;
+cursor:zoom-in
+}
+
+.promo-line{
+align-items:flex-start
+}
+
+.promo-main{
+display:flex;
+gap:10px;
+align-items:flex-start;
+min-width:0
+}
+
+.promo-photo-thumb{
+width:76px;
+height:76px;
+object-fit:contain;
+border-radius:10px;
+border:1px solid #493e33;
+background:#100f0d;
+cursor:zoom-in;
+flex:0 0 76px
+}
+
+.preview{
+cursor:zoom-in
+}
+
+.photo-viewer{
+position:fixed;
+inset:0;
+z-index:1000;
+display:none;
+align-items:center;
+justify-content:center;
+padding:16px;
+background:rgba(0,0,0,.88)
+}
+
+.photo-viewer.show{
+display:flex
+}
+
+.photo-viewer img{
+display:block;
+max-width:96vw;
+max-height:90vh;
+width:auto;
+height:auto;
+object-fit:contain;
+border-radius:14px;
+box-shadow:0 25px 80px rgba(0,0,0,.65)
+}
+
+.photo-viewer-close{
+position:fixed;
+top:14px;
+right:14px;
+width:46px;
+height:46px;
+border:1px solid #5a4a3c;
+border-radius:50%;
+background:#19140f;
+color:#fff;
+font-size:24px;
+cursor:pointer
+}
+
+.photo-viewer-hint{
+position:fixed;
+bottom:12px;
+left:50%;
+transform:translateX(-50%);
+color:#ddd;
+font-size:12px;
+background:rgba(20,16,12,.85);
+padding:8px 12px;
+border-radius:999px;
+white-space:nowrap
+}
+
+@media(max-width:560px){
+
+.row-actions{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+width:100%
+}
+
+.row-actions .btn{
+width:100%
+}
+
+.promo-line{
+flex-direction:column
+}
+
+.promo-line>.btn{
+width:100%
+}
+
+.promo-main{
+width:100%
+}
+
+.promo-photo-thumb{
+width:70px;
+height:70px;
+flex-basis:70px
+}
+
+.photo-viewer{
+padding:8px
+}
+
+.photo-viewer img{
+max-width:98vw;
+max-height:84vh
+}
+
+.photo-viewer-hint{
+max-width:90vw;
+overflow:hidden;
+text-overflow:ellipsis
+}
+
+}
+
+.admin-toast{
+position:fixed;
+left:50%;
+bottom:18px;
+transform:translateX(-50%);
+z-index:1100;
+display:none;
+max-width:min(92vw,420px);
+padding:12px 16px;
+border-radius:12px;
+background:#173626;
+border:1px solid #34754d;
+color:#d5ffe1;
+font-size:12px;
+font-weight:800;
+text-align:center;
+box-shadow:0 15px 45px rgba(0,0,0,.35)
+}
+
+.admin-toast.show{
+display:block
+}
+
+@media(max-width:600px){
+
+.admin-toast{
+bottom:calc(14px + env(safe-area-inset-bottom));
+width:92vw
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<main class="wrap">
+
+<section
+class="login"
+id="login"
+>
+
+<div class="brand">
+☀️ Pauluzzi Bronze
 </div>
-<div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
+
+<h1>
+Acesso administrativo
+</h1>
+
+<p
+class="muted"
+style="text-align:center"
+>
+
+A sessão é criada pelo servidor e armazenada em cookie HttpOnly. A senha não fica no JavaScript.
+
+</p>
+
+<form
+id="loginForm"
+>
+
+<input
+class="input"
+id="senha"
+type="password"
+autocomplete="current-password"
+placeholder="Senha administrativa"
+required
+>
+
+<button
+class="btn primary"
+>
+Entrar no painel
+</button>
+
+</form>
+
+</section>
+
+<section
+class="dash"
+id="dash"
+>
+
+<header class="top">
+
+<div>
+
+<div
+class="brand"
+style="text-align:left"
+>
+☀️ Pauluzzi Bronze
+</div>
+
+<h1>
+Painel administrativo
+</h1>
+
+<div class="muted">
+Controle de promoções, horários e pagamentos.
+</div>
+
+</div>
+
+<div class="actions">
+
+<button
+class="btn ghost"
+id="refresh"
+>
+↻ Atualizar
+</button>
+
+<button
+class="btn danger"
+id="logout"
+>
+Sair
+</button>
+
+</div>
+
+</header>
+
+<div class="stats">
+
+<div class="stat">
+
+<small>
+Agendamentos
+</small>
+
+<strong
+id="sTotal"
+>
+0
+</strong>
+
+</div>
+
+<div class="stat">
+
+<small>
+Pagamento informado
+</small>
+
+<strong
+id="sInformed"
+>
+0
+</strong>
+
+</div>
+
+<div class="stat">
+
+<small>
+Confirmados
+</small>
+
+<strong
+id="sConfirmed"
+>
+0
+</strong>
+
+</div>
+
+<div class="stat">
+
+<small>
+Valor confirmado
+</small>
+
+<strong
+id="sRevenue"
+>
+R$ 0,00
+</strong>
+
+</div>
+
+</div>
+
+<div class="grid">
+
+<div>
+
+<section class="card">
+
+<h2>
+Nova promoção
+</h2>
+
+<div class="muted">
+A imagem é otimizada no navegador antes do envio.
+</div>
+
+<form
+id="promoForm"
+>
+
+<div class="field">
+
+<label>
+Título
+</label>
+
+<input
+class="input"
+id="titulo"
+maxlength="80"
+placeholder="Ex.: Combo Bronze"
+required
+>
+
+</div>
+
+<div class="field">
+
+<label>
+Descrição / especificação da promoção
+</label>
+
+<textarea
+class="input"
+id="descricao"
+maxlength="500"
+rows="3"
+style="height:auto;padding:10px 12px;resize:vertical"
+placeholder="Ex.: 60 min na Turbo + 5 min no Paredão"
+></textarea>
+
+<div class="hint">
+Texto livre. Você pode escrever combinações e especificações da promoção.
+</div>
+
+</div>
+
+<div class="field">
+
+<label>
+Texto junto do valor (opcional)
+</label>
+
+<input
+class="input"
+id="valorTexto"
+maxlength="120"
+placeholder="Ex.: combo completo / por pessoa"
+>
+
+</div>
+
+<div class="field">
+
+<label>
+Categoria
+</label>
+
+<select
+class="select"
+id="categoria"
+>
+
+<option>
+Paredão
+</option>
+
+<option>
+Máquina Turbo
+</option>
+
+<option>
+Sol
+</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>
+Preço
+</label>
+
+<input
+class="input"
+id="preco"
+type="number"
+min="0.01"
+max="9999"
+step="0.01"
+placeholder="59.99"
+required
+>
+
+</div>
+
+<div class="field">
+
+<label>
+Duração (minutos)
+</label>
+
+<input
+class="input"
+id="duracao"
+type="number"
+min="0"
+max="240"
+step="1"
+value="60"
+>
+
+<div class="hint">
+Use 0 em promoções sem reserva de duração, como ordem de chegada.
+</div>
+
+</div>
+
+<div class="field">
+
+<label>
+Horário fixo (opcional)
+</label>
+
+<input
+class="input"
+id="horaFixa"
+maxlength="5"
+placeholder="08:00"
+>
+
+</div>
+
+<div class="field">
+
+<label>
+Dias válidos
+</label>
+
+<div class="checks">
+
+<label>
+<input
+type="checkbox"
+name="dia"
+value="0"
+>
+Dom
+</label>
+
+<label>
+<input
+type="checkbox"
+name="dia"
+value="1"
+>
+Seg
+</label>
+
+<label>
+<input
+type="checkbox"
+name="dia"
+value="2"
+>
+Ter
+</label>
+
+<label>
+<input
+type="checkbox"
+name="dia"
+value="3"
+>
+Qua
+</label>
+
+<label>
+<input
+type="checkbox"
+name="dia"
+value="4"
+>
+Qui
+</label>
+
+<label>
+<input
+type="checkbox"
+name="dia"
+value="5"
+>
+Sex
+</label>
+
+<label>
+<input
+type="checkbox"
+name="dia"
+value="6"
+>
+Sáb
+</label>
+
+</div>
+
+</div>
+
+<div class="field">
+
+<label>
+Imagem
+</label>
+
+<input
+class="input"
+id="foto"
+type="file"
+accept="image/png,image/jpeg,image/webp"
+>
+
+<img
+class="preview"
+id="preview"
+alt="Prévia da promoção"
+>
+
+<div class="photo-note">
+Prefira imagens de até aproximadamente 1 MB.
+</div>
+
+</div>
+
+<button
+class="btn primary"
+style="width:100%"
+>
+Salvar promoção
+</button>
+
+</form>
+
+</section>
+
+<section
+class="card"
+style="margin-top:15px"
+>
+
+<h2>
+Promoções ativas
+</h2>
+
+<div
+id="promoList"
+class="promo-list"
+></div>
+
+</section>
+
+</div>
+
+<section
+class="card"
+style="margin-bottom:15px"
+>
+
+<h2>
+Agendamento manual
+</h2>
+
+<div class="muted">
+
+Use quando o cliente não conseguir pagar pelo Pix e combinar pagamento em dinheiro. O agendamento entra diretamente como <strong>Confirmado</strong>.
+
+</div>
+
+<form
+id="manualForm"
+style="margin-top:12px"
+>
+
+<div class="grid2">
+
+<div class="field">
+
+<label>
+Nome
+</label>
+
+<input
+class="input"
+id="manualNome"
+maxlength="100"
+required
+>
+
+</div>
+
+<div class="field">
+
+<label>
+WhatsApp
+</label>
+
+<input
+class="input"
+id="manualTelefone"
+maxlength="20"
+required
+>
+
+</div>
+
+</div>
+
+<div class="grid2">
+
+<div class="field">
+
+<label>
+Serviço
+</label>
+
+<select
+class="select"
+id="manualServico"
+required
+></select>
+
+</div>
+
+<div class="field">
+
+<label>
+Data
+</label>
+
+<input
+class="input"
+id="manualData"
+type="date"
+required
+>
+
+</div>
+
+</div>
+
+<div class="grid2">
+
+<div class="field">
+
+<label>
+Horário
+</label>
+
+<input
+class="input"
+id="manualHora"
+type="time"
+required
+>
+
+</div>
+
+<div class="field">
+
+<label>
+Duração (minutos)
+</label>
+
+<input
+class="input"
+id="manualDuracao"
+type="number"
+min="5"
+max="240"
+step="5"
+value="60"
+required
+>
+
+</div>
+
+</div>
+
+<label class="check">
+
+<input
+type="checkbox"
+id="manualOculos"
+>
+
+<b id="manualOculosText">
+👓 Óculos (+ R$ 5,00)
+</b>
+
+</label>
+
+<div
+class="hint"
+id="manualOculosHint"
+>
+Opcional nos demais serviços. Você pode trazer o seu.
+</div>
+
+<div class="field">
+
+<label>
+Protetor solar
+</label>
+
+<select
+class="select"
+id="manualProtetor"
+>
+
+<option value="local">
+Comprar no local
+</option>
+
+<option value="proprio">
+Vou trazer o meu
+</option>
+
+</select>
+
+<div class="hint">
+Obrigatório para o atendimento. Você pode trazer o seu ou comprar no local.
+</div>
+
+</div>
+
+<div class="field">
+
+<label>
+Observação
+</label>
+
+<input
+class="input"
+id="manualObs"
+maxlength="200"
+placeholder="Ex.: pagamento em dinheiro"
+>
+
+</div>
+
+<button
+class="btn primary"
+style="width:100%"
+>
+Adicionar à agenda manualmente
+</button>
+
+<div
+class="muted"
+id="manualMsg"
+style="margin-top:8px"
+></div>
+
+</form>
+
+</section>
+
+<section class="card">
+
+<h2>
+Agendamentos
+</h2>
+
+<div class="muted">
+
+“Pagamento informado” significa que o cliente avisou que pagou. “Confirmado” é o status definido pelo atendimento após conferir o Pix.
+
+</div>
+
+<div class="filters">
+
+<input
+class="input"
+id="busca"
+placeholder="Pesquisar por nome, telefone ou serviço"
+>
+
+<select
+class="select"
+id="filtro"
+>
+
+<option value="todos">
+Todos os status
+</option>
+
+<option value="pagamento_pendente">
+Pagamento pendente
+</option>
+
+<option value="pagamento_informado">
+Pagamento informado
+</option>
+
+<option value="confirmado">
+Confirmado
+</option>
+
+<option value="cancelado">
+Cancelado
+</option>
+
+</select>
+
+</div>
+
+<div class="table-wrap">
+
+<table class="table">
+
+<thead>
+
+<tr>
+
+<th>
+Cliente
+</th>
+
+<th>
+Serviço
+</th>
+
+<th>
+Data / hora
+</th>
+
+<th>
+Valor
+</th>
+
+<th>
+Status
+</th>
+
+<th>
+Ações
+</th>
+
+</tr>
+
+</thead>
+
+<tbody
+id="bookingTable"
+></tbody>
+
+</table>
+
+</div>
+
+</section>
+
+</div>
+
+</section>
+
+</main>
+
+<div
+class="photo-viewer"
+id="photoViewer"
+aria-hidden="true"
+>
+
+<button
+type="button"
+class="photo-viewer-close"
+id="photoViewerClose"
+aria-label="Fechar imagem"
+>
+×
+</button>
+
+<img
+id="photoViewerImg"
+alt="Visualização da promoção"
+>
+
+<div class="photo-viewer-hint">
+Toque fora da imagem ou no × para fechar
+</div>
+
+</div>
+
+<div
+id="adminToast"
+class="admin-toast"
+role="status"
+aria-live="polite"
+></div>
+
 <script>
-const $=id=>document.getElementById(id),money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}),esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]));const fallbackImg='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675"><rect width="1200" height="675" fill="#201912"/><circle cx="950" cy="130" r="180" fill="#d8ad4b" opacity=".22"/><text x="600" y="365" text-anchor="middle" fill="#f5d98a" font-family="Arial" font-size="60" font-weight="700">Pauluzzi Bronze</text></svg>');let bookings=[],promos=[];
-async function api(url,options={}){let r;try{r=await fetch(url,{cache:'no-store',credentials:'same-origin',...options})}catch(err){throw new Error('Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.')}const b=await r.json().catch(()=>({}));if(r.status===401){showLogin();throw new Error('Sessão expirada.')}if(!r.ok)throw new Error(b.erro||`Erro no servidor (${r.status}).`);return b}
-function showLogin(){$('dash').style.display='none';$('login').style.display='block'}async function showDash(){$('login').style.display='none';$('dash').style.display='block';await Promise.all([loadAll(),carregarManualServicos()])}
-async function verify(){try{await api('/admin/session');showDash()}catch{showLogin()}}
-$('loginForm').addEventListener('submit',async e=>{e.preventDefault();try{const r=await fetch('/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('senha').value})});const b=await r.json().catch(()=>({}));if(!r.ok)throw new Error(b.erro||'Senha incorreta.');$('senha').value='';showDash()}catch(err){alert(err.message)}});
-$('logout').addEventListener('click',async()=>{try{await api('/admin/logout',{method:'POST'})}finally{showLogin()}});$('refresh').addEventListener('click',loadAll);$('busca').addEventListener('input',renderBookings);$('filtro').addEventListener('change',renderBookings);
-async function loadAll(){try{await Promise.all([loadBookings(),loadPromos()])}catch(err){alert(err.message)}}
-async function loadBookings(){const data=(await api('/listar')).agendamentos||[];bookings=data;$('sTotal').textContent=data.length;$('sInformed').textContent=data.filter(x=>x.status==='pagamento_informado').length;$('sConfirmed').textContent=data.filter(x=>x.status==='confirmado').length;$('sRevenue').textContent=money(data.filter(x=>x.status==='confirmado').reduce((s,x)=>s+Number(x.valor||0),0));renderBookings()}
-function statusLabel(s){return s==='pagamento_informado'?'Pagamento informado':s==='confirmado'?'Confirmado':s==='cancelado'?'Cancelado':'Pagamento pendente'}
-function statusClass(s){return s==='pagamento_informado'?'informed':s==='confirmado'?'confirmed':s==='cancelado'?'cancelled':'pending'}
-function renderBookings(){const q=$('busca').value.trim().toLowerCase(),filter=$('filtro').value;const data=bookings.filter(x=>(filter==='todos'||x.status===filter)&&(!q||[x.nome,x.telefone,x.tipo,x.categoria].join(' ').toLowerCase().includes(q)));$('bookingTable').innerHTML=data.length?data.map(x=>`<tr><td><strong>${esc(x.nome)}</strong><br><span class="muted">${esc(x.telefone)}</span></td><td>${esc(x.tipo)}<br><span class="muted">${esc(x.categoria)}${x.oculos?' · 👓':''}</span></td><td>${esc(x.data.split('-').reverse().join('/'))}<br>${esc(x.hora)}</td><td><strong>${money(x.valor)}</strong></td><td><span class="tag ${statusClass(x.status)}">${statusLabel(x.status)}</span></td><td><div class="row-actions">${x.status==='pagamento_informado'?`<button type="button" class="btn success booking-action" data-action="status" data-id="${esc(x._id)}" data-status="confirmado">Confirmar Pix</button>`:''}${x.status!=='cancelado'?`<button type="button" class="btn danger booking-action" data-action="status" data-id="${esc(x._id)}" data-status="cancelado">Cancelar</button>`:''}<button type="button" class="btn ghost booking-action" data-action="delete" data-id="${esc(x._id)}">Apagar</button></div></td></tr>`).join(''):'<tr><td colspan="6" class="empty">Nenhum agendamento encontrado.</td></tr>'}
-async function setStatus(id,status){if(!window.confirm(status==='confirmado'?'Confirmar que o Pix foi conferido?':'Cancelar este agendamento?'))return;try{await api('/agendamentos/'+encodeURIComponent(id)+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});await loadBookings()}catch(e){alert(e.message)}}
-async function deleteBooking(id){if(!window.confirm('Apagar permanentemente este agendamento?'))return;try{await api('/agendamentos/'+encodeURIComponent(id),{method:'DELETE'});await loadBookings()}catch(e){alert(e.message)}}
+
+const $=
+id=>
+document.getElementById(
+id
+);
+
+const money=
+v=>
+Number(
+v||0
+).toLocaleString(
+'pt-BR',
+{
+style:'currency',
+currency:'BRL'
+}
+);
+
+const esc=
+v=>
+String(
+v??''
+).replace(
+/[&<>'"]/g,
+c=>
+({
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+"'":'&#39;',
+'"':'&quot;'
+}[c])
+);
+
+const fallbackImg=
+'data:image/svg+xml;charset=UTF-8,'+
+encodeURIComponent(
+'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675">'+
+'<rect width="1200" height="675" fill="#201912"/>'+
+'<circle cx="950" cy="130" r="180" fill="#d8ad4b" opacity=".22"/>'+
+'<text x="600" y="365" text-anchor="middle" fill="#f5d98a" font-family="Arial" font-size="60" font-weight="700">Pauluzzi Bronze</text>'+
+'</svg>'
+);
+
+let bookings=[];
+let promos=[];
+
+async function api(
+url,
+options={}
+){
+
+let r;
+
+try{
+
+r=
+await fetch(
+url,
+{
+cache:'no-store',
+credentials:'same-origin',
+...options
+}
+);
+
+}catch(
+err
+){
+
+throw new Error(
+'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.'
+);
+
+}
+
+const b=
+await r
+.json()
+.catch(
+()=>({})
+);
+
+if(
+r.status===
+401
+){
+
+showLogin();
+
+throw new Error(
+'Sessão expirada.'
+);
+
+}
+
+if(
+!r.ok
+){
+
+throw new Error(
+b.erro||
+`Erro no servidor (${r.status}).`
+);
+
+}
+
+return b;
+
+}
+
+function showLogin(){
+
+$('dash')
+.style.display=
+'none';
+
+$('login')
+.style.display=
+'block';
+
+}
+
+async function showDash(){
+
+$('login')
+.style.display=
+'none';
+
+$('dash')
+.style.display=
+'block';
+
+await Promise.all(
+[
+loadAll(),
+carregarManualServicos()
+]
+);
+
+}
+
+async function verify(){
+
+try{
+
+await api(
+'/admin/session'
+);
+
+showDash();
+
+}catch{
+
+showLogin();
+
+}
+
+}
+
+$('loginForm')
+.addEventListener(
+'submit',
+async e=>{
+
+e.preventDefault();
+
+try{
+
+const r=
+await fetch(
+'/admin/login',
+{
+method:'POST',
+headers:{
+'Content-Type':
+'application/json'
+},
+body:
+JSON.stringify(
+{
+password:
+$('senha').value
+}
+)
+}
+);
+
+const b=
+await r
+.json()
+.catch(
+()=>({})
+);
+
+if(
+!r.ok
+)
+throw new Error(
+b.erro||
+'Senha incorreta.'
+);
+
+$('senha').value=
+'';
+
+showDash();
+
+}catch(
+err
+){
+
+alert(
+err.message
+);
+
+}
+
+}
+);
+
+$('logout')
+.addEventListener(
+'click',
+async()=>{
+
+try{
+
+await api(
+'/admin/logout',
+{
+method:'POST'
+}
+);
+
+}finally{
+
+showLogin();
+
+}
+
+}
+);
+
+$('refresh')
+.addEventListener(
+'click',
+loadAll
+);
+
+$('busca')
+.addEventListener(
+'input',
+renderBookings
+);
+
+$('filtro')
+.addEventListener(
+'change',
+renderBookings
+);
+
+async function loadAll(){
+
+try{
+
+await Promise.all(
+[
+loadBookings(),
+loadPromos()
+]
+);
+
+}catch(
+err
+){
+
+alert(
+err.message
+);
+
+}
+
+}
+
+async function loadBookings(){
+
+const data=
+(
+await api(
+'/listar'
+)
+)
+.agendamentos||
+[];
+
+bookings=
+data;
+
+$('sTotal')
+.textContent=
+data.length;
+
+$('sInformed')
+.textContent=
+data.filter(
+x=>
+x.status===
+'pagamento_informado'
+)
+.length;
+
+$('sConfirmed')
+.textContent=
+data.filter(
+x=>
+x.status===
+'confirmado'
+)
+.length;
+
+$('sRevenue')
+.textContent=
+money(
+data
+.filter(
+x=>
+x.status===
+'confirmado'
+)
+.reduce(
+(s,x)=>
+s+
+Number(
+x.valor||
+0
+),
+0
+)
+);
+
+renderBookings();
+
+}
+
+function statusLabel(
+s
+){
+
+return s===
+'pagamento_informado'
+?
+'Pagamento informado'
+:
+s===
+'confirmado'
+?
+'Confirmado'
+:
+s===
+'cancelado'
+?
+'Cancelado'
+:
+'Pagamento pendente';
+
+}
+
+function statusClass(
+s
+){
+
+return s===
+'pagamento_informado'
+?
+'informed'
+:
+s===
+'confirmado'
+?
+'confirmed'
+:
+s===
+'cancelado'
+?
+'cancelled'
+:
+'pending';
+
+}
+
+function renderBookings(){
+
+const q=
+$('busca')
+.value
+.trim()
+.toLowerCase();
+
+const filter=
+$('filtro')
+.value;
+
+const data=
+bookings.filter(
+x=>
+(
+filter===
+'todos'||
+x.status===
+filter
+)&&
+(
+!q||
+[
+x.nome,
+x.telefone,
+x.tipo,
+x.categoria
+]
+.join(' ')
+.toLowerCase()
+.includes(q)
+)
+);
+
+$('bookingTable')
+.innerHTML=
+data.length
+?
+data
+.map(
+x=>
+`
+
+<tr>
+
+<td>
+
+<strong>
+${esc(
+x.nome
+)}
+</strong>
+
+<br>
+
+<span class="muted">
+${esc(
+x.telefone
+)}
+</span>
+
+</td>
+
+<td>
+
+${esc(
+x.tipo
+)}
+
+<br>
+
+<span class="muted">
+
+${esc(
+x.categoria
+)}
+
+${x.oculos?
+' · 👓':
+''}
+
+</span>
+
+</td>
+
+<td>
+
+${esc(
+x.data
+.split('-')
+.reverse()
+.join('/')
+)}
+
+<br>
+
+${esc(
+x.hora
+)}
+
+</td>
+
+<td>
+
+<strong>
+${money(
+x.valor
+)}
+</strong>
+
+</td>
+
+<td>
+
+<span
+class="tag ${statusClass(
+x.status
+)}"
+>
+
+${statusLabel(
+x.status
+)}
+
+</span>
+
+</td>
+
+<td>
+
+<div
+class="row-actions"
+>
+
+${
+x.status===
+'pagamento_informado'
+?
+`
+
+<button
+type="button"
+class="btn success booking-action"
+data-action="status"
+data-id="${esc(
+x._id
+)}"
+data-status="confirmado"
+>
+Confirmar Pix
+</button>
+
+`
+:
+''
+}
+
+${
+x.status!==
+'cancelado'
+?
+`
+
+<button
+type="button"
+class="btn danger booking-action"
+data-action="status"
+data-id="${esc(
+x._id
+)}"
+data-status="cancelado"
+>
+Cancelar
+</button>
+
+`
+:
+''
+}
+
+<button
+type="button"
+class="btn ghost booking-action"
+data-action="delete"
+data-id="${esc(
+x._id
+)}"
+>
+Apagar
+</button>
+
+</div>
+
+</td>
+
+</tr>
+
+`
+)
+.join('')
+:
+`
+
+<tr>
+
+<td
+colspan="6"
+class="empty"
+>
+Nenhum agendamento encontrado.
+</td>
+
+</tr>
+
+`;
+
+}
+
+async function setStatus(
+id,
+status
+){
+
+if(
+!window.confirm(
+status===
+'confirmado'
+?
+'Confirmar que o Pix foi conferido?'
+:
+'Cancelar este agendamento?'
+)
+)
+return;
+
+try{
+
+await api(
+'/agendamentos/'+
+encodeURIComponent(
+id
+)+
+'/status',
+{
+method:'PATCH',
+headers:{
+'Content-Type':
+'application/json'
+},
+body:
+JSON.stringify(
+{
+status
+}
+)
+}
+);
+
+await loadBookings();
+
+}catch(
+e
+){
+
+alert(
+e.message
+);
+
+}
+
+}
+
+async function deleteBooking(
+id
+){
+
+if(
+!window.confirm(
+'Apagar permanentemente este agendamento?'
+)
+)
+return;
+
+try{
+
+await api(
+'/agendamentos/'+
+encodeURIComponent(
+id
+),
+{
+method:'DELETE'
+}
+);
+
+await loadBookings();
+
+}catch(
+e
+){
+
+alert(
+e.message
+);
+
+}
+
+}
+
 function renderPromoList(){
-  $('promoList').innerHTML=promos.length?promos.map(p=>{
-    const foto=p.foto||fallbackImg;
-    return `<div class="promo-line">
-      <div class="promo-main">
-        <button type="button" class="photo-open" data-action="view-promo-photo" data-id="${esc(p._id)}" title="Abrir foto">
-          <img class="promo-photo-thumb" src="${esc(foto)}" alt="${esc(p.titulo)}" loading="lazy">
-        </button>
-        <div><strong>${esc(p.titulo)}</strong><small>${esc(p.categoria)} · ${money(p.preco)}${p.valorTexto?' · '+esc(p.valorTexto):''} · ${esc((p.dias||[]).join(', '))}${p.horaFixa?' · '+esc(p.horaFixa):''}</small>${p.descricao?`<div class="promo-description">${esc(p.descricao)}</div>`:''}<div class="hint">Clique na foto para ampliar.</div></div>
-      </div>
-      <button type="button" class="btn danger promo-action" data-action="delete-promo" data-id="${esc(p._id)}">Apagar</button>
-    </div>`;
-  }).join(''):'<div class="empty">Nenhuma promoção ativa.</div>';
+
+$('promoList')
+.innerHTML=
+promos.length
+?
+
+promos
+.map(
+p=>{
+
+const foto=
+p.foto||
+fallbackImg;
+
+return `
+
+<div
+class="promo-line"
+>
+
+<div
+class="promo-main"
+>
+
+<button
+type="button"
+class="photo-open"
+data-action="view-promo-photo"
+data-id="${esc(
+p._id
+)}"
+title="Abrir foto"
+>
+
+<img
+class="promo-photo-thumb"
+src="${esc(
+foto
+)}"
+alt="${esc(
+p.titulo
+)}"
+loading="lazy"
+>
+
+</button>
+
+<div>
+
+<strong>
+${esc(
+p.titulo
+)}
+</strong>
+
+<small>
+
+${esc(
+p.categoria
+)}
+·
+${money(
+p.preco
+)}
+
+${
+p.valorTexto
+?
+' · '+
+esc(
+p.valorTexto
+)
+:
+''
 }
-async function loadPromos(){promos=await api('/promocoes');renderPromoList()}
-function toastAdmin(message){
-  const box=$('adminToast');
-  if(!box){alert(message);return;}
-  box.textContent=message;box.classList.add('show');clearTimeout(window.__toastAdminTimer);window.__toastAdminTimer=setTimeout(()=>box.classList.remove('show'),3000);
+
+·
+${esc(
+(p.dias||[])
+.join(', ')
+)}
+
+${
+p.horaFixa
+?
+' · '+
+esc(
+p.horaFixa
+)
+:
+''
 }
-async function deletePromo(id){
-  if(!id)return;
-  if(!window.confirm('Apagar esta promoção da lista de promoções ativas?'))return;
-  const button=[...document.querySelectorAll('.promo-action')].find(el=>String(el.dataset.id)===String(id));
-  if(button){button.disabled=true;button.textContent='Apagando…';}
-  try{
-    await api('/admin/promocoes/'+encodeURIComponent(id)+'/desativar',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
-    promos=promos.filter(p=>String(p._id)!==String(id));
-    renderPromoList();
-    toastAdmin('✅ Promoção apagada com sucesso.');
-  }catch(e){
-    if(button){button.disabled=false;button.textContent='Apagar';}
-    alert(e.message);
-  }
+
+</small>
+
+${
+p.descricao
+?
+`
+
+<div
+class="promo-description"
+>
+${esc(
+p.descricao
+)}
+</div>
+
+`
+:
+''
+}
+
+<div class="hint">
+Clique na foto para ampliar.
+</div>
+
+</div>
+
+</div>
+
+<button
+type="button"
+class="btn danger promo-action"
+data-action="delete-promo"
+data-id="${esc(
+p._id
+)}"
+>
+Apagar
+</button>
+
+</div>
+
+`;
+
+}
+)
+.join('')
+:
+
+'<div class="empty">Nenhuma promoção ativa.</div>';
+
+}
+
+async function loadPromos(){
+
+promos=
+await api(
+'/promocoes'
+);
+
+renderPromoList();
+
+}
+
+function toastAdmin(
+message
+){
+
+const box=
+$('adminToast');
+
+if(
+!box
+){
+
+alert(
+message
+);
+
+return;
+
+}
+
+box.textContent=
+message;
+
+box.classList.add(
+'show'
+);
+
+clearTimeout(
+window.__toastAdminTimer
+);
+
+window.__toastAdminTimer=
+setTimeout(
+()=>
+box.classList.remove(
+'show'
+),
+3000
+);
+
+}
+
+async function deletePromo(
+id
+){
+
+if(
+!id
+)
+return;
+
+if(
+!window.confirm(
+'Apagar esta promoção da lista de promoções ativas?'
+)
+)
+return;
+
+const button=
+[
+...
+document.querySelectorAll(
+'.promo-action'
+)
+]
+.find(
+el=>
+String(
+el.dataset.id
+)===
+String(
+id
+)
+);
+
+if(
+button
+){
+
+button.disabled=
+true;
+
+button.textContent=
+'Apagando…';
+
+}
+
+try{
+
+await api(
+'/admin/promocoes/'+
+encodeURIComponent(
+id
+)+
+'/desativar',
+{
+method:'POST',
+headers:{
+'Content-Type':
+'application/json'
+},
+body:'{}'
+}
+);
+
+promos=
+promos.filter(
+p=>
+String(
+p._id
+)!==
+String(
+id
+)
+);
+
+renderPromoList();
+
+toastAdmin(
+'✅ Promoção apagada com sucesso.'
+);
+
+}catch(
+e
+){
+
+if(
+button
+){
+
+button.disabled=
+false;
+
+button.textContent=
+'Apagar';
+
+}
+
+alert(
+e.message
+);
+
+}
+
 }
 
 function ajustarCamposPromocao(){
-  const cat=$('categoria')?.value;
-  const dur=$('duracao');
-  if(!dur)return;
-  if(cat==='Paredão'){
-    dur.min='60'; dur.max='240'; dur.step='60'; dur.value=dur.value<60?'60':Math.round(Number(dur.value)/60)*60;
-  }else if(cat==='Máquina Turbo'){
-    dur.min='5'; dur.max='240'; dur.step='5'; dur.value=dur.value<5?'5':Math.round(Number(dur.value)/5)*5;
-  }else{
-    dur.min='0'; dur.max='240'; dur.step='5'; dur.value='0';
-  }
-}
-function compressImage(file){return new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>{const img=new Image();img.onload=()=>{const max=1200,ratio=Math.min(1,max/Math.max(img.width,img.height));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*ratio));c.height=Math.max(1,Math.round(img.height*ratio));c.getContext('2d').drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/webp',.82))};img.onerror=reject;img.src=fr.result};fr.onerror=reject;fr.readAsDataURL(file)})}
-ajustarCamposPromocao();
-$('categoria').addEventListener('change',ajustarCamposPromocao);
-$('foto').addEventListener('change',()=>{
-  const file=$('foto').files[0],p=$('preview');
-  if(!file){p.style.display='none';p.removeAttribute('src');return}
-  if(p.dataset.objectUrl){try{URL.revokeObjectURL(p.dataset.objectUrl)}catch{}}
-  const url=URL.createObjectURL(file);
-  p.dataset.objectUrl=url; p.src=url; p.style.display='block';
-});
 
-function openPhotoViewer(src,alt='Visualização da promoção'){
-  if(!src)return;
-  $('photoViewerImg').src=src;
-  $('photoViewerImg').alt=alt;
-  $('photoViewer').classList.add('show');
-  $('photoViewer').setAttribute('aria-hidden','false');
-  document.body.style.overflow='hidden';
+const cat=
+$('categoria')
+?.value;
+
+const dur=
+$('duracao');
+
+if(
+!dur
+)
+return;
+
+if(
+cat===
+'Paredão'
+){
+
+dur.min=
+'60';
+
+dur.max=
+'240';
+
+dur.step=
+'60';
+
+dur.value=
+dur.value<
+60
+?
+'60'
+:
+Math.round(
+Number(
+dur.value
+)/
+60
+)*
+60;
+
+}else if(
+cat===
+'Máquina Turbo'
+){
+
+dur.min=
+'5';
+
+dur.max=
+'240';
+
+dur.step=
+'5';
+
+dur.value=
+dur.value<
+5
+?
+'5'
+:
+Math.round(
+Number(
+dur.value
+)/
+5
+)*
+5;
+
+}else{
+
+dur.min=
+'0';
+
+dur.max=
+'240';
+
+dur.step=
+'5';
+
+dur.value=
+'0';
+
 }
+
+}
+
+function compressImage(
+file
+){
+
+return new Promise(
+(
+resolve,
+reject
+)=>
+{
+
+const fr=
+new FileReader();
+
+fr.onload=
+()=>
+{
+
+const img=
+new Image();
+
+img.onload=
+()=>
+{
+
+const max=
+1200;
+
+const ratio=
+Math.min(
+1,
+max/
+Math.max(
+img.width,
+img.height
+)
+);
+
+const c=
+document
+.createElement(
+'canvas'
+);
+
+c.width=
+Math.max(
+1,
+Math.round(
+img.width*
+ratio
+)
+);
+
+c.height=
+Math.max(
+1,
+Math.round(
+img.height*
+ratio
+)
+);
+
+c
+.getContext(
+'2d'
+)
+.drawImage(
+img,
+0,
+0,
+c.width,
+c.height
+);
+
+resolve(
+c.toDataURL(
+'image/webp',
+.82
+)
+);
+
+};
+
+img.onerror=
+reject;
+
+img.src=
+fr.result;
+
+};
+
+fr.onerror=
+reject;
+
+fr.readAsDataURL(
+file
+);
+
+}
+);
+
+}
+
+ajustarCamposPromocao();
+
+$('categoria')
+.addEventListener(
+'change',
+ajustarCamposPromocao
+);
+
+$('foto')
+.addEventListener(
+'change',
+()=>{
+
+const file=
+$('foto')
+.files[0];
+
+const p=
+$('preview');
+
+if(
+!file
+){
+
+p.style.display=
+'none';
+
+p.removeAttribute(
+'src'
+);
+
+return;
+
+}
+
+if(
+p.dataset.objectUrl
+){
+
+try{
+
+URL.revokeObjectURL(
+p.dataset.objectUrl
+);
+
+}catch{}
+
+}
+
+const url=
+URL.createObjectURL(
+file
+);
+
+p.dataset.objectUrl=
+url;
+
+p.src=
+url;
+
+p.style.display=
+'block';
+
+}
+);
+
+function openPhotoViewer(
+src,
+alt=
+'Visualização da promoção'
+){
+
+if(
+!src
+)
+return;
+
+$('photoViewerImg')
+.src=
+src;
+
+$('photoViewerImg')
+.alt=
+alt;
+
+$('photoViewer')
+.classList.add(
+'show'
+);
+
+$('photoViewer')
+.setAttribute(
+'aria-hidden',
+'false'
+);
+
+document.body.style.overflow=
+'hidden';
+
+}
+
 function closePhotoViewer(){
-  $('photoViewer').classList.remove('show');
-  $('photoViewer').setAttribute('aria-hidden','true');
-  $('photoViewerImg').removeAttribute('src');
-  document.body.style.overflow='';
+
+$('photoViewer')
+.classList.remove(
+'show'
+);
+
+$('photoViewer')
+.setAttribute(
+'aria-hidden',
+'true'
+);
+
+$('photoViewerImg')
+.removeAttribute(
+'src'
+);
+
+document.body.style.overflow=
+'';
+
 }
-$('preview').addEventListener('click',()=>openPhotoViewer($('preview').src,$('titulo').value||'Prévia da promoção'));
-$('photoViewerClose').addEventListener('click',closePhotoViewer);
-$('photoViewer').addEventListener('click',e=>{if(e.target.id==='photoViewer')closePhotoViewer()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePhotoViewer()});
-$('bookingTable').addEventListener('click',e=>{
-  const btn=e.target.closest('.booking-action');
-  if(!btn)return;
-  const id=btn.dataset.id;
-  if(btn.dataset.action==='status') setStatus(id,btn.dataset.status);
-  else if(btn.dataset.action==='delete') deleteBooking(id);
-});
-$('promoList').addEventListener('click',e=>{
-  const view=e.target.closest('[data-action="view-promo-photo"]');
-  if(view){
-    const promo=promos.find(p=>String(p._id)===String(view.dataset.id));
-    if(promo&&promo.foto)openPhotoViewer(promo.foto,promo.titulo);
-    return;
-  }
-  const del=e.target.closest('[data-action="delete-promo"]');
-  if(del){e.preventDefault();deletePromo(del.dataset.id);}
-});
-$('promoForm').addEventListener('submit',async e=>{e.preventDefault();const btn=e.submitter;btn.disabled=true;try{const checks=[...document.querySelectorAll('input[name="dia"]:checked')];if(!checks.length)throw new Error('Selecione ao menos um dia.');const file=$('foto').files[0];const foto=file?await compressImage(file):'';if(foto&&foto.length>1900000)throw new Error('A imagem continua muito grande. Escolha uma imagem menor.');const body={titulo:$('titulo').value,descricao:$('descricao').value,valorTexto:$('valorTexto').value,preco:$('preco').value,categoria:$('categoria').value,duracaoMinutos:$('duracao').value,horaFixa:$('horaFixa').value.trim(),diasNum:checks.map(x=>x.value),foto};await api('/promocoes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});e.target.reset();$('preview').style.display='none';await loadPromos();alert('Promoção criada com sucesso.')}catch(err){alert(err.message)}finally{btn.disabled=false}});
+
+$('preview')
+.addEventListener(
+'click',
+()=>openPhotoViewer(
+$('preview')
+.src,
+
+$('titulo')
+.value||
+'Prévia da promoção'
+)
+);
+
+$('photoViewerClose')
+.addEventListener(
+'click',
+closePhotoViewer
+);
+
+$('photoViewer')
+.addEventListener(
+'click',
+e=>{
+
+if(
+e.target.id===
+'photoViewer'
+)
+closePhotoViewer();
+
+}
+);
+
+document.addEventListener(
+'keydown',
+e=>{
+
+if(
+e.key===
+'Escape'
+)
+closePhotoViewer();
+
+}
+);
+
+$('bookingTable')
+.addEventListener(
+'click',
+e=>{
+
+const btn=
+e.target.closest(
+'.booking-action'
+);
+
+if(
+!btn
+)
+return;
+
+const id=
+btn.dataset.id;
+
+if(
+btn.dataset.action===
+'status'
+)
+setStatus(
+id,
+btn.dataset.status
+);
+
+else if(
+btn.dataset.action===
+'delete'
+)
+deleteBooking(
+id
+);
+
+}
+);
+
+$('promoList')
+.addEventListener(
+'click',
+e=>{
+
+const view=
+e.target.closest(
+'[data-action="view-promo-photo"]'
+);
+
+if(
+view
+){
+
+const promo=
+promos.find(
+p=>
+String(
+p._id
+)===
+String(
+view.dataset.id
+)
+);
+
+if(
+promo&&
+promo.foto
+)
+openPhotoViewer(
+promo.foto,
+promo.titulo
+);
+
+return;
+
+}
+
+const del=
+e.target.closest(
+'[data-action="delete-promo"]'
+);
+
+if(
+del
+){
+
+e.preventDefault();
+
+deletePromo(
+del.dataset.id
+);
+
+}
+
+}
+);
+
+$('promoForm')
+.addEventListener(
+'submit',
+async e=>{
+
+e.preventDefault();
+
+const btn=
+e.submitter;
+
+btn.disabled=
+true;
+
+try{
+
+const checks=
+[
+...
+document.querySelectorAll(
+'input[name="dia"]:checked'
+)
+];
+
+if(
+!checks.length
+)
+throw new Error(
+'Selecione ao menos um dia.'
+);
+
+const file=
+$('foto')
+.files[0];
+
+const foto=
+file
+?
+await compressImage(
+file
+)
+:
+'';
+
+if(
+foto&&
+foto.length>
+1900000
+)
+throw new Error(
+'A imagem continua muito grande. Escolha uma imagem menor.'
+);
+
+const body={
+
+titulo:
+$('titulo').value,
+
+descricao:
+$('descricao').value,
+
+valorTexto:
+$('valorTexto').value,
+
+preco:
+$('preco').value,
+
+categoria:
+$('categoria').value,
+
+duracaoMinutos:
+$('duracao').value,
+
+horaFixa:
+$('horaFixa').value.trim(),
+
+diasNum:
+checks.map(
+x=>x.value
+),
+
+foto
+
+};
+
+await api(
+'/promocoes',
+{
+method:'POST',
+headers:{
+'Content-Type':
+'application/json'
+},
+body:
+JSON.stringify(
+body
+)
+}
+);
+
+e.target.reset();
+
+$('preview')
+.style.display=
+'none';
+
+await loadPromos();
+
+alert(
+'Promoção criada com sucesso.'
+);
+
+}catch(
+err
+){
+
+alert(
+err.message
+);
+
+}finally{
+
+btn.disabled=
+false;
+
+}
+
+}
+);
 
 async function carregarManualServicos(){
-  const sel=$('manualServico');
-  if(!sel)return;
-  try{
-    const cfg=await api('/config');
-    sel.innerHTML=(cfg.services||[]).map(s=>
-      `<option value="${esc(s.id)}" data-cat="${esc(s.categoria)}" data-dur="${s.duracaoMinutos}" data-preco="${s.preco}">${esc(s.nome)} — ${money(s.preco)}</option>`
-    ).join('');
-    ajustarManualServico();
-  }catch(e){
-    $('manualMsg').textContent=e.message||'Não foi possível carregar os serviços.';
-  }
-}
-function ajustarManualServico(){
-  const opt=$('manualServico')?.selectedOptions?.[0];
-  const dur=$('manualDuracao');
-  const cb=$('manualOculos');
-  const txt=$('manualOculosText');
-  const hint=$('manualOculosHint');
-  if(!opt)return;
 
-  const cat=opt.dataset.cat||'';
-  if(cat==='Paredão'){
-    dur.min='60'; dur.step='60'; dur.value='60';
-    cb.disabled=false;
-    txt.textContent='👓 Óculos (+ R$ 5,00)';
-    hint.textContent='Opcional. Você pode trazer o seu.';
-  }else if(cat==='Máquina Turbo'){
-    dur.min='5'; dur.step='5'; dur.value='5';
-    cb.checked=true; cb.disabled=true;
-    txt.textContent='👓 Óculos — obrigatório (+ R$ 5,00)';
-    hint.textContent='Obrigatório. Você pode trazer o seu.';
-  }else{
-    dur.min='5'; dur.step='5'; dur.value=String(opt.dataset.dur||'5');
-    cb.disabled=false;
-    txt.textContent='👓 Óculos (+ R$ 5,00)';
-    hint.textContent='Opcional. Você pode trazer o seu.';
-  }
+const sel=
+$('manualServico');
+
+if(
+!sel
+)
+return;
+
+try{
+
+const cfg=
+await api(
+'/config'
+);
+
+sel.innerHTML=
+(
+cfg.services||
+[]
+)
+.map(
+s=>
+`
+<option
+value="${esc(
+s.id
+)}"
+data-cat="${esc(
+s.categoria
+)}"
+data-dur="${s.duracaoMinutos}"
+data-preco="${s.preco}"
+>
+${esc(
+s.nome
+)}
+—
+${money(
+s.preco
+)}
+</option>
+`
+)
+.join('');
+
+ajustarManualServico();
+
+}catch(
+e
+){
+
+$('manualMsg')
+.textContent=
+e.message||
+'Não foi possível carregar os serviços.';
+
 }
-async function salvarManual(e){
-  e.preventDefault();
-  const msg=$('manualMsg');
-  msg.textContent='Salvando...';
-  const body={
-    nome:$('manualNome').value,
-    telefone:$('manualTelefone').value,
-    servicoId:$('manualServico').value,
-    data:$('manualData').value,
-    hora:$('manualHora').value,
-    duracaoMinutos:Number($('manualDuracao').value||0),
-    oculos:$('manualOculos').checked,
-    protetorSolar:$('manualProtetor').value,
-    observacao:$('manualObs').value
-  };
-  try{
-    await api('/admin/agendamentos/manual',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(body)
-    });
-    msg.textContent='✅ Agendamento manual criado e colocado na agenda.';
-    $('manualForm').reset();
-    ajustarManualServico();
-    await loadBookings();
-  }catch(err){
-    msg.textContent='❌ '+err.message;
-  }
+
 }
-$('manualServico')?.addEventListener('change',ajustarManualServico);
-$('manualForm')?.addEventListener('submit',salvarManual);
+
+function ajustarManualServico(){
+
+const opt=
+$('manualServico')
+?.selectedOptions
+?.[0];
+
+const dur=
+$('manualDuracao');
+
+const cb=
+$('manualOculos');
+
+const txt=
+$('manualOculosText');
+
+const hint=
+$('manualOculosHint');
+
+if(
+!opt
+)
+return;
+
+const cat=
+opt.dataset.cat||
+'';
+
+if(
+cat===
+'Paredão'
+){
+
+dur.min=
+'60';
+
+dur.step=
+'60';
+
+dur.value=
+'60';
+
+cb.disabled=
+false;
+
+txt.textContent=
+'👓 Óculos (+ R$ 5,00)';
+
+hint.textContent=
+'Opcional. Você pode trazer o seu.';
+
+}else if(
+cat===
+'Máquina Turbo'
+){
+
+dur.min=
+'5';
+
+dur.step=
+'5';
+
+dur.value=
+'5';
+
+cb.checked=
+true;
+
+cb.disabled=
+true;
+
+txt.textContent=
+'👓 Óculos — obrigatório (+ R$ 5,00)';
+
+hint.textContent=
+'Obrigatório. Você pode trazer o seu.';
+
+}else{
+
+dur.min=
+'5';
+
+dur.step=
+'5';
+
+dur.value=
+String(
+opt.dataset.dur||
+'5'
+);
+
+cb.disabled=
+false;
+
+txt.textContent=
+'👓 Óculos (+ R$ 5,00)';
+
+hint.textContent=
+'Opcional. Você pode trazer o seu.';
+
+}
+
+}
+
+async function salvarManual(
+e
+){
+
+e.preventDefault();
+
+const msg=
+$('manualMsg');
+
+msg.textContent=
+'Salvando...';
+
+const body={
+
+nome:
+$('manualNome').value,
+
+telefone:
+$('manualTelefone').value,
+
+servicoId:
+$('manualServico').value,
+
+data:
+$('manualData').value,
+
+hora:
+$('manualHora').value,
+
+duracaoMinutos:
+Number(
+$('manualDuracao').value||
+0
+),
+
+oculos:
+$('manualOculos').checked,
+
+protetorSolar:
+$('manualProtetor').value,
+
+observacao:
+$('manualObs').value
+
+};
+
+try{
+
+await api(
+'/admin/agendamentos/manual',
+{
+method:'POST',
+headers:{
+'Content-Type':
+'application/json'
+},
+body:
+JSON.stringify(
+body
+)
+}
+);
+
+msg.textContent=
+'✅ Agendamento manual criado e colocado na agenda.';
+
+$('manualForm')
+.reset();
+
+ajustarManualServico();
+
+await loadBookings();
+
+}catch(
+err
+){
+
+msg.textContent=
+'❌ '+
+err.message;
+
+}
+
+}
+
+$('manualServico')
+?.addEventListener(
+'change',
+ajustarManualServico
+);
+
+$('manualForm')
+?.addEventListener(
+'submit',
+salvarManual
+);
+
 verify();
-</script></body></html>
+
+</script>
+
+</body>
+
+</html>
